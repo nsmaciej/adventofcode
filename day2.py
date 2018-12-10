@@ -1,17 +1,6 @@
-import itertools
-import collections
+data = [x.strip() for x in open("day2.txt").readlines()]
 
-
-def diff(a, b):
-    r = 0
-    for i, j in zip(a, b):
-        if i != j:
-            r += 1
-    return r
-
-
-data = [x.strip() for x in open("b.txt").readlines()]
 for x in data:
     for y in data:
-        if diff(x, y) == 1:
-            print(x)
+        if sum(i != j for i, j in zip(x, y)) == 1:
+            print("".join(i for i, j in zip(x, y) if i == j))
