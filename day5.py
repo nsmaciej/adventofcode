@@ -1,19 +1,15 @@
 import string
 
 
-def invert(x):
-    return x.upper() if x.islower() else x.lower()
-
-
 def remove(polymer, x):
-    return "".join(i for i in polymer if i != x and i != invert(x))
+    return "".join(i for i in polymer if i != x and i != x.swapcase())
 
 
 def simulate(polymer):
     final = []
     i = 0
     while i < len(polymer):
-        if final and final[-1] == invert(polymer[i]):
+        if final and final[-1] == polymer[i].swapcase():
             final.pop()
         else:
             final.append(polymer[i])
