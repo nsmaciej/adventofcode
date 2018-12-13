@@ -2,20 +2,21 @@ import re
 import collections
 
 
-def events(log):
-    Event = collections.namedtuple("Event", "date, time, action")
-    for entry in log:
-        day = re.search(r"\[(.*)\]", entry)[1]
-        time = int(re.search(r"\d\d:(\d\d)", entry)[1])
-        if "falls asleep" in entry:
-            yield Event(day, time, "sleep")
-        elif "wakes up" in entry:
-            yield Event(day, time, "wake")
-        else:
-            yield Event(day, time, int(re.search(r"#(\d+)", entry)[1]))
+Event = collections.namedtuple("Event", "date, time, action")
 
 
-log = sorted(events(open("day4.txt").readlines()))
+def parse(entry):
+    day = re.search(r"\[(.*)\]", entry)[1]
+    time = int(re.search(r"\d\d:(\d\d)", entry)[1])
+    if "falls asleep" in entry:
+        return Event(day, time, "sleep")
+    elif "wakes up" in entry:
+        return Event(day, time, "wake")
+    else:
+        return Event(day, time, int(re.search(r"#(\d+)", entry)[1]))
+
+
+log = sorted(list(map(parse, open("day4.txt"))))
 asleep = collections.defaultdict(lambda: [0] * 60)
 guard = None
 sleep_time = 0

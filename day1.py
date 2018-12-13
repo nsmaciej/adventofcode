@@ -1,6 +1,6 @@
 import itertools
 
-changes = list(map(int, open("day1.txt").readlines()))
+changes = list(map(int, open("day1.txt")))
 print(sum(changes))
 
 seen = {0}

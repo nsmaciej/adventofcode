@@ -1,4 +1,4 @@
-data = [x.strip() for x in open("day2.txt").readlines()]
+data = [x.strip() for x in open("day2.txt")]
 
 for x in data:
     for y in data:
