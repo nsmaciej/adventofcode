@@ -16,15 +16,6 @@ def group(data):
     return r
 
 
-def topo(key):
-    if key in deps:
-        for x in deps[key]:
-            if x not in completed:
-                yield from topo(x)
-    yield key
-    completed.add(key)
-
-
 def invert(data):
     r = {}
     for k, v in data.items():
