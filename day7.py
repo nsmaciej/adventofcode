@@ -70,7 +70,6 @@ def simulate(deps):
         dt = min(x[0] for x in working if x[1] is not None)
         tt += dt
 
-        print("".join(a[1] or "." for a in working))
         for i, (t, j) in enumerate(working):
             if j is None:
                 continue
@@ -86,6 +85,6 @@ def simulate(deps):
     return tt
 
 
-deps = group(map(parse, open("day7.txt")))
+deps = group(map(parse, open("inputs/day7.txt")))
 print("".join(solve(deps)))
 print(simulate(deps))

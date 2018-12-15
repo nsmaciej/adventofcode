@@ -16,11 +16,9 @@ def solve(players, last_marble):
     return max(score)
 
 
+data = open("inputs/day9.txt").read()
 players, last_marble = map(
-    int,
-    re.match(
-        r"(\d+) players; last marble is worth (\d+) points", open("day9.txt").read()
-    ).groups(),
+    int, re.match(r"(\d+) players; last marble is worth (\d+) points", data).groups()
 )
 print(solve(players, last_marble))
 print(solve(players, last_marble * 100))

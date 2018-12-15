@@ -17,7 +17,7 @@ def simulate(polymer):
     return len(final)
 
 
-polymer = open("day5.txt").read()
+polymer = open("inputs/day5.txt").read()
 print(simulate(polymer))
 to_remove = min(string.ascii_lowercase, key=lambda x: simulate(remove(polymer, x)))
 print(simulate(remove(polymer, to_remove)))

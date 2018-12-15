@@ -18,7 +18,7 @@ def edge_set(a):
     return set(a[:, -1]) | set(a[:, 0]) | set(a[0, :]) | set(a[-1, :]) | {-1}
 
 
-coords = np.array([tuple(map(int, x.split(", "))) for x in open("day6.txt")])
+coords = np.array([tuple(map(int, x.split(", "))) for x in open("inputs/day6.txt")])
 width = max(coords[:, 0]) + 1
 height = max(coords[:, 1]) + 1
 voronoi = np.apply_along_axis(closest, 0, np.indices((width, height)))

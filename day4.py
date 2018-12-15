@@ -16,7 +16,7 @@ def parse(entry):
         return Event(day, time, int(re.search(r"#(\d+)", entry)[1]))
 
 
-log = sorted(list(map(parse, open("day4.txt"))))
+log = sorted(list(map(parse, open("inputs/day4.txt"))))
 asleep = collections.defaultdict(lambda: [0] * 60)
 guard = None
 sleep_time = 0
@@ -29,12 +29,10 @@ for evt in log:
     else:
         guard = evt.action
 
-print("Strategy 1")
 sleepy_guard = max(asleep.keys(), key=lambda x: sum(asleep[x]))
 sleep_minute = asleep[sleepy_guard].index(max(asleep[sleepy_guard]))
 print(sleep_minute * sleepy_guard)
 
-print("Strategy 2")
 sleepy_guard = max(asleep.keys(), key=lambda x: max(asleep[x]))
 sleep_minute = max(range(60), key=lambda x: asleep[sleepy_guard][x])
 print(sleep_minute * sleepy_guard)
