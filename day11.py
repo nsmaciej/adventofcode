@@ -8,16 +8,12 @@ def power_level(pos):
     return ((rack_id * y + serial) * rack_id // 100 % 10) - 5
 
 
-def sum_between(s, e):
-    # Usually each coordinate would be one off, but padding counteracts that.
-    return area[e[0], e[1]] + area[s[0], s[1]] - area[s[0], e[1]] - area[e[0], s[1]]
+def square_sum(x, y, k):
+    return area[x + k, y + k] + area[x, y] - area[x, y + k] - area[x + k, y]
 
 
 def max_sum(k):
-    return max(
-        np.ndindex(size - k, size - k),
-        key=lambda h: sum_between(h, (h[0] + k, h[1] + k)),
-    )
+    return max(np.ndindex(size - k, size - k), key=lambda h: square_sum(*h, k))
 
 
 def show(*vals):
@@ -28,6 +24,6 @@ serial = int(open("inputs/day11.txt").read())
 size = 300
 levels = np.apply_along_axis(power_level, 0, np.indices((size, size)))
 area = np.pad(levels.cumsum(0).cumsum(1), 1, "constant")
-best_k = max(range(size), key=max_sum)
 show(*max_sum(3))
+best_k = max(range(size), key=lambda k: square_sum(*max_sum(k), k))
 show(*max_sum(best_k), best_k)
