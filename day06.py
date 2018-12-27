@@ -15,7 +15,7 @@ def within_10000(x):
 
 
 def edge_set(a):
-    return set(a[:, -1]) | set(a[:, 0]) | set(a[0, :]) | set(a[-1, :]) | {-1}
+    return set(a[:, [0, -1]].flat) | set(a[[0, -1]].flat) | {-1}
 
 
 coords = np.array([tuple(map(int, x.split(", "))) for x in open("inputs/day6.txt")])
