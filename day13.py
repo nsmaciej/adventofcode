@@ -11,7 +11,7 @@ def show(yx):
 
 board = np.array([list(x[:-1]) for x in open("inputs/day13.txt").readlines()[:-1]])
 arrows = {">": (0, 1), "<": (0, -1), "^": (-1, 0), "v": (1, 0)}
-carts = np.transpose(np.isin(board, list("><^v")).nonzero())
+carts = np.argwhere(np.isin(board, list("><^v")))
 delta = np.array([arrows[x] for x in board[tuple(carts.T)]])
 turn = np.zeros(len(carts), int)
 board[np.isin(board, list("><"))] = "-"
