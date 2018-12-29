@@ -1,5 +1,5 @@
 import numpy as np
-from heapq import *
+from collections import deque
 
 
 def show(board):
@@ -19,34 +19,37 @@ def adjacent(pt):
     return ((pt[0] + y, pt[1] + x) for y, x in [(-1, 0), (0, -1), (0, 1), (1, 0)])
 
 
-def distance(board, pt):
-    queue = [(0, pt)]
-    r = np.full(board.shape, INF)
-    r[pt] = 0
+def board_select(board, pt, fn):
+    queue = deque([(0, pt)])
+    visited = np.zeros(board.shape, bool)
+    visited[pt] = True
+    selected = (INF, pt)
     while queue:
-        dist, pos = heappop(queue)
-        if r[pos] < dist:
-            continue
+        dist, pos = queue.popleft()
+        if board[pos] == "." and fn(pos):
+            selected = min(selected, (dist, pos))
+        if dist >= selected[0]:
+            continue  # No point checking further.
         for adj in adjacent(pos):
-            if board[adj] == "." and r[adj] > 1 + dist:
-                r[adj] = 1 + dist
-                heappush(queue, (1 + dist, adj))
-    return r
+            if board[adj] == "." and not visited[adj]:
+                visited[adj] = True
+                queue.append((1 + dist, adj))
+    if fn(selected[1]):
+        return selected[1]
+    return None
 
 
 def choose_step(board, pt):
-    if any(board[x] == ENEMY[board[pt]] for x in adjacent(pt)):
-        return None  # Already near enemy
-    options = spread(board == ENEMY[board[pt]]) & (board == ".")
-    if not options.max():
-        return None  # Nothing is reachable.
-    pt_dist = distance(board, pt)[options]
-    target = tuple(np.argwhere(options)[pt_dist == pt_dist.min()][0])
-    target_dist = distance(board, target)
-    step = min(adjacent(pt), key=lambda x: target_dist[x])
-    if target_dist[step] == INF:
-        return None  # Cannot move.
-    return step
+    enemy = ENEMY[board[pt]]
+    if any(board[x] == enemy for x in adjacent(pt)):
+        # Already near enemy, board_select would fail since we occupy the spot.
+        return None
+    in_range = spread(board == enemy)
+    target = board_select(board, pt, lambda x: in_range[x])
+    if target is None:
+        return None  # No reachable target.
+    valid_moves = set(adjacent(pt))
+    return board_select(board, target, lambda x: x in valid_moves)
 
 
 def entities(board):
@@ -71,9 +74,13 @@ def solve(board, elf_attack):
                 hp[step] = hp[pos]
                 pos = step
                 show(board)
-            enemies = [x for x in adjacent(pos) if board[x] == enemy]
-            if enemies:
-                attack = min(enemies, key=lambda x: hp[x])
+            # Attack
+            attack = min(
+                (x for x in adjacent(pos) if board[x] == enemy),
+                key=lambda x: hp[x],
+                default=None,
+            )
+            if attack is not None:
                 hp[attack] -= elf_attack if board[pos] == "E" else 3
                 if hp[attack] <= 0:
                     deaths[enemy] += 1
