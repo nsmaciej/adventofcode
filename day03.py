@@ -10,7 +10,7 @@ def drange(a, b):
     return itertools.product(range(a), range(b))
 
 
-areas = list(map(parse, open("inputs/day3.txt")))
+areas = list(map(parse, open("inputs/day03.txt")))
 width = max(x[0] + x[2] for x in areas) + 1
 height = max(x[1] + x[3] for x in areas) + 1
 field = [[0] * width for _ in range(height)]

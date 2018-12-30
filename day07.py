@@ -85,6 +85,6 @@ def simulate(deps):
     return tt
 
 
-deps = group(map(parse, open("inputs/day7.txt")))
+deps = group(map(parse, open("inputs/day07.txt")))
 print("".join(solve(deps)))
 print(simulate(deps))

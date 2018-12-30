@@ -23,6 +23,6 @@ def node_value(tree):
 
 
 Node = namedtuple("Node", "metadata, children")
-tree = parse(map(int, open("inputs/day8.txt").read().split()))
+tree = parse(map(int, open("inputs/day08.txt").read().split()))
 print(metadata_sum(tree))
 print(node_value(tree))

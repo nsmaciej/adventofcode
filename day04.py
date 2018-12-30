@@ -16,7 +16,7 @@ def parse(entry):
         return Event(day, time, int(re.search(r"#(\d+)", entry)[1]))
 
 
-log = sorted(list(map(parse, open("inputs/day4.txt"))))
+log = sorted(list(map(parse, open("inputs/day04.txt"))))
 asleep = collections.defaultdict(lambda: [0] * 60)
 guard = None
 sleep_time = 0

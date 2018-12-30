@@ -13,7 +13,7 @@ def common_letters():
                 return "".join(i for i, j in zip(x, y) if i == j)
 
 
-data = [x.strip() for x in open("inputs/day2.txt")]
+data = [x.strip() for x in open("inputs/day02.txt")]
 x, y = map(sum, zip(*map(value, data)))
 print(x * y)
 print(common_letters())
