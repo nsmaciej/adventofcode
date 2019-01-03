@@ -1,6 +1,5 @@
 import re
 import numpy as np
-import fileinput
 from heapq import *
 
 
@@ -50,8 +49,8 @@ def flow(p, move):
 
 
 def drip(p, move):
-    if scan[below(r)] == "#" and scan[move(r)] == "." and scan[below(move(r))] == ".":
-        pour(move(l))
+    if scan[below(p)] == "#" and scan[move(p)] == "." and scan[below(move(p))] == ".":
+        pour(move(p))
 
 
 def pour(p, go_up=True):
@@ -59,6 +58,8 @@ def pour(p, go_up=True):
     while scan[below(p)] == ".":
         p = below(p)
         scan[p] = "|"
+        if not valid(below(p)):
+            return
     l = flow(p, left)
     r = flow(p, right)
     if scan[left(l)] == "#" and scan[right(r)] == "#":
@@ -70,8 +71,7 @@ def pour(p, go_up=True):
         pour(p, go_up=False)
 
 
-fd = fileinput.input()
-xs, ys = np.array(list(map(parse, fd))).transpose((1, 0, 2))
+xs, ys = np.array(list(map(parse, open("inputs/day17.txt")))).transpose((1, 0, 2))
 source_x = 500 - xs.min() + 1
 xs -= xs.min() - 1
 ys -= ys.min()
