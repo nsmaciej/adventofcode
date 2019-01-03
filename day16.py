@@ -31,14 +31,6 @@ def parse(match):
     return int_tuple(before, ", "), int_tuple(op, " "), int_tuple(after, ", ")
 
 
-def find_option(iterable, fn):
-    for x in iterable:
-        if fn(x):
-            return x
-    for opcode, options in possible:
-        opcode
-
-
 ops = {
     "addr": reg_op(add),
     "addi": imm_op(add),
