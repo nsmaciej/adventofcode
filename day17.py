@@ -3,15 +3,6 @@ import numpy as np
 from heapq import *
 
 
-def show(scan):
-    colours = {
-        "#": "\x1b[31m#\x1b[0m",
-        "~": "\x1b[36m~\x1b[0m",
-        "|": "\x1b[36m|\x1b[0m",
-    }
-    print("\n" + "\n".join("".join(colours.get(y, y) for y in x) for x in scan))
-
-
 def parse(line):
     m = re.match(r"([xy])=(\d+), [xy]=(\d+)..(\d+)", line)
     first = int(m[2]), int(m[2]) + 1

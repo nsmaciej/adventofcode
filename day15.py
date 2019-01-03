@@ -2,12 +2,6 @@ import numpy as np
 from collections import deque
 
 
-def show(board):
-    if PRINT:
-        colours = {"E": "\x1b[32mE\x1b[0m", "G": "\x1b[31mG\x1b[0m"}
-        print("\n".join("".join(colours.get(y, y) for y in x) for x in board))
-
-
 def spread(m):
     r = np.roll(m, 1, 0) | np.roll(m, -1, 0)
     r |= np.roll(m, 1, 1) | np.roll(m, -1, 1)
@@ -73,7 +67,6 @@ def solve(board, elf_attack):
                 board[step], board[pos] = board[pos], "."
                 hp[step] = hp[pos]
                 pos = step
-                show(board)
             # Attack
             attack = min(
                 (x for x in adjacent(pos) if board[x] == enemy),
@@ -85,7 +78,6 @@ def solve(board, elf_attack):
                 if hp[attack] <= 0:
                     deaths[enemy] += 1
                     board[attack] = "."
-                    show(board)
         if alive["E"] == deaths["E"] or alive["G"] == deaths["G"]:
             return hp[entities(board)].sum() * turn, deaths
         turn += 1
