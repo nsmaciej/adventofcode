@@ -1,5 +1,3 @@
-# Advent of Code 2018
+# Advent of Code 2018 & 2019
 
-### Todo
-
-- [ ] Nice solution to puzzle 9
+The solution to puzzle 9 form 2018 is ugly, peruse at your own risk.
