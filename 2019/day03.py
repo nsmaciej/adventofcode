@@ -11,10 +11,8 @@ def points(turns):
     return times
 
 
-a, b = open("inputs/day03.txt")
 DIRECTIONS = {"U": (0, 1), "D": (0, -1), "L": (-1, 0), "R": (1, 0)}
-a = points(a)
-b = points(b)
+a, b = map(points, open("inputs/day03.txt"))
 intersections = set(a.keys()) & set(b.keys())
 print(min(map(lambda x: abs(x[0]) + abs(x[1]), intersections)))
 print(min(map(lambda x: a[x] + b[x], intersections)))
