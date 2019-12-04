@@ -7,7 +7,7 @@ def solve(group):
         yield (
             start <= x <= end
             and sorted(digits) == digits
-            and any(group(i) for i in Counter(digits).values())
+            and any(map(group, Counter(digits).values()))
         )
 
 
