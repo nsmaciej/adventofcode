@@ -5,8 +5,7 @@ def solve(group):
     for x in range(start, end + 1):
         digits = list(str(x))
         yield (
-            x >= start
-            and x <= end
+            start <= x <= end
             and sorted(digits) == digits
             and any(group(i) for i in Counter(digits).values())
         )
