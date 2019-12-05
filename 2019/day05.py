@@ -6,13 +6,15 @@ class State:
         self.tape = tape.copy()
         self.pc = 0
 
+    def paramater_index(self, arg, mode):
+        ix = self.pc + 1 + arg
+        return ix if mode == 1 else self.tape[ix]
+
     def paramater(self, arg, mode):
-        r = self.tape[self.pc + 1 + arg]
-        return r if mode == 1 else self.tape[r]
+        return self.tape[self.paramater_index(arg, mode)]
 
     def store(self, arg, mode, value):
-        ix = self.pc + 1 + arg
-        self.tape[ix if mode == 1 else self.tape[ix]] = value
+        self.tape[self.paramater_index(arg, mode)] = value
 
     def operand(self, modes, fn):
         args = [self.paramater(i, m) for i, m in enumerate(modes[:2])]
