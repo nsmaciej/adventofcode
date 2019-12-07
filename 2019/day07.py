@@ -30,9 +30,8 @@ class State:
         return op, modes
 
 
-def simulate(tape, inputs):
+def simulate(name, tape, inp):
     state = State(tape)
-    output = None
     while True:
         op, modes = state.instruction()
         # Math operators.
@@ -47,10 +46,12 @@ def simulate(tape, inputs):
 
         # I/O.
         elif op == 3:
-            state.store(0, modes[0], inputs.pop(0))
+            r = inp.pop(0)
+            state.store(0, modes[0], r)
             state.pc += 2
         elif op == 4:
-            output = state.paramater(0, modes[0])
+            r = yield state.paramater(0, modes[0])
+            inp.append(r)
             state.pc += 2
 
         # Jumps.
@@ -67,23 +68,27 @@ def simulate(tape, inputs):
         else:
             assert op == 99
             break
-    return output
 
 
 tape = list(map(int, open("inputs/day07.txt").read().split(",")))
 
 
 def a():
-    for x in itertools.permutations(range(5), 5):
-        a = simulate(tape, [x[0], 0])
-        b = simulate(tape, [x[1], a])
-        c = simulate(tape, [x[2], b])
-        d = simulate(tape, [x[3], c])
-        e = simulate(tape, [x[4], d])
-        yield e
+    for x in itertools.permutations(range(5, 10), 5):
+        try:
+            a = simulate(0, tape, [x[0], 0])
+            b = simulate(1, tape, [x[1], next(a)])
+            c = simulate(2, tape, [x[2], next(b)])
+            d = simulate(3, tape, [x[3], next(c)])
+            e = simulate(4, tape, [x[4], next(d)])
+            amps = [a, b, c, d, e]
+            signal = next(e)
+            i = 0
+            while True:
+                signal = amps[i].send(signal)
+                i = (i + 1) % len(amps)
+        except StopIteration:
+            yield signal
 
 
 print(max(a()))
-# print(simulate(tape, 1))
-# print(simulate(tape, 5))
-# open("inputs/day07.txt")
