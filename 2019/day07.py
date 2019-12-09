@@ -3,7 +3,7 @@ from intcode import Vm
 
 
 def signal(phases):
-    amps = [Vm(tape, [x]) for x in phases]
+    amps = [Vm(program, [x]) for x in phases]
     signal = 0
     amp_ix = 0
     while True:
@@ -15,6 +15,6 @@ def signal(phases):
         amp_ix = (amp_ix + 1) % len(amps)
 
 
-tape = list(map(int, open("inputs/day07.txt").read().split(",")))
+program = open("inputs/day07.txt").read()
 print(max(map(signal, permutations(range(5)))))
 print(max(map(signal, permutations(range(5, 10)))))

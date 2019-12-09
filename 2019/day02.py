@@ -2,14 +2,14 @@ from intcode import Vm
 
 
 def simulate(n, v):
-    vm = Vm(tape)
+    vm = Vm(program)
     vm.tape[1] = n
     vm.tape[2] = v
-    assert vm.run()
+    vm.complete()
     return vm.tape[0]
 
 
-tape = list(map(int, open("inputs/day02.txt").read().split(",")))
+program = open("inputs/day02.txt").read()
 print(simulate(12, 2))
 for n in range(100):
     for v in range(100):

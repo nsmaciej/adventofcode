@@ -1,13 +1,5 @@
-import operator
 from intcode import Vm
 
-
-def simulate(test_id):
-    vm = Vm(tape, [test_id])
-    assert vm.run()
-    return vm.outputs[-1]
-
-
-tape = list(map(int, open("inputs/day05.txt").read().split(",")))
-print(simulate(1))
-print(simulate(5))
+program = open("inputs/day05.txt").read()
+print(Vm(program, [1]).complete()[-1])
+print(Vm(program, [5]).complete()[-1])
