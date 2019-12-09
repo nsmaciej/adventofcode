@@ -44,10 +44,9 @@ class Vm:
     # Returns True if halted.
     def run(self):
         while self[self.pc] != 99:
-            encoding = str(self[self.pc]).zfill(5)
-            op = int(encoding[3:])
-            # Important to reverse it, this way the first mode is the first operand.
-            modes = list(map(int, encoding[:3]))[::-1]
+            inst = self[self.pc]
+            op = inst % 100
+            modes = [(inst // 100) % 10, (inst // 1000) % 10, (inst // 10000) % 10]
 
             # Math operators.
             if op == 1:
@@ -62,6 +61,7 @@ class Vm:
             # I/O.
             elif op == 3:
                 if not self.inputs:
+                    # Need more input.
                     return False
                 self.store(0, modes[0], self.inputs.pop(0))
                 self.pc += 2
