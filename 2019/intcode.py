@@ -1,4 +1,5 @@
 import operator
+import sys
 
 # Mode 1 is immediate mode, mode 0 is indirect.
 class Vm:
@@ -76,3 +77,7 @@ class Vm:
             else:
                 assert op == 99
         return True
+
+
+if __name__ == "__main__":
+    print(" ".join(map(str, Vm(sys.argv[1], []).complete())))
