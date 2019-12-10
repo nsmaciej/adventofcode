@@ -1,15 +1,20 @@
 import numpy as np
-from math import gcd, atan2, pi
+from math import gcd, atan2, pi, hypot
 from collections import defaultdict
 
 
-def asteroid_angles(coord):
+def delta(a, b):
+    return a[0] - b[0], a[1] - b[1]
+
+
+def asteroid_angles(candidate):
     angles = defaultdict(list)
-    for other, i in np.ndenumerate(field):
-        if other != coord and i == "#":
-            dy, dx = other[0] - coord[0], other[1] - coord[1]
+    for coord, kind in np.ndenumerate(field):
+        if coord != candidate and kind == "#":
+            # Careful, the order here matters.
+            dy, dx = delta(coord, candidate)
             d = gcd(dy, dx)
-            angles[dy // d, dx // d].append(other)
+            angles[dy // d, dx // d].append(coord)
     return angles
 
 
@@ -19,7 +24,9 @@ def angle(x):
 
 field = [list(x.strip()) for x in open("inputs/day10.txt")]
 asteroids = {i: asteroid_angles(i) for i, v in np.ndenumerate(field) if v == "#"}
-targets = max(asteroids.values(), key=len)
+station = max(asteroids, key=lambda x: len(asteroids[x]))
+targets = asteroids[station]
 print(len(targets))
-win_y, win_x = targets[sorted(targets.keys(), key=angle)[199]][0]
+win_angle = targets[sorted(targets.keys(), key=angle)[199]]
+win_y, win_x = sorted(win_angle, key=lambda x: hypot(*delta(x, station)))[0]
 print(win_x * 100 + win_y)
