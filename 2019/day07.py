@@ -6,10 +6,10 @@ def signal(phases):
     amps = [Vm(program, [x]) for x in phases]
     signal = 0
     for i, amp in cycle(enumerate(amps)):
-        amp.inputs.append(signal)
+        amp.input(signal)
         if amp.run() and i == 4:
-            return amp.outputs.pop()
-        signal = amp.outputs.pop()
+            return amp.output()
+        signal = amp.output()
 
 
 program = open("inputs/day07.txt").read()

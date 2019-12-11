@@ -33,6 +33,12 @@ class Vm:
         else:
             self.pc += 3
 
+    def output(self):
+        return self.outputs.pop(0)
+
+    def input(self, value):
+        self.inputs.append(value)
+
     def complete(self):
         assert self.run()
         return self.outputs
