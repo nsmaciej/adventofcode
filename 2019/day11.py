@@ -1,32 +1,25 @@
 from intcode import Vm
-from operator import itemgetter
 import numpy as np
 
 
 def run(start):
     hull = {}
-    robot = Vm(open("inputs/day11.txt").read(), [start])
-    x, y = 0, 0
-    dx, dy = 0, -1
+    robot = Vm(program, [start])
+    pos = np.array([0, 0])
+    delta = np.array([-1, 0])
     while not robot.run():
-        hull[x, y] = robot.outputs.pop(0)
-        if robot.outputs.pop(0) == 0:
-            dx, dy = dy, -dx
-        else:
-            dx, dy = -dy, dx
-        x += dx
-        y += dy
-        robot.inputs.append(hull.get((x, y), 0))
+        hull[tuple(pos)] = robot.output()
+        turn = [[0, -1], [1, 0]] if robot.output() else [[0, 1], [-1, 0]]
+        delta = delta @ turn
+        pos += delta
+        robot.input(hull.get(tuple(pos), 0))
     return hull
 
 
+program = open("inputs/day11.txt").read()
 print(len(run(0)))
-
-hull = run(1)
-sy, _ = max(hull.keys(), key=itemgetter(0))
-_, sx = max(hull.keys(), key=itemgetter(1))
-out = np.zeros((sy + 1, sx + 1), int)
-out[0, 0] = 1
-for pos, color in hull.items():
-    out[pos] = color
-print("\n".join("".join(map(str, row)).replace("0", " ") for row in out.T))
+hull = np.array([p for p, c in run(1).items() if c == 1])
+hull += hull.min(0)
+out = np.zeros(hull.max(0) + 1, int)
+out[tuple(hull.T)] = 1
+print("\n".join("".join(map(str, row)).replace("0", " ") for row in out))
