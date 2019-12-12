@@ -6,18 +6,41 @@ def parse(x):
     return list(map(int, re.match(r"<x=(-?\d+), y=(-?\d+), z=(-?\d+)>", x).groups()))
 
 
-def cmp(x, y):
-    return (x > y).astype(int) - (x < y).astype(int)
+def moon_velocity(x, y):
+    return ((x > y).astype(int) - (x < y).astype(int)).sum(0)
+
+
+class Universe:
+    def __init__(self, moons):
+        self.moons = np.copy(moons)
+        self.vel = np.zeros_like(moons)
+
+    def step(self):
+        for i in range(len(self.moons)):
+            self.vel[i] += moon_velocity(self.moons, self.moons[i, :])
+        self.moons += self.vel
+
+    def energy(self):
+        return sum(abs(self.moons).sum(1) * abs(self.vel).sum(1))
 
 
 moons = np.array(list(map(parse, open("inputs/day12.txt"))))
-velocity = np.zeros_like(moons)
+universe = Universe(moons)
 for _ in range(1000):
-    new_velocity = np.copy(velocity)
-    for moon in range(len(moons)):
-        for dim in range(3):
-            new_velocity[moon, dim] += cmp(moons[:, dim], moons[moon, dim]).sum()
-    velocity = new_velocity
-    moons += new_velocity
+    universe.step()
+print(universe.energy())
 
-print(sum(abs(moons).sum(1) * abs(velocity).sum(1)))
+universe = Universe(moons)
+seen = {axis: {} for axis in range(3)}
+cycle = {}
+age = 0
+while len(cycle) < 3:
+    universe.step()
+    for i in range(3):
+        key = (tuple(universe.moons[:, i]), tuple(universe.vel[:, i]))
+        if key in seen[i]:
+            cycle[i] = age - seen[i][key]
+        else:
+            seen[i][key] = age
+    age += 1
+print(np.lcm.reduce(list(cycle.values())))
