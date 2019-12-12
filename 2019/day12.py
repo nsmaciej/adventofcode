@@ -28,16 +28,12 @@ for _ in range(1000):
 print(universe.energy())
 
 universe = Universe(moons)
-seen = {axis: {} for axis in range(3)}
 cycle = {}
 age = 0
 while len(cycle) < 3:
     universe.step()
     for i in range(3):
-        key = (tuple(universe.moons[:, i]), tuple(universe.vel[:, i]))
-        if key in seen[i]:
-            cycle[i] = age - seen[i][key]
-        else:
-            seen[i][key] = age
+        if not universe.vel[i, :].any():
+            cycle[i] = age
     age += 1
 print(np.lcm.reduce(list(cycle.values())))
