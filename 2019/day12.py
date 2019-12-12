@@ -6,10 +6,6 @@ def parse(x):
     return list(map(int, re.match(r"<x=(-?\d+), y=(-?\d+), z=(-?\d+)>", x).groups()))
 
 
-def moon_velocity(x, y):
-    return ((x > y).astype(int) - (x < y).astype(int)).sum(0)
-
-
 class Universe:
     def __init__(self, moons):
         self.moons = np.copy(moons)
@@ -17,7 +13,8 @@ class Universe:
 
     def step(self):
         for i in range(len(self.moons)):
-            self.vel[i] += moon_velocity(self.moons, self.moons[i, :])
+            x, y = self.moons, self.moons[i, :]
+            self.vel[i] += ((x > y).astype(int) - (x < y).astype(int)).sum(0)
         self.moons += self.vel
 
     def energy(self):
