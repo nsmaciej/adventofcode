@@ -49,7 +49,7 @@ class Vm:
 
     def complete(self):
         assert self.run()
-        return self._outputs
+        return self.drain_output()
 
     def run(self):
         while self.tape[self._pc] != 99:
