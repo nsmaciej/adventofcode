@@ -36,6 +36,11 @@ class Vm:
     def output(self):
         return self.outputs.pop(0)
 
+    def drain_output(self):
+        output = self.outputs
+        self.outputs = []
+        return output
+
     def input(self, value):
         self.inputs.append(value)
 
