@@ -1,8 +1,15 @@
 # distutils: language = c++
-# cython: cdivision=True
+# cython: cdivision=True, boundscheck=False, wraparound=False
 
 from libc.stdint cimport int64_t
 from libcpp.vector cimport vector
+
+cdef class Program:
+    cdef vector[int64_t] program
+
+    def __init__(self, str program):
+        self.program = map(int, program.split(","))
+
 
 cdef class Vm:
     cdef list outputs
@@ -11,12 +18,16 @@ cdef class Vm:
     cdef int64_t base
     cdef vector[int64_t] tape
 
-    def __init__(self, str program, inputs=None):
+    def __init__(self, program, inputs=None):
         self.outputs = []
         self.inputs = inputs or []
         self.pc = 0
         self.base = 0
-        self.tape = map(int, program.split(","))
+        self.tape = (
+            (<Program>program).program
+            if isinstance(program, Program)
+            else map(int, program.split(","))
+        )
 
     cdef inline void allocate_up_to(self, int64_t ix):
         while <size_t>ix >= self.tape.size():
@@ -67,10 +78,6 @@ cdef class Vm:
     def complete(self):
         assert self.run()
         return self.drain_output()
-
-    cdef void function(self, fn):
-        self.store(self.arg_index(2), fn(self.arg(0), self.arg(1)))
-        self.pc += 4
 
     cpdef bint run(self):
         cdef int inst, op

@@ -1,10 +1,23 @@
 import operator
 import sys
+import os
+
+
+class PythonProgram:
+    def __init__(self, program):
+        self.program = list(map(int, program.split(",")))
+
 
 # Mode 1 is immediate mode, mode 0 is indirect.
-class Vm:
+class PythonVm:
     def __init__(self, program, inputs=None):
-        self.tape = dict(enumerate(map(int, program.split(","))))
+        self.tape = dict(
+            enumerate(
+                program.program
+                if isinstance(program, Program)
+                else map(int, program.split(","))
+            )
+        )
         self._pc = 0
         self._outputs = []
         self._base = 0
@@ -98,6 +111,12 @@ class Vm:
                 assert op == 99
         return True
 
+
+import icore
+
+py_incode = int(os.getenv("PY_INTCODE") or 0)
+Vm = PythonVm if py_incode else icore.Vm
+Program = PythonProgram if py_incode else icore.Program
 
 if __name__ == "__main__":
     print(" ".join(map(str, Vm(sys.argv[1], []).complete())))
