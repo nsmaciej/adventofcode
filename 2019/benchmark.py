@@ -17,7 +17,7 @@ def time_one(day, fast):
 def get_speedup(day):
     before = statistics.mean(time_one(day, 1) for _ in range(runs))
     after = statistics.mean(time_one(day, 0) for _ in range(runs))
-    print(f"Day {day}\t{before / after:4.1f}x")
+    print(f"Day {day}\t{before / after:4.1f}x ({before:6.2f}s, {after:6.2f}s)")
     return before, after
 
 
@@ -27,4 +27,4 @@ print(f"Using {runs} runs\n")
 stats = list(map(get_speedup, days))
 before = sum(x for x, _ in stats)
 after = sum(y for _, y in stats)
-print(f"\nOverall\t{before / after:4.1f}x")
+print(f"\nOverall\t{before / after:4.1f}x ({before:6.2f}s, {after:6.2f}s)")
