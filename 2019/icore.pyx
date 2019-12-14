@@ -41,7 +41,7 @@ cdef class Vm:
         self.allocate_up_to(ix)
         return self.tape[ix]
 
-    cdef int64_t arg_index(self, int arg):
+    cdef inline int64_t arg_index(self, int arg):
         cdef int ix = self.pc + 1 + arg
         cdef int[3] positions = [100, 1000, 10000]
         cdef int mode = self.get(self.pc) // positions[arg] % 10
@@ -52,7 +52,7 @@ cdef class Vm:
         elif mode == 2:  # Relative.
             return self.base + self.get(ix)
 
-    cdef int64_t arg(self, int arg):
+    cdef inline int64_t arg(self, int arg):
         return self.get(self.arg_index(arg))
 
     def set_tape(self, int64_t ix, int64_t value):
