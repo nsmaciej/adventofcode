@@ -5,14 +5,17 @@ import numpy as np
 def run(start):
     hull = {}
     robot = Vm(program, [start])
-    pos = np.array([0, 0])
-    delta = np.array([-1, 0])
+    x, y = 0, 0
+    dx, dy = 0, -1
     while not robot.run():
-        hull[tuple(pos)] = robot.output()
-        turn = [[0, -1], [1, 0]] if robot.output() else [[0, 1], [-1, 0]]
-        delta = delta @ turn
-        pos += delta
-        robot.input(hull.get(tuple(pos), 0))
+        hull[y, x] = robot.output()
+        if robot.output() == 0:
+            dx, dy = dy, -dx
+        else:
+            dx, dy = -dy, dx
+        x += dx
+        y += dy
+        robot.input(hull.get((y, x), 0))
     return hull
 
 
