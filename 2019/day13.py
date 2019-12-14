@@ -5,7 +5,7 @@ program = open("inputs/day13.txt").read()
 print(Vm(program).complete()[2::3].count(2))
 
 game = Vm(program)
-game.tape[0] = 2
+game.set_tape(0, 2)
 score = 0
 last_x = {}
 game.run()

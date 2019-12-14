@@ -33,6 +33,12 @@ class Vm:
         else:
             self._pc += 3
 
+    def set_tape(self, ix, value):
+        self.tape[ix] = value
+
+    def get_tape(self, ix):
+        return self.tape[ix]
+
     def has_output(self):
         return bool(self._outputs)
 
@@ -66,7 +72,7 @@ class Vm:
             elif op == 8:
                 self._function(operator.eq)
 
-            # _jumps.
+            # jumps.
             elif op == 5:
                 self._jump(operator.truth)
             elif op == 6:

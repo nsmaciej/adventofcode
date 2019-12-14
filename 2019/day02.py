@@ -3,10 +3,10 @@ from intcode import Vm
 
 def simulate(n, v):
     vm = Vm(program)
-    vm.tape[1] = n
-    vm.tape[2] = v
+    vm.set_tape(1, n)
+    vm.set_tape(2, v)
     vm.complete()
-    return vm.tape[0]
+    return vm.get_tape(0)
 
 
 program = open("inputs/day02.txt").read()
