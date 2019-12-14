@@ -130,5 +130,3 @@ cdef class Vm:
             else:
                 assert op == 99
         return True
-
-    
