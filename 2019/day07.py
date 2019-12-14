@@ -1,5 +1,5 @@
 from itertools import permutations, cycle
-from intcode import Vm
+from intcode import Vm, Program
 
 
 def signal(phases):
@@ -12,6 +12,6 @@ def signal(phases):
         signal = amp.output()
 
 
-program = open("inputs/day07.txt").read()
+program = Program(open("inputs/day07.txt").read())
 print(max(map(signal, permutations(range(5)))))
 print(max(map(signal, permutations(range(5, 10)))))

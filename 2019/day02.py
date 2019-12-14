@@ -1,4 +1,4 @@
-from intcode import Vm
+from intcode import Vm, Program
 
 
 def simulate(n, v):
@@ -9,7 +9,7 @@ def simulate(n, v):
     return vm.get_tape(0)
 
 
-program = open("inputs/day02.txt").read()
+program = Program(open("inputs/day02.txt").read())
 print(simulate(12, 2))
 for n in range(100):
     for v in range(100):
