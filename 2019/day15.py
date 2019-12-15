@@ -10,6 +10,7 @@ back = {1: 2, 2: 1, 3: 4, 4: 3}
 
 
 def search(vm, pos, t):
+    found = None
     for i in range(4):
         np = add(pos, delta[i + 1])
         if np in known:
@@ -18,15 +19,19 @@ def search(vm, pos, t):
         vm.run()
         known[np] = vm.output()
         if known[np] == 2:
-            return pos, t + 1
+            found = pos, t + 1
         elif known[np] == 1:
             r = search(vm, add(pos, delta[i + 1]), t + 1)
+            # Finding oxygen doesn't mean we are done exploring. We need the entire ship
+            # for the second step to work.
             if r:
-                return r
+                found = r
+        if known[np] in [1, 2]:
             vm.input(back[i + 1])
             vm.run()
             vm.output()  # Pop
         # Otherwise we found a wall, do not move back.
+    return found
 
 
 def fill(pos, time):
