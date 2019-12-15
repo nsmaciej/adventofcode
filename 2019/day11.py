@@ -5,17 +5,16 @@ from aoc import *
 def run(start):
     hull = {}
     robot = Vm(program, [start])
-    x, y = 0, 0
+    pos = (0, 0)
     dx, dy = 0, -1
     while not robot.run():
-        hull[y, x] = robot.output()
+        hull[pos] = robot.output()
         if robot.output() == 0:
             dx, dy = dy, -dx
         else:
             dx, dy = -dy, dx
-        x += dx
-        y += dy
-        robot.input(hull.get((y, x), 0))
+        pos = add(pos, (dy, dx))
+        robot.input(hull.get(pos, 0))
     return hull
 
 
