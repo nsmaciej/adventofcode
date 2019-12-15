@@ -1,8 +1,11 @@
+from aoc import *
+
+
 def trace(x):
     return (trace(orbits[x]) if x in orbits else []) + [x]
 
 
-data = [x.strip().split(")") for x in open("inputs/day06.txt")]
+data = [x.strip().split(")") for x in data(6)]
 orbits = {y: x for x, y in data}
 you, san = trace("YOU"), trace("SAN")
 offset = sum(x == y for x, y in zip(you, san))

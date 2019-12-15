@@ -1,5 +1,6 @@
 import re
 import numpy as np
+from aoc import *
 
 
 def parse(x):
@@ -23,7 +24,7 @@ class Universe:
         return sum(abs(self.moons).sum(1) * abs(self.vel).sum(1))
 
 
-moons = np.array(list(map(parse, open("inputs/day12.txt"))))
+moons = np.array(list(map(parse, data(12))))
 universe = Universe(moons)
 for _ in range(1000):
     universe.step()

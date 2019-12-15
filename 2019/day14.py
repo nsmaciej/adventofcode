@@ -1,9 +1,10 @@
+from aoc import *
 from collections import namedtuple, defaultdict
 import math
 
 reactions = {}
 Reaction = namedtuple("Reaction", ["product_count", "reactants"])
-for line in open("inputs/day14.txt"):
+for line in data(14):
     reactants, product = line.split(" => ")
     product_count, product_type = product.split()
     reactants = [x.split() for x in reactants.split(", ")]

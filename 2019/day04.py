@@ -1,3 +1,4 @@
+from aoc import *
 from collections import Counter
 
 
@@ -11,6 +12,6 @@ def solve(group):
         )
 
 
-start, end = map(int, open("inputs/day04.txt").read().split("-"))
+start, end = map(int, data(4).read().split("-"))
 print(sum(solve(lambda x: x >= 2)))
 print(sum(solve(lambda x: x == 2)))

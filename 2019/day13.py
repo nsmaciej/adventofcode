@@ -1,6 +1,7 @@
 from intcode import Vm
+from aoc import *
 
-program = open("inputs/day13.txt").read()
+program = data(13).read()
 
 print(Vm(program).complete()[2::3].count(2))
 
