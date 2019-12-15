@@ -37,7 +37,7 @@ class PythonVm:
         return self.tape.get(self._arg_index(arg), 0)
 
     def _function(self, fn):
-        self.tape[self._arg_index(2)] = fn(self._arg(0), self._arg(1))
+        self.tape[self._arg_index(2)] = int(fn(self._arg(0), self._arg(1)))
         self._pc += 4
 
     def _jump(self, test):
