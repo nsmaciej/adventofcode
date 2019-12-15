@@ -1,5 +1,5 @@
 from intcode import Vm
-import numpy as np
+from aoc import *
 
 
 def run(start):
@@ -19,10 +19,6 @@ def run(start):
     return hull
 
 
-program = open("inputs/day11.txt").read()
+program = data(11).read()
 print(len(run(0)))
-hull = np.array([p for p, c in run(1).items() if c == 1])
-hull += hull.min(0)
-out = np.zeros(hull.max(0) + 1, int)
-out[tuple(hull.T)] = 1
-print("\n".join("".join(map(str, row)).replace("0", " ") for row in out))
+print_grid(run(1), mapping={0: " ", 1: "#"})
