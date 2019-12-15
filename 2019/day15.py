@@ -28,25 +28,21 @@ def flood(steps):
     known[y, x] = last
     if last == 2:
         return steps
-    elif last == 0:
+    if last == 0:
         return
-    else:
-        for i in range(4):
-            r = flood(steps + [i + 1])
-            if r:
-                return r
+    for i in range(4):
+        r = flood(steps + [i + 1])
+        if r:
+            return r
 
 
 def flood2(pos, time):
     if pos in oxygen:
         return
-    if pos in known and (known[pos] == 1 or known[pos] == 2):
-        if pos not in oxygen:
-            oxygen[pos] = time
+    if pos in known and known[pos] in [1, 2]:
+        oxygen[pos] = time
         for s in range(4):
-            r = ad(pos, delta[s + 1])
-            if r not in oxygen:
-                todo.add((r, time + 1))
+            todo.add((ad(pos, delta[s + 1]), time + 1))
 
 
 r = None
