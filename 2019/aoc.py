@@ -1,13 +1,26 @@
+import sys
+
 def add(a, b):
+    """Add two 2d points"""
     return a[0] + b[0], a[1] + b[1]
 
 
 def sub(a, b):
+    """Subtract two 2d points"""
     return a[0] - b[0], a[1] - b[1]
 
 
+def around(p):
+    """Return points around a point"""
+    y, x = p
+    return [(y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)]
+
+
 def data(day):
-    return open(f"inputs/day{day:02}.txt")
+    """Return a day's data, allowing the user to possibly override it"""
+    assert len(sys.argv) < 3
+    file_name = sys.argv[1] if len(sys.argv) == 2 else f"inputs/day{day:02}.txt"
+    return sys.stdin if file_name == "-" else open(file_name)
 
 
 def print_grid(grid, blank=" ", mapping={}):
