@@ -1,7 +1,6 @@
 from aoc import *
 
 
-
 def run(phase):
     for p in range(100):
         phase = [digit(phase, i) for i in range(len(phase))]
