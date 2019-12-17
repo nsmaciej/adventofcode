@@ -75,6 +75,10 @@ cdef class Vm:
     def input(self, value):
         self.inputs.append(value)
 
+    def input_line(self, line):
+        self.inputs += map(ord, line)
+        self.inputs.append(ord("\n"))
+
     def complete(self):
         assert self.run()
         return self.drain_output()
