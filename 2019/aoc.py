@@ -16,6 +16,17 @@ def around(p):
     return [(y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)]
 
 
+def cls():
+    """Clear the screen"""
+    print("\033[2J", end="")
+
+
+def turn(p, turn_right):
+    """Turn left if False, right if True"""
+    dy, dx = p
+    return (dx, -dy) if turn_right else (-dx, dy)
+
+
 def data(day):
     """Return a day's data, allowing the user to possibly override it"""
     assert len(sys.argv) < 3
