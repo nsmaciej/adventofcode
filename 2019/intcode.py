@@ -66,6 +66,10 @@ class PythonVm:
     def input(self, value):
         self._inputs.append(value)
 
+    def input_line(self, line):
+        self._inputs += map(ord, line)
+        self._inputs.append(ord("\n"))
+
     def complete(self):
         assert self.run()
         return self.drain_output()
