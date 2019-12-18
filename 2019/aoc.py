@@ -1,5 +1,6 @@
 import sys
 
+
 def add(a, b):
     """Add two 2d points"""
     return a[0] + b[0], a[1] + b[1]
@@ -32,6 +33,11 @@ def data(day):
     assert len(sys.argv) < 3
     file_name = sys.argv[1] if len(sys.argv) == 2 else f"inputs/day{day:02}.txt"
     return sys.stdin if file_name == "-" else open(file_name)
+
+
+def make_grid(array):
+    """Return a index to value dict given an iterable yielding iterables"""
+    return {(y, x): v for y, row in enumerate(array) for x, v in enumerate(row)}
 
 
 def print_grid(grid, blank=" ", mapping={}):

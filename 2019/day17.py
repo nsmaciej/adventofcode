@@ -2,12 +2,7 @@ from intcode import Vm
 from aoc import *
 
 output = "".join(map(chr, Vm(data(17).read(), []).complete()))
-hull = {
-    (y, x): val
-    for y, row in enumerate(output.split("\n"))
-    for x, val in enumerate(row)
-    if val != "."
-}
+hull = {k: v for k, v in make_grid(output.split("\n")).items() if v != "."}
 print(sum(p[0] * p[1] for p in hull if all(p in hull for p in around(p))))
 
 moves = {">": (0, 1), "<": (0, -1), "^": (-1, 0), "v": (1, 0)}
