@@ -28,6 +28,14 @@ def turn(p, turn_right):
     return (dx, -dy) if turn_right else (-dx, dy)
 
 
+def first(iterable):
+    """Return the first truthy element of an iterable"""
+    for x in iterable:
+        if x:
+            return x
+    return None
+
+
 def data(day):
     """Return a day's data, allowing the user to possibly override it"""
     assert len(sys.argv) < 3
