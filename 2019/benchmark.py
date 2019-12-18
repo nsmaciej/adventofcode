@@ -22,7 +22,7 @@ def get_speedup(day):
 
 
 runs = 10
-days = [2, 7, 9, 11, 13, 15]
+days = [2, 7, 9, 11, 13, 15, 17]
 print(f"Using {runs} runs\n")
 stats = list(map(get_speedup, days))
 before = sum(x for x, _ in stats)
