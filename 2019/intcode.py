@@ -118,7 +118,7 @@ class PythonVm:
 
 import icore
 
-py_incode = int(os.getenv("PY_INTCODE") or 0)
+py_incode = int(os.getenv("PY_INTCODE", 0))
 Vm = PythonVm if py_incode else icore.Vm
 Program = PythonProgram if py_incode else icore.Program
 
