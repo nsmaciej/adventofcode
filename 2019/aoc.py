@@ -30,10 +30,7 @@ def turn(p, turn_right):
 
 def first(iterable):
     """Return the first truthy element of an iterable"""
-    for x in iterable:
-        if x:
-            return x
-    return None
+    return next(x for x in iterable if x)
 
 
 def data(day):
