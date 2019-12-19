@@ -1,5 +1,8 @@
 import sys
 
+# The biggest 'simple integer'
+inf = 2 ** 30 - 1
+
 
 def add(a, b):
     """Add two 2d points"""

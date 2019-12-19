@@ -2,7 +2,7 @@ from aoc import *
 from collections import deque
 
 
-def distance(start, end):
+def distance(start):
     queue = deque([start])
     dist = {}
     dist[start] = 0
@@ -12,37 +12,32 @@ def distance(start, end):
             if p in grid and grid[p] != "#" and not grid[p].isupper() and p not in dist:
                 dist[p] = dist[pos] + 1
                 queue.append(p)
-    return dist.get(end)
+    return {k: dist[key_pos[k]] for k in keys if key_pos[k] in dist}
 
 
 def solve():
     def inner(pos, got, td):
         nonlocal shortest, dp
-        if td >= shortest:
+        dp_key = (pos, got)
+        if td >= shortest or td >= dp.get(dp_key, inf):
             return
-        dp_key = (pos, frozenset(got))
-        if td >= dp.get(dp_key, 1_000_000):
-            return
-        if len(got) == 2:
-            print(pos, got)
-        dp[dp_key] = td
-
         if len(got) == len(keys):
             if td < shortest:
                 shortest = td
-
-        for key in keys - set(got):
-            dist = distance(pos, key_pos[key])
-            if dist:
+            return
+        dp[dp_key] = td
+        key_dist = distance(pos)
+        for key in keys - got:
+            if key in key_dist:
                 if key in door_pos:
                     grid[door_pos[key]] = "."
-                inner(key_pos[key], got + [key], td + dist)
+                inner(key_pos[key], got | {key}, td + key_dist[key])
                 if key in door_pos:
                     grid[door_pos[key]] = key.upper()
 
     dp = {}
-    shortest = 99999
-    inner(you, [], 0)
+    shortest = inf
+    inner(you, frozenset(), 0)
     return shortest
 
 
