@@ -1,54 +1,47 @@
 from intcode import Vm, Program
-from collections import defaultdict
+from collections import deque
 from aoc import *
 
-program = Program(data(15).read())
-known = {}
-oxygen = {}
-delta = {1: (-1, 0), 2: (1, 0), 3: (0, -1), 4: (0, 1)}
-back = {1: 2, 2: 1, 3: 4, 4: 3}
 
-
-def search(vm, pos, t):
-    found = None
-    for i in range(4):
-        np = add(pos, delta[i + 1])
-        if np in known:
+def search(start):
+    system = None
+    for cmd in range(1, 5):
+        pos = add(start, moves[cmd])
+        if pos in ship:
             continue
-        vm.input(i + 1)
-        vm.run()
-        known[np] = vm.output()
-        if known[np] == 2:
-            found = pos, t + 1
-        elif known[np] == 1:
-            r = search(vm, add(pos, delta[i + 1]), t + 1)
-            # Finding oxygen doesn't mean we are done exploring. We need the entire ship
-            # for the second step to work.
-            if r:
-                found = r
-        if known[np] in [1, 2]:
-            vm.input(back[i + 1])
-            vm.run()
-            vm.output()  # Pop
-        # Otherwise we found a wall, do not move back.
-    return found
+        droid.input(cmd)
+        droid.run()
+        out = ship[pos] = droid.output()
+        if ship[pos] == 2:
+            system = pos
+        elif ship[pos] == 1:
+            r = search(pos)
+            # Do not stop exploring, we need to map the entire ship.
+            system = system or r
+        else:
+            continue  # Found a wall. Do not move back.
+        droid.input(back[cmd])
+        droid.run()
+        droid.output()  # Pop
+    return system
 
 
-def fill(pos, time):
-    if pos in oxygen:
-        return
-    if pos in known and known[pos] in [1, 2]:
-        oxygen[pos] = time
-        for s in range(4):
-            todo.add((add(pos, delta[s + 1]), time + 1))
+def distances(start):
+    queue = deque([start])
+    dist = {start: 0}
+    while queue:
+        pos = queue.pop()
+        for p in around(pos):
+            if p not in dist and ship.get(p) in [1, 2]:
+                dist[p] = dist[pos] + 1
+                queue.append(p)
+    return dist
 
 
-vm = Vm(program, [])
-pos, t = search(vm, (0, 0), 0)
-print(t)
-
-todo = {(pos, 1)}
-while todo:
-    p, t = todo.pop()
-    fill(p, t)
-print(max(oxygen.values()))
+ship = {}
+moves = {1: (-1, 0), 2: (1, 0), 3: (0, -1), 4: (0, 1)}
+back = {1: 2, 2: 1, 3: 4, 4: 3}
+droid = Vm(data(15).read())
+system = search((0, 0))
+print(distances((0, 0))[system])
+print(max(distances(system).values()))
