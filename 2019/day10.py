@@ -1,4 +1,3 @@
-import numpy as np
 from math import gcd, atan2, pi, hypot
 from collections import defaultdict
 from aoc import *
@@ -6,24 +5,24 @@ from aoc import *
 
 def asteroid_angles(candidate):
     angles = defaultdict(list)
-    for coord, kind in np.ndenumerate(field):
+    for coord, kind in field.items():
         if coord != candidate and kind == "#":
-            # Careful, the order here matters.
-            dy, dx = sub(coord, candidate)
+            dy, dx = sub(coord, candidate)  # Careful, the order here matters.
             d = gcd(dy, dx)
-            angles[dy // d, dx // d].append(coord)
+            angles[dx // d, -dy // d].append(coord)  # Note the rotated coordinates.
     return angles
 
 
 def angle(x):
-    return (atan2(x[0], x[1]) + pi / 2) % (2 * pi)
+    return atan2(x[0], x[1]) % (2 * pi)
 
 
-field = [list(x.strip()) for x in data(10)]
-asteroids = {i: asteroid_angles(i) for i, v in np.ndenumerate(field) if v == "#"}
+field = make_grid(data(10).read().splitlines())
+asteroids = {i: asteroid_angles(i) for i, v in field.items() if v == "#"}
 station = max(asteroids, key=lambda x: len(asteroids[x]))
 targets = asteroids[station]
 print(len(targets))
+
 win_angle = targets[sorted(targets.keys(), key=angle)[199]]
-win_y, win_x = sorted(win_angle, key=lambda x: hypot(*sub(x, station)))[0]
+win_y, win_x = min(win_angle, key=lambda x: hypot(*sub(x, station)))
 print(win_x * 100 + win_y)
