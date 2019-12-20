@@ -29,35 +29,28 @@ def serialize(path):
     return ",".join(path)
 
 
-def find_mid(l, m, r):
-    def short(part):
-        return sum(map(len, part)) + len(part) - 1 <= 20
-
-    def check(part):
-        return all(x == y for x, y in zip(path[i:], part))
-
-    ls, ms, rs = path[:l], None, path[-r:]
-    if not short(ls) or not short(rs):
-        return False
+def find_main(lengths):
+    routines = [path[: lengths[0]]]
     i = 0
     while i < len(path):
-        if check(ls):
-            i += l
-        elif check(rs):
-            i += r
-        elif ms and check(ms):
-            i += m
-        elif not ms and short(path[i : i + m]):
-            ms = path[i : i + m]
-            i += m
+        for r in routines:
+            if all(x == y for x, y in zip(r, path[i:])):
+                i += len(r)
+                break
         else:
-            return False
-    return map(serialize, (ls, ms, rs))
+            if len(routines) == len(lengths):
+                return
+            candidate = path[i : i + lengths[len(routines)]]
+            if len(serialize(candidate)) > 20:
+                return
+            routines.append(candidate)
+            i += len(candidate)
+    return map(serialize, routines)
 
 
 moves = {">": (0, 1), "<": (0, -1), "^": (-1, 0), "v": (1, 0)}
 path = list(find_path())
-a, b, c = first(find_mid(*x) for x in product(range(4, 11), repeat=3))
+a, b, c = first(map(find_main, product(range(4, 11), repeat=3)))
 main = serialize(path).replace(a, "A").replace(b, "B").replace(c, "C")
 vm = Vm(data(17).read())
 vm.set_tape(0, 2)
