@@ -15,7 +15,9 @@ class Solver:
         self.key_pos = {v: k for k, v in self.grid.items() if v.islower()}
         self.key_ix = {k: i for i, k in enumerate(self.keys)}
         self.door_pos = {v.lower(): k for k, v in self.grid.items() if v.isupper()}
-        self.dist = {self.bots[0]: self.distance(self.bots[0])}
+        self.dist = {}
+        for b in self.bots:
+            self.dist[b] = self.distance(b)
         for k in self.keys:
             self.dist[self.key_pos[k]] = self.distance(self.key_pos[k])
 
@@ -39,9 +41,9 @@ class Solver:
         }
 
     def solve(self):
-        def inner(pos, got, td):
+        def inner(places, got, td):
             nonlocal shortest, dp
-            dp_key = (pos, got)
+            dp_key = (tuple(places), got)
             if td >= shortest or td >= dp.get(dp_key, inf):
                 return
             if len(got) == len(self.keys):
@@ -49,19 +51,32 @@ class Solver:
                     shortest = td
                 return
             dp[dp_key] = td
-            for key in self.keys - got:
-                if self.dist[pos][key][1] <= got:
-                    if key in self.door_pos:
-                        self.grid[self.door_pos[key]] = "."
-                    inner(self.key_pos[key], got | {key}, td + self.dist[pos][key][0])
-                    if key in self.door_pos:
-                        self.grid[self.door_pos[key]] = key.upper()
+            for bot_ix, bot in enumerate(places):
+                # Things this robot can still explore.
+                responsible = set(self.dist[bot].keys()) - got
+                for key in responsible:
+                    if self.dist[bot][key][1] <= got:
+                        if key in self.door_pos:
+                            self.grid[self.door_pos[key]] = "."
+                        new_places = places.copy()
+                        new_places[bot_ix] = self.key_pos[key]
+                        inner(new_places, got | {key}, td + self.dist[bot][key][0])
+                        if key in self.door_pos:
+                            self.grid[self.door_pos[key]] = key.upper()
 
         dp = {}
         shortest = inf
-        inner(self.bots[0], frozenset(), 0)
+        inner(self.bots, frozenset(), 0)
         return shortest
 
 
 text = data(18).read()
 print(Solver(text).solve())
+
+lines = list(map(list, text.splitlines()))
+mid = len(lines) // 2
+lines[mid - 1][mid - 1 : mid + 2] = "@#@"
+lines[mid + 1][mid - 1 : mid + 2] = "@#@"
+lines[mid][mid - 1 : mid + 2] = "###"
+updated = "\n".join("".join(x) for x in lines)
+print(Solver(updated).solve())
