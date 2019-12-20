@@ -14,7 +14,7 @@ def sub(a, b):
     return a[0] - b[0], a[1] - b[1]
 
 
-def around(p):
+def around(p=(0, 0)):
     """Return points around a point"""
     y, x = p
     return [(y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)]
