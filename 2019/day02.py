@@ -3,11 +3,11 @@ from aoc import *
 
 
 def simulate(n, v):
-    vm = Vm(program)
-    vm.set_tape(1, n)
-    vm.set_tape(2, v)
-    vm.complete()
-    return vm.get_tape(0)
+    computer = Vm(program)
+    computer.set_tape(1, n)
+    computer.set_tape(2, v)
+    computer.complete()
+    return computer.get_tape(0)
 
 
 program = Program(data(2).read())

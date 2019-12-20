@@ -52,8 +52,8 @@ moves = {">": (0, 1), "<": (0, -1), "^": (-1, 0), "v": (1, 0)}
 path = list(find_path())
 a, b, c = first(map(find_main, product(range(4, 11), repeat=3)))
 main = serialize(path).replace(a, "A").replace(b, "B").replace(c, "C")
-vm = Vm(data(17).read())
-vm.set_tape(0, 2)
+vacuum = Vm(data(17).read())
+vacuum.set_tape(0, 2)
 for line in [main, a, b, c, "n"]:
-    vm.input_line(line)
-print(vm.complete().pop())
+    vacuum.input_line(line)
+print(vacuum.complete().pop())
