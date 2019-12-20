@@ -2,7 +2,7 @@ from intcode import Vm
 from aoc import *
 from itertools import product
 
-output = "".join(map(chr, Vm(data(17).read(), []).complete()))
+output = "".join(map(chr, Vm(data(17).read()).complete()))
 hull = {k: v for k, v in make_grid(output.split("\n")).items() if v != "."}
 print(sum(p[0] * p[1] for p in hull if all(p in hull for p in around(p))))
 

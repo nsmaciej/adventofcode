@@ -121,6 +121,3 @@ import icore
 py_incode = int(os.getenv("PY_INTCODE", 0))
 Vm = PythonVm if py_incode else icore.Vm
 Program = PythonProgram if py_incode else icore.Program
-
-if __name__ == "__main__":
-    print(" ".join(map(str, Vm(sys.argv[1], []).complete())))
