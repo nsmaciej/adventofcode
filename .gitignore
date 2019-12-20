@@ -2,3 +2,5 @@
 *.cpp
 *.so
 *.o
+*.swp
+.DS_Store

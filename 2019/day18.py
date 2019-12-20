@@ -6,14 +6,8 @@ class Solver:
     def __init__(self, text):
         self.grid = make_grid(text.splitlines())
         self.bots = [i for i, v in self.grid.items() if v == "@"]
-        # This shouldn't matter, but let's just leave it in for now.
-        for b in self.bots:
-            self.grid[b] = "."
-
-        # Compute some useful data.
         self.keys = {v for k, v in self.grid.items() if v.islower()}
         self.key_pos = {v: k for k, v in self.grid.items() if v.islower()}
-        self.key_ix = {k: i for i, k in enumerate(self.keys)}
         self.door_pos = {v.lower(): k for k, v in self.grid.items() if v.isupper()}
         self.dist = {}
         for b in self.bots:
