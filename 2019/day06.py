@@ -1,8 +1,12 @@
 from aoc import *
 
 
-def trace(x):
-    return (trace(orbits[x]) if x in orbits else []) + [x]
+def trace(obj):
+    path = [obj]
+    while obj in orbits:
+        obj = orbits[obj]
+        path.append(obj)
+    return list(reversed(path))
 
 
 data = [x.strip().split(")") for x in data(6)]
