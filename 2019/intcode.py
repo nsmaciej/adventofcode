@@ -121,3 +121,13 @@ import icore
 py_incode = int(os.getenv("PY_INTCODE", 0))
 Vm = PythonVm if py_incode else icore.Vm
 Program = PythonProgram if py_incode else icore.Program
+
+def show_output(output):
+    def try_chr(x):
+        if x < 128:
+            c = chr(x)
+            if c.isprintable() or c == "\n":
+                return c
+        return f"<{x}>"
+
+    return "".join(map(try_chr, output))

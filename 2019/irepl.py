@@ -1,18 +1,10 @@
-from intcode import Vm
+from intcode import Vm, show_output
 import argparse
 import sys
 
 
 def parse_overrides(overrides):
     return tuple(map(int, overrides.split(":")))
-
-
-def show_output(output):
-    output = map(chr, output)
-    return "".join(
-        x if x.isascii() and (x.isprintable() or x == "\n") else f"<{ord(x)}>"
-        for x in output
-    )
 
 
 parser = argparse.ArgumentParser()

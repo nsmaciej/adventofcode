@@ -56,4 +56,4 @@ vacuum = Vm(data(17).read())
 vacuum.set_tape(0, 2)
 for line in [main, a, b, c, "n"]:
     vacuum.input_line(line)
-print(vacuum.complete().pop())
+print(vacuum.complete()[-1])
