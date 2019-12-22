@@ -1,16 +1,11 @@
 from aoc import *
-from intcode import Vm, show_output
-
-# OR is like 'if x: y = true'
-# AND is like 'if y: y = x'
-# NOT is like 'x = not y'
+from intcode import Vm
 
 
 def run(program):
     droid = Vm(data(21).read())
     for line in program.strip().splitlines():
-        if not line.startswith("#") and line:
-            droid.input_line(line)
+        droid.input_line(line)
     print(droid.complete()[-1])
 
 
@@ -19,7 +14,6 @@ run(
     """
 NOT C J
 AND D J
-# Jump if: A air
 NOT A T
 OR T J
 WALK
