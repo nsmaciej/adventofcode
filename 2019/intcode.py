@@ -14,7 +14,7 @@ class PythonVm:
         self.tape = dict(
             enumerate(
                 program.program
-                if isinstance(program, Program)
+                if isinstance(program, PythonProgram)
                 else map(int, program.split(","))
             )
         )
@@ -51,6 +51,9 @@ class PythonVm:
 
     def get_tape(self, ix):
         return self.tape[ix]
+
+    def has_input(self):
+        return bool(self._inputs)
 
     def has_output(self):
         return bool(self._outputs)
@@ -121,6 +124,7 @@ import icore
 py_incode = int(os.getenv("PY_INTCODE", 0))
 Vm = PythonVm if py_incode else icore.Vm
 Program = PythonProgram if py_incode else icore.Program
+
 
 def show_output(output):
     def try_chr(x):

@@ -61,6 +61,9 @@ cdef class Vm:
     def get_tape(self, int64_t ix):
         return self.get(ix)
 
+    def has_input(self):
+        return bool(self.inputs)
+
     def has_output(self):
         return bool(self.outputs)
 
