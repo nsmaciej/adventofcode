@@ -15,9 +15,9 @@ def search(start):
         if ship[pos] == 2:
             system = pos
         elif ship[pos] == 1:
-            r = search(pos)
-            # Do not stop exploring, we need to map the entire ship.
-            system = system or r
+            if r := search(pos):
+                # Do not stop exploring, we need to map the entire ship.
+                system = r
         else:
             continue  # Found a wall. Do not move back.
         droid.input(back[cmd])
