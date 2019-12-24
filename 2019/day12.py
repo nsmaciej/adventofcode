@@ -1,3 +1,4 @@
+# TODO: Rewrite. The current numpy version is slower than python alone.
 import re
 import numpy as np
 from aoc import *

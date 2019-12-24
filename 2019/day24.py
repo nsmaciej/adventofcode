@@ -1,3 +1,4 @@
+# TODO: Rewrite, maybe use an adjacency list. Two parts in one.
 from aoc import *
 
 
