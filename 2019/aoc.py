@@ -1,4 +1,5 @@
 import sys
+from itertools import islice
 
 # The biggest 'simple integer'
 inf = 2 ** 30 - 1
@@ -41,6 +42,13 @@ def data(day):
     assert len(sys.argv) < 3
     file_name = sys.argv[1] if len(sys.argv) == 2 else f"inputs/day{day:02}.txt"
     return sys.stdin if file_name == "-" else open(file_name)
+
+
+def chunk(iterable, size):
+    """Chunk an iterable"""
+    # Copied from Stack Overflow.
+    it = iter(iterable)
+    return iter(lambda: tuple(islice(it, size)), ())
 
 
 def make_grid(array):

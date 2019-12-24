@@ -2,7 +2,6 @@ from intcode import Vm
 from aoc import *
 
 program = data(13).read()
-
 print(Vm(program).complete()[2::3].count(2))
 
 game = Vm(program)
@@ -11,9 +10,7 @@ score = 0
 last_x = {}
 game.run()
 while game.has_output():
-    output = game.drain_output()
-    for i in range(0, len(output), 3):
-        x, y, k = output[i : i + 3]
+    for x, y, k in chunk(game.drain_output(), 3):
         if x == -1 and y == 0:
             score = k
         else:
