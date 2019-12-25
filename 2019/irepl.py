@@ -10,6 +10,7 @@ def parse_overrides(overrides):
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--raw", help="do not use ascii I/O", action="store_true")
 parser.add_argument("-i", "--inputs", help="provide input in advance", nargs="+")
+parser.add_argument("-l", "--log", help="log the session")
 parser.add_argument(
     "-t", "--tape", help="tape overrides", nargs="+", default=[], type=parse_overrides
 )
@@ -19,6 +20,8 @@ args = parser.parse_args()
 vm = Vm(open(args.program).read())
 for pos, val in args.tape:
     vm.set_tape(pos, val)
+log = open(args.log, "w") if args.log else None
+
 
 while True:
     halted = vm.run()
@@ -33,6 +36,8 @@ while True:
         break
 
     data = input() if args.inputs is None else args.inputs.pop(0)
+    if log:
+        log.write(data + "\n")
     if args.raw:
         vm.input(int(data))
     else:
