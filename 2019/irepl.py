@@ -1,10 +1,18 @@
-from intcode import Vm, show_output
+from intcode import Vm
 import argparse
 import sys
 
 
 def parse_overrides(overrides):
     return tuple(map(int, overrides.split(":")))
+
+
+def try_chr(x):
+    if x < 128:
+        c = chr(x)
+        if c.isprintable() or c == "\n":
+            return c
+    return f"<{x}>"
 
 
 parser = argparse.ArgumentParser()
@@ -31,7 +39,7 @@ while True:
         if output:
             print(" ".join(map(str, output)))
     else:
-        print(show_output(output), end="")
+        print("".join(map(try_chr, output)), end="")
     if halted:
         break
 
