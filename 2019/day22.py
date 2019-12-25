@@ -4,6 +4,7 @@ import re
 cmds = list(data(22).read().splitlines())
 N = 10007
 
+
 def at_index(i):
     for cmd in reversed(cmds):
         if cmd == "deal into new stack":
@@ -17,5 +18,6 @@ def at_index(i):
             val = int(m[1])
             i = (i * pow(val, -1, N)) % N
     return i
+
 
 print(next(x for x in range(N) if at_index(x) == 2019))

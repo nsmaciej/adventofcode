@@ -33,22 +33,25 @@ east
 south
 east
 take polygon
-north
 """
+
 
 def run(line):
     droid.input_line(line)
     droid.run()
     return droid.drain_output()
 
+
 def response(line):
     return "".join(map(chr, run(line)))
+
 
 def solve():
     for line in all_items.splitlines():
         droid.input_line(line)
     droid.run()
     droid.drain_output()
+    assert "Security Checkpoint" in response("north")
 
     items = set(x[2:] for x in response("inv").splitlines() if x.startswith("-"))
     for item_count in range(1, len(items)):
@@ -61,6 +64,7 @@ def solve():
             else:
                 for item in to_drop:
                     run(f"take {item}")
+
 
 droid = Vm(data(25).read())
 print(solve())
