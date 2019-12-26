@@ -17,4 +17,4 @@ def run(start):
 
 program = data(11).read()
 print(len(run(0)))
-print_grid(run(1), mapping={0: " ", 1: "#"})
+print(ocr(run(1)))

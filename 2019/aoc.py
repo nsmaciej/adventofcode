@@ -59,25 +59,47 @@ def make_grid(array):
     return {(y, x): v for y, row in enumerate(array) for x, v in enumerate(row)}
 
 
-def print_grid(grid, blank=" ", mapping={}):
-    """
-    Tries to print a grid. The grid can either be a dict mapping indices to values or a
-    two dimensional ndarray.
-    """
-    # I know mutable default arguments are bad but we never mutate mapping.
+def ocr(grid):
+    """Tries to 'OCR' a boolean text"""
     import numpy as np
 
+    # Create the grid.
     if isinstance(grid, dict):
         ix = np.array(list(grid.keys()))
         my, mx = ix.min(0)
         h, w = ix.max(0) - ix.min(0) + 1
-        output = [[blank] * w for _ in range(h)]
+        output = [[0] * w for _ in range(h)]
         for y, x in grid:
-            value = grid[y, x]
-            output[y - my][x - mx] = mapping.get(value, str(value))
-        print("\n".join("".join(x) for x in output))
-
+            output[y - my][x - mx] = grid[y, x]
+        grid = ["".join(" #"[x] for x in row) for row in output]
     elif isinstance(grid, np.ndarray):
-        print("\n".join("".join(mapping.get(x, str(x)) for x in row) for row in grid))
+        grid = ["".join(" #"[x] for x in row) for row in grid]
     else:
         raise RuntimeError("cannot print grid")
+    
+    # Stip common leading and trailing whitespace.
+    leading = min(x.find("#") for x in grid)
+    trailing = max(x.rfind("#") + 1 for x in grid)
+    grid = [x[leading:trailing] for x in grid]
+    assert len(grid) == 6
+
+    letters = {"".join(v).strip(): k for k, v in _letters.items()}  # Part to letter map
+    result = ""
+    for x in range(0, len(grid[0]), 5):
+        if part := "".join(grid[y][x : x + 4] for y in range(6)).strip():
+            result += letters[part]
+    return result
+
+
+_letters = {
+    "A": [" ## ", "#  #", "#  #", "####", "#  #", "#  #"],
+    "B": ["### ", "#  #", "### ", "#  #", "#  #", "### "],
+    "C": [" ## ", "#  #", "#   ", "#   ", "#  #", " ## "],
+    "F": ["####", "#   ", "### ", "#   ", "#   ", "#   "],
+    "J": ["  ##", "   #", "   #", "   #", "#  #", " ## "],
+    "K": ["#  #", "# # ", "##  ", "# # ", "# # ", "#  #"],
+    "L": ["#   ", "#   ", "#   ", "#   ", "#   ", "####"],
+    "P": ["### ", "#  #", "#  #", "### ", "#   ", "#   "],
+    "U": ["#  #", "#  #", "#  #", "#  #", "#  #", " ## "],
+    "Z": ["####", "   #", "  # ", " #  ", "#   ", "####"],
+}
