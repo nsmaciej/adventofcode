@@ -1,42 +1,60 @@
-# TODO: Rewrite, maybe use an adjacency list. Two parts in one.
 from aoc import *
 
 
-def neighbours(level, p):
-    count = 0
-    for m in around():
-        x = add(p, m)
-        if x == (2, 2):
-            # Invert direction and move towards the edge of the inner grid.
-            ny, nx = 2 - m[0] * 2, 2 - m[1] * 2
-            if level + 1 in grid:
-                for i in range(5):
-                    count += grid[level + 1][(1 * i, nx) if m[0] == 0 else (ny, 1 * i)]
-        elif x not in grid[level]:
-            # We are not in grid but aren't (2, 2). Follow this direction out from
-            # the middle of the outer grid.
-            if level - 1 in grid:
-                count += grid[level - 1][add((2, 2), m)]
-        else:
-            count += grid[level][x]
-    return count
+def adj_list(grid):
+    adj = defaultdict(list)
+    for i in grid:
+        for k in around(i):
+            if k in grid:
+                adj[i].append((0, *k))
+    return adj
 
 
-def state(level, p):
-    n = neighbours(level, p)
-    return n == 1 if grid[level][p] else 0 < n < 3
+def tick(adj, alive):
+    neighbours = defaultdict(int)
+    next_alive = set()
+    for p in alive:
+        for a in adj[p[1:]]:
+            delta, y, x = a
+            neighbours[p[0] + delta, y, x] += 1
+    for p in alive:
+        if neighbours[p] == 1:
+            next_alive.add(p)
+    for p, c in neighbours.items():
+        if 0 < c < 3 and p not in alive:
+            next_alive.add(p)
+    return next_alive
 
 
-grid = {
-    i: v == "#"
-    for i, v, in make_grid(data(24).read().splitlines()).items()
-    if i != (2, 2)
-}
-grid = {0: grid}
-for turn in range(200):
-    if sum(grid[min(grid)].values()) > 0:
-        grid[min(grid) - 1] = {i: False for i in grid[0]}
-    if sum(grid[max(grid)].values()) > 0:
-        grid[max(grid) + 1] = {i: False for i in grid[0]}
-    grid = {level: {i: state(level, i) for i in grid[level]} for level in grid}
-print(sum(sum(g.values()) for g in grid.values()))
+def part_one():
+    adj = adj_list(grid)
+    alive = first_alive
+    seen = set()
+    while frozenset(alive) not in seen:
+        seen.add(frozenset(alive))
+        alive = tick(adj, alive)
+    return sum(1 << i for i, v in enumerate(grid) if (0, *v) in alive)
+
+
+def part_two():
+    adj = adj_list({i: v for i, v in grid.items() if i != (2, 2)})
+    for x in range(5):
+        adj[0, x].append((1, 1, 2))
+        adj[x, 4].append((1, 2, 3))
+        adj[4, x].append((1, 3, 2))
+        adj[x, 0].append((1, 2, 1))
+        adj[1, 2].append((-1, 0, x))
+        adj[2, 3].append((-1, x, 4))
+        adj[3, 2].append((-1, 4, x))
+        adj[2, 1].append((-1, x, 0))
+
+    alive = first_alive
+    for _ in range(200):
+        alive = tick(adj, alive)
+    return len(alive)
+
+
+grid = {i: v == "#" for i, v, in make_grid(data(24).read().splitlines()).items()}
+first_alive = {(0, *i) for i, v in grid.items() if v}
+print(part_one())
+print(part_two())
