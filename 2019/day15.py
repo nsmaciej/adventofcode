@@ -1,5 +1,4 @@
 from intcode import Vm, Program
-from collections import deque
 from aoc import *
 
 

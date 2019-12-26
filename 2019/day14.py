@@ -1,6 +1,5 @@
 # TODO: Rewrite. Use a topgraphic sort.
 from aoc import *
-from collections import namedtuple, defaultdict
 import math
 
 reactions = {}

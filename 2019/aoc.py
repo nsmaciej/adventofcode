@@ -1,6 +1,9 @@
 import sys
 from itertools import islice
 
+# Public exports
+from collections import *
+
 # The biggest 'simple integer'
 inf = 2 ** 30 - 1
 

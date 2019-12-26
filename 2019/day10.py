@@ -1,5 +1,4 @@
 from math import gcd, atan2, pi, hypot
-from collections import defaultdict
 from aoc import *
 
 

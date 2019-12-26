@@ -1,5 +1,4 @@
 from aoc import *
-from collections import defaultdict, deque, namedtuple
 from pprint import pprint
 
 

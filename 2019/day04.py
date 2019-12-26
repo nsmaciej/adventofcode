@@ -1,5 +1,4 @@
 from aoc import *
-from collections import Counter
 
 
 def solve(group):
