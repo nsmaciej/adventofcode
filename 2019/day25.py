@@ -53,17 +53,16 @@ def solve():
     droid.drain_output()
     assert "Security Checkpoint" in response("north")
 
-    items = set(x[2:] for x in response("inv").splitlines() if x.startswith("-"))
-    for item_count in range(1, len(items)):
-        for inv in combinations(items, item_count):
-            to_drop = items - set(inv)
-            for item in to_drop:
-                run(f"drop {item}")
-            if "you are ejected back to the checkpoint" not in (r := response("east")):
-                return re.search(f"[0-9]+", r)[0]
-            else:
-                for item in to_drop:
-                    run(f"take {item}")
+    items = [x[2:] for x in response("inv").splitlines() if x.startswith("-")]
+    last_c = 0
+    for ix in range(1, 2 ** len(items)):
+        c = ix ^ (ix >> 1)  # Gray code.
+        item_ix = len(bin(last_c ^ c)) - 3  # Find the index of the flipped bit.
+        action = "drop" if c & (last_c ^ c) else "take"
+        run(f"{action} {items[item_ix]}")
+        last_c = c
+        if "you are ejected back to the checkpoint" not in (r := response("east")):
+            return re.search(f"[0-9]+", r)[0]
 
 
 droid = Vm(data(25).read())
