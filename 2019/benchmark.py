@@ -15,10 +15,14 @@ def time_one(day, fast):
     return perf_counter() - start
 
 
+def time(t):
+    return f"\033[1;31m{t:6.2f}s\033[0m" if t > 0.3 else f"{t:6.2f}s"
+
+
 def get_speedup(day):
     before = statistics.mean(time_one(day, 1) for _ in range(runs))
     after = statistics.mean(time_one(day, 0) for _ in range(runs))
-    print(f"Day {day}\t{before / after:4.1f}x ({before:6.2f}s, {after:6.2f}s)")
+    print(f"Day {day:<2}  {before / after:4.1f}x ({time(before)}, {time(after)})")
     return before, after
 
 
