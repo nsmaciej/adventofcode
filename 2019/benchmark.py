@@ -2,6 +2,7 @@ import subprocess
 from time import perf_counter
 import statistics
 import os
+import sys
 
 
 def time_one(day, fast):
@@ -22,7 +23,8 @@ def get_speedup(day):
 
 
 runs = 10
-days = [2, 7, 9, 11, 13, 15, 17, 19, 21]
+days = [2, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25]
+days = list(map(int, sys.argv[1:])) if len(sys.argv) > 1 else days
 print(f"Using {runs} runs\n")
 stats = list(map(get_speedup, days))
 before = sum(x for x, _ in stats)
