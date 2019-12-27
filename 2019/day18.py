@@ -7,10 +7,13 @@ class Solver:
         self.bots = [i for i, v in self.grid.items() if v == "@"]
         self.keys = {v for k, v in self.grid.items() if v.islower()}
         self.key_pos = {v: k for k, v in self.grid.items() if v.islower()}
-        self.door_pos = {v.lower(): k for k, v in self.grid.items() if v.isupper()}
+        self.dp = {}
         self.dist = {}
         for b in self.bots:
             self.dist[b] = self.distance(b)
+        self.responsible = {
+            i: frozenset(self.dist[b].keys()) for i, b in enumerate(self.bots)
+        }
         for k in self.keys:
             self.dist[self.key_pos[k]] = self.distance(self.key_pos[k])
 
@@ -33,34 +36,26 @@ class Solver:
             if self.key_pos[k] in dist
         }
 
-    def solve(self):
-        def inner(places, got, td):
-            nonlocal shortest, dp
-            dp_key = (tuple(places), got)
-            if td >= shortest or td >= dp.get(dp_key, inf):
-                return
-            if len(got) == len(self.keys):
-                if td < shortest:
-                    shortest = td
-                return
-            dp[dp_key] = td
-            for bot_ix, bot in enumerate(places):
-                # Things this robot can still explore.
-                responsible = set(self.dist[bot].keys()) - got
-                for key in responsible:
-                    if self.dist[bot][key][1] <= got:
-                        if key in self.door_pos:
-                            self.grid[self.door_pos[key]] = "."
-                        new_places = places.copy()
-                        new_places[bot_ix] = self.key_pos[key]
-                        inner(new_places, got | {key}, td + self.dist[bot][key][0])
-                        if key in self.door_pos:
-                            self.grid[self.door_pos[key]] = key.upper()
-
-        dp = {}
+    def _walk(self, bots, need):
+        run = (tuple(bots), need)
+        if not need:
+            return 0
+        if run in self.dp:
+            return self.dp[run]
         shortest = inf
-        inner(self.bots, frozenset(), 0)
+        for bot_ix, bot in enumerate(bots):
+            for key in self.responsible[bot_ix] & need:
+                dist, required = self.dist[bot][key]
+                if required.isdisjoint(need):
+                    new_bots = bots.copy()
+                    new_bots[bot_ix] = self.key_pos[key]
+                    total_dist = dist + self._walk(new_bots, need - {key})
+                    shortest = min(total_dist, shortest)
+        self.dp[run] = shortest
         return shortest
+
+    def solve(self):
+        return self._walk(self.bots, frozenset(self.keys))
 
 
 text = data(18).read()
