@@ -1,41 +1,51 @@
-# TODO: Rewrite. The current numpy version is slower than python alone.
-import re
-import numpy as np
 from aoc import *
+import re
+from itertools import count
+from math import gcd
+
+
+def cmp(x, y):
+    return (x > y) - (x < y)
+
+
+def lcm(a, b):
+    return a * b // gcd(a, b)
+
+
+def part_one():
+    pos = [x.copy() for x in moons]
+    vel = [[0, 0, 0] for _ in range(len(pos))]
+    for _ in range(1000):
+        for d in range(3):
+            for m in range(len(pos)):
+                for k in range(m):
+                    r = cmp(pos[m][d], pos[k][d])
+                    vel[m][d] -= r
+                    vel[k][d] += r
+            for m in range(len(pos)):
+                pos[m][d] += vel[m][d]
+    return sum(sum(map(abs, vel[m])) * sum(map(abs, pos[m])) for m in range(len(pos)))
+
+
+def cycle(d):
+    pos = [x[d] for x in moons]
+    vel = [0] * len(pos)
+    for age in count(1):
+        for m in range(len(pos)):
+            for k in range(m):
+                r = cmp(pos[m], pos[k])
+                vel[m] -= r
+                vel[k] += r
+        if not any(vel):
+            return 2 * age  # TODO: Provide an explanation.
+        for m in range(len(pos)):
+            pos[m] += vel[m]
 
 
 def parse(x):
     return list(map(int, re.match(r"<x=(-?\d+), y=(-?\d+), z=(-?\d+)>", x).groups()))
 
 
-class Universe:
-    def __init__(self, moons):
-        self.moons = np.copy(moons)
-        self.vel = np.zeros_like(moons)
-        self.age = 0
-
-    def step(self):
-        for i in range(len(self.moons)):
-            x, y = self.moons, self.moons[i, :]
-            self.vel[i] += ((x > y).astype(int) - (x < y).astype(int)).sum(0)
-        self.moons += self.vel
-        self.age += 1
-
-    def energy(self):
-        return sum(abs(self.moons).sum(1) * abs(self.vel).sum(1))
-
-
-moons = np.array(list(map(parse, data(12))))
-universe = Universe(moons)
-for _ in range(1000):
-    universe.step()
-print(universe.energy())
-
-universe = Universe(moons)
-cycle = {}
-while len(cycle) < 3:
-    universe.step()
-    for i in range(3):
-        if not universe.vel[:, i].any() and i not in cycle:
-            cycle[i] = 2 * universe.age
-print(np.lcm.reduce(list(cycle.values())))
+moons = list(map(parse, data(12)))
+print(part_one())
+print(lcm(lcm(cycle(0), cycle(1)), cycle(2)))
