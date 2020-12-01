@@ -1,9 +1,10 @@
-main :: IO ()
-main = do
-  xs <- readFile "inputs/day02.txt"
-  let ds = map (map read . split 'x') $ lines xs
-  print . sum $ map paper ds
-  print . sum $ map ribbon ds
+import Soln
+
+main =
+  runSoln'
+    (map (map read . split 'x') . lines)
+    (sum . map paper)
+    (sum . map ribbon)
 
 paper :: [Int] -> Int
 paper [l, w, h] = minimum ds + (sum $ map (2 *) ds)
