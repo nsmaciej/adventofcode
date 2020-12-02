@@ -10,5 +10,5 @@ runSoln f g = do
   f input
   g input
 
-runSoln' :: (String -> a) -> (a -> IO ()) -> (a -> IO ()) -> IO ()
-runSoln' p f g = runSoln (f . p) (g . p)
+runSoln' :: (Show l, Show r) => (String -> a) -> (a -> l) -> (a -> r) -> IO ()
+runSoln' p f g = runSoln (print . f . p) (print . g . p)

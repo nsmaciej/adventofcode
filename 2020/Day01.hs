@@ -4,9 +4,9 @@ import Soln
 find :: Int -> [Int] -> Maybe Int
 find n xs = listToMaybe $ filter (\x -> elem (n - x) xs) xs
 
-part1 xs = print $ a * (2020 - a) where Just a = find 2020 xs
+part1 xs = a * (2020 - a) where Just a = find 2020 xs
 
-part2 xs = print $ a * b * (2020 - a - b)
+part2 xs = a * b * (2020 - a - b)
   where
     a = head $ filter (\x -> isJust $ find (2020 - x) xs) xs
     Just b = find (2020 - a) xs
