@@ -1,4 +1,4 @@
-module Soln (runSoln, runSoln') where
+module Advent (runSoln, runSoln') where
 
 import Data.Char
 import System.Environment

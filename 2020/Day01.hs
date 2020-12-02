@@ -1,5 +1,5 @@
+import Advent
 import Data.Maybe
-import Soln
 
 find :: Int -> [Int] -> Maybe Int
 find n xs = listToMaybe $ filter (\x -> elem (n - x) xs) xs
