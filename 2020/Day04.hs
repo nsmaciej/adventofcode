@@ -3,7 +3,6 @@ import Text.Megaparsec
 import Text.Megaparsec.Char
 import Data.Char
 import Data.Maybe
-import Data.List
 import Control.Monad
 
 type Passport = [(String, String)]
@@ -27,8 +26,8 @@ valid' x = and [
   where k ? p = isJust $ lookup k x >>= guard . p
 
 checkHeight :: String -> Bool
-checkHeight xs = if isSuffixOf "cm" xs then rng 150 193 n else rng 59 76 n
-  where n = takeWhile isDigit xs
+checkHeight xs = if u == "cm" then rng 150 193 n else rng 59 76 n
+  where (u, n) = span isDigit xs
 
 rng :: Int -> Int -> String -> Bool
 rng l h x = n >= l && n <= h where n = read x
