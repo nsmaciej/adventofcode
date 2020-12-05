@@ -1,10 +1,9 @@
 import Advent
-import Data.List
 
 main = runSoln' (map parse . lines) maximum part2
 
 part2 :: [Int] -> Int
-part2 xs = head [y | (x, y) <- zip (sort xs) [minimum xs..], y /= x]
+part2 xs = sum [minimum xs .. maximum xs] - sum xs
 
 parse :: String -> Int
 parse x = 8 * locate 'B' r + locate 'R' c
