@@ -17,21 +17,21 @@ common day
   build-depends:       base ^>= 4.13,
                        advent,
 executable day01
-  import:              day
-  main-is:             Day01.hs
+  import:         day
+  main-is:        Day01.hs
 
 executable day02
-  import:              day
-  main-is:             Day02.hs
-  build-depends:       megaparsec
+  import:         day
+  main-is:        Day02.hs
+  build-depends:  megaparsec
 
 executable day03
-  import:              day
-  main-is:             Day03.hs
+  import:         day
+  main-is:        Day03.hs
 
 executable day04
-  import:              day
-  main-is:             Day04.hs
-  build-depends:       megaparsec,
+  import:         day
+  main-is:        Day04.hs
+  build-depends:  megaparsec,
 
 -- Structure inspired by glguy/advent2019
