@@ -34,4 +34,8 @@ executable day04
   main-is:        Day04.hs
   build-depends:  megaparsec,
 
+executable day05
+  import:         day
+  main-is:        Day05.hs
+
 -- Structure inspired by glguy/advent2019
