@@ -16,20 +16,20 @@ common day
   build-depends:       base ^>= 4.13,
                        advent,
 executable day01
-  import:              day
-  main-is:             Day01.hs
+  import:         day
+  main-is:        Day01.hs
 
 executable day02
-  import:              day
-  main-is:             Day02.hs
+  import:         day
+  main-is:        Day02.hs
 
 executable day03
-  import:              day
-  main-is:             Day03.hs
-  build-depends:       containers ^>= 0.6,
+  import:         day
+  main-is:        Day03.hs
+  build-depends:  containers ^>= 0.6,
 
 executable day04
-  import:              day
-  main-is:             Day04.hs
-  build-depends:       cryptohash-md5 ^>= 0.11,
-                       bytestring ^>= 0.10,
+  import:         day
+  main-is:        Day04.hs
+  build-depends:  cryptohash-md5 ^>= 0.11,
+                  bytestring ^>= 0.10,
