@@ -1,20 +1,15 @@
 import Advent
 import Data.List
-import Data.Maybe
 
 main = runSoln' (map parse . lines) maximum part2
 
 part2 :: [Int] -> Int
-part2 xs = snd . fromJust $ find (uncurry (/=)) $ zip (sort xs) [minimum xs..]
+part2 xs = head [y | (x, y) <- zip (sort xs) [minimum xs..], y /= x]
 
 parse :: String -> Int
-parse x = 8 * locate 'F' 'B' 127 x + locate 'L' 'R' 7 x
+parse x = 8 * locate 'B' r + locate 'R' c
+  where (r, c) = span (`elem` "FB") x
 
-locate :: Char -> Char -> Int -> String -> Int
-locate lc hc = divide 0
-  where
-    divide l h (x:xs)
-      | x == lc = divide l ((l + h) `div` 2) xs
-      | x == hc = divide ((l + h) `div` 2) h xs
-      | otherwise = divide l h xs
-    divide _ h [] = h
+-- Approach stolen from u/Psy_Blades
+locate :: Char -> String -> Int
+locate hc = foldl (\a x -> a * 2 + if x == hc then 1 else 0) 0
