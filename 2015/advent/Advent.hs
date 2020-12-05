@@ -1,4 +1,4 @@
-module Advent (Pt, fromPair, zero, runSoln, runSoln') where
+module Advent (Pt, fromPair, zero, runSoln, runSoln', countp) where
 
 import Data.Char
 import System.Environment (getArgs, getProgName)
@@ -32,3 +32,6 @@ fromPair (x, y) = Pt x y
 
 zero :: Num a => Pt a
 zero = Pt 0 0
+
+countp :: (a -> Bool) -> [a] -> Int
+countp = (length .) . filter

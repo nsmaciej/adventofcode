@@ -33,3 +33,7 @@ executable day04
   main-is:        Day04.hs
   build-depends:  cryptohash-md5 ^>= 0.11,
                   bytestring ^>= 0.10,
+
+executable day05
+  import:         day
+  main-is:        Day05.hs
