@@ -26,8 +26,10 @@ executable day02
 executable day03
   import:              day
   main-is:             Day03.hs
-  build-depends:       containers ^>= 0.6
+  build-depends:       containers ^>= 0.6,
 
 executable day04
   import:              day
   main-is:             Day04.hs
+  build-depends:       cryptohash-md5 ^>= 0.11,
+                       bytestring ^>= 0.10,
