@@ -1,6 +1,6 @@
+import Advent
 import Data.Set (Set)
 import qualified Data.Set as S
-import Soln
 
 main = runSoln' init part1 part2
 

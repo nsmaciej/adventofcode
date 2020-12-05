@@ -1,0 +1,33 @@
+cabal-version:       2.2
+name:                aoc2015
+version:             0.1.0.0
+author:              Maciej Goszczycki
+maintainer:          mgoszcz2@gmail.com
+build-type:          Simple
+
+library advent
+  hs-source-dirs:      advent
+  exposed-modules:     Advent
+  build-depends:       base ^>= 4.13,
+  default-language:    Haskell2010
+
+common day
+  default-language:    Haskell2010
+  build-depends:       base ^>= 4.13,
+                       advent,
+executable day01
+  import:              day
+  main-is:             Day01.hs
+
+executable day02
+  import:              day
+  main-is:             Day02.hs
+
+executable day03
+  import:              day
+  main-is:             Day03.hs
+  build-depends:       containers ^>= 0.6
+
+executable day04
+  import:              day
+  main-is:             Day04.hs

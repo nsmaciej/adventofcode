@@ -1,4 +1,4 @@
-import Soln
+import Advent
 
 main =
   runSoln'
