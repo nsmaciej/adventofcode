@@ -27,7 +27,7 @@ valid' x = and [
 checkHeight :: String -> Bool
 checkHeight xs = if u == "cm" then rng 150 193 n else rng 59 76 n
   where
-    (u, n) = span isDigit xs
+    (n, u) = span isDigit xs
 
 rng :: Int -> Int -> String -> Bool
 rng l h x = n >= l && n <= h
