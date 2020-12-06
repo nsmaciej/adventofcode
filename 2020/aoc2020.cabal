@@ -23,7 +23,7 @@ executable day01
 executable day02
   import:         day
   main-is:        Day02.hs
-  build-depends:  megaparsec
+  build-depends:  megaparsec,
 
 executable day03
   import:         day
@@ -37,5 +37,10 @@ executable day04
 executable day05
   import:         day
   main-is:        Day05.hs
+
+executable day06
+  import:         day
+  main-is:        Day06.hs
+  build-depends:  megaparsec,
 
 -- Structure inspired by glguy/advent2019
