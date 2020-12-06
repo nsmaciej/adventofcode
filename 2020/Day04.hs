@@ -1,7 +1,4 @@
 import Advent
-import Text.Megaparsec
-import Text.Megaparsec.Char
-import Data.Char
 import Data.Maybe
 import Control.Monad
 
@@ -11,7 +8,8 @@ main = runSoln' (parseString pPassports) (countp valid) (countp valid')
 
 valid :: Passport -> Bool
 valid x = and $ map (`elem` map fst x) fs
-  where fs = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+  where
+    fs = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
 
 valid' :: Passport -> Bool
 valid' x = and [
@@ -23,14 +21,18 @@ valid' x = and [
     "ecl" ? (`elem` ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]),
     "pid" ? \x -> length x == 9 && all isDigit x
   ]
-  where k ? p = isJust $ lookup k x >>= guard . p
+  where
+    k ? p = isJust $ lookup k x >>= guard . p
 
 checkHeight :: String -> Bool
 checkHeight xs = if u == "cm" then rng 150 193 n else rng 59 76 n
-  where (u, n) = span isDigit xs
+  where
+    (u, n) = span isDigit xs
 
 rng :: Int -> Int -> String -> Bool
-rng l h x = n >= l && n <= h where n = read x
+rng l h x = n >= l && n <= h
+  where
+    n = read x
 
 pPassports :: Parser [Passport]
 pPassports = (pField `endBy` spaceChar) `sepBy` newline

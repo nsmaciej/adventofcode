@@ -1,9 +1,19 @@
-module Advent (Parser, runSoln, runSoln', parseString, countp) where
+module Advent (
+  Parser, runSoln, runSoln', parseString, countp,
+  module Text.Megaparsec,
+  module Text.Megaparsec.Char,
+  module Text.Megaparsec.Char.Lexer,
+  module Data.List,
+  module Data.Char,
+) where
 
 import Data.Char
+import Data.List
 import System.Environment
 import Data.Void
-import Text.Megaparsec
+import Text.Megaparsec hiding (parse)
+import Text.Megaparsec.Char (char, letterChar, spaceChar, string, newline)
+import Text.Megaparsec.Char.Lexer (decimal)
 
 inputFilePath :: IO FilePath
 inputFilePath = do
