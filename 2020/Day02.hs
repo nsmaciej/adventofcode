@@ -13,7 +13,7 @@ vaild1 (l, h, c, xs) = x >= l && x <= h
     x = length $ filter (== c) xs
 
 vaild2 :: Password -> Bool
-vaild2 (i, i', c, xs) = (xs !! (i -1) == c) /= (xs !! (i' -1) == c)
+vaild2 (i, j, c, xs) = (xs !! (i - 1) == c) /= (xs !! (j - 1) == c)
 
 pPassword :: Parser Password
 pPassword = (,,,)
