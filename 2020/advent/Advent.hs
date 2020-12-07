@@ -1,5 +1,5 @@
 module Advent (
-  Parser, runSoln, runSoln', parseString, countp,
+  Parser, runSoln, runSoln', parseAll, parseLines, countp,
   module Text.Megaparsec,
   module Text.Megaparsec.Char,
   module Text.Megaparsec.Char.Lexer,
@@ -12,7 +12,7 @@ import Data.List
 import System.Environment
 import Data.Void
 import Text.Megaparsec hiding (parse)
-import Text.Megaparsec.Char (char, letterChar, spaceChar, string, newline)
+import Text.Megaparsec.Char (char, letterChar, lowerChar, spaceChar, string, newline)
 import Text.Megaparsec.Char.Lexer (decimal)
 
 inputFilePath :: IO FilePath
@@ -34,5 +34,8 @@ runSoln' p f g = runSoln (print . f . p) (print . g . p)
 
 type Parser = Parsec Void String
 
-parseString :: Parser a -> String -> a
-parseString parser = either (error . errorBundlePretty) id . runParser parser "input"
+parseAll :: Parser a -> String -> a
+parseAll parser = either (error . errorBundlePretty) id . runParser parser "input"
+
+parseLines :: Parser a -> String -> [a]
+parseLines parser = map (parseAll parser) . lines

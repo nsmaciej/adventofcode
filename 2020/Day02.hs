@@ -3,7 +3,7 @@ import Advent
 type Password = (Int, Int, Char, String)
 
 main = runSoln'
-  (map (parseString pPassword) . lines)
+  (parseLines pPassword)
   (countp vaild1)
   (countp vaild2)
 

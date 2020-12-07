@@ -4,7 +4,7 @@ import Control.Monad
 
 type Passport = [(String, String)]
 
-main = runSoln' (parseString pPassports) (countp valid) (countp valid')
+main = runSoln' (parseAll pPassports) (countp valid) (countp valid')
 
 valid :: Passport -> Bool
 valid x = and $ map (`elem` map fst x) fs
