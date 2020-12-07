@@ -31,7 +31,7 @@ part2 cs = run (M.insert "b" (Set $ Lit $ run cs M.! "a") cs) M.! "a"
 
 -- This relies on sharing for performence.
 run :: Map String Op -> Map String Int
-run cs = M.map (\v -> (2^16 - 1) .&. resolve v) cs
+run cs = M.map resolve cs
   where
     value :: Value -> Int
     value (Lit n) = n
@@ -40,7 +40,7 @@ run cs = M.map (\v -> (2^16 - 1) .&. resolve v) cs
     resolve (Or a b) = value a .|. value b
     resolve (And a b) = value a .&. value b
     resolve (Rshift a b) = value a `shiftR` value b
-    resolve (Lshift a b) = value a `shiftL` value b
+    resolve (Lshift a b) = (2^16 - 1) .&. (value a `shiftL` value b)
     resolve (Not a) = complement $ value a
     resolve (Set a) = value a
 
