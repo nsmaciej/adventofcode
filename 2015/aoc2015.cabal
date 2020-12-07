@@ -39,6 +39,12 @@ executable day05
   import:         day
   main-is:        Day05.hs
 
+executable day07
+  import:         day
+  main-is:        Day07.hs
+  build-depends:  megaparsec ^>= 9.0,
+                  containers ^>= 0.6,
+
 executable day08
   import:         day
   main-is:        Day08.hs
