@@ -41,4 +41,9 @@ executable day06
   import:         day
   main-is:        Day06.hs
 
+executable day07
+  import:         day
+  main-is:        Day07.hs
+  build-depends:  containers,
+
 -- Structure inspired by glguy/advent2019
