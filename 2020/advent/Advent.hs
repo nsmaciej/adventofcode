@@ -12,7 +12,7 @@ import Data.List
 import System.Environment
 import Data.Void
 import Text.Megaparsec hiding (parse)
-import Text.Megaparsec.Char (char, letterChar, lowerChar, spaceChar, string, newline)
+import Text.Megaparsec.Char (char, letterChar, lowerChar, spaceChar, string, newline, hspace, hspace1)
 import Text.Megaparsec.Char.Lexer (decimal)
 
 inputFilePath :: IO FilePath
