@@ -1,37 +1,33 @@
 import Advent
+import Data.Sequence (Seq)
 import qualified Data.Set as Set
+import qualified Data.Sequence as Seq
 
 data Op = Nop Int | Jmp Int | Acc Int deriving (Show, Eq)
 type Cpu = (Int, Int)
 
-main = runSoln' (parseLines pOp) part1 part2
+main = runSoln' (Seq.fromList . parseLines pOp) part1 part2
 
-run :: Cpu -> [Op] -> [Cpu]
-run c@(ip, _) ops
-  | ip >= length ops = []
-  | otherwise = run (step c $ ops !! ip) ops
+run :: Cpu -> Seq Op -> [Cpu]
+run c@(ip, _) ops = case ops Seq.!? ip of
+  Nothing -> [c]
+  Just op -> c : run (step c op) ops
 
-part1 :: [Op] -> Int
+part1 :: Seq Op -> Int
 part1 ops = snd $ states !! (i - 1)
   where
     states = run (0, 0) ops
     Just i = dupIx $ map fst states
 
-halt :: [Op] -> Maybe Int
+halt :: Seq Op -> Maybe Int
 halt ops = case dupIx $ map fst states of
     Nothing -> Just . snd $ last states
     Just _ -> Nothing
   where
     states = run (0, 0) ops
 
-update :: Int -> (a -> a) -> [a] -> [a]
-update _ _ [] = []
-update n f (x:xs)
-  | n == 0 = f x : xs
-  | otherwise = x : update (n - 1) f xs
-
-part2 :: [Op] -> Int
-part2 ops = head [a | Just a <- map (\i -> halt (update i flipOp ops)) [0..]]
+part2 :: Seq Op -> Int
+part2 ops = head [a | Just a <- map (\i -> halt (Seq.adjust flipOp i ops)) [0..]]
 
 dupIx :: Ord a => [a] -> Maybe Int
 dupIx xs = dup' xs 0 Set.empty
