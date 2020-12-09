@@ -15,7 +15,7 @@ import Data.Void
 import Text.Printf
 import Text.Megaparsec hiding (parse)
 import Text.Megaparsec.Char (char, letterChar, lowerChar, spaceChar, string, string', newline, hspace, hspace1)
-import Text.Megaparsec.Char.Lexer (decimal)
+import Text.Megaparsec.Char.Lexer (decimal, signed)
 
 inputFilePath :: IO FilePath
 inputFilePath = do

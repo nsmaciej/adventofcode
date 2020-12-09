@@ -1,6 +1,6 @@
 import Advent
 import Data.Sequence (Seq)
-import qualified Data.Set as Set
+import qualified Data.IntSet as Set
 import qualified Data.Sequence as Seq
 
 data Op = Nop Int | Jmp Int | Acc Int deriving (Show, Eq)
@@ -29,7 +29,7 @@ halt ops = case dupIx $ map fst states of
 part2 :: Seq Op -> Int
 part2 ops = head [a | Just a <- map (\i -> halt (Seq.adjust flipOp i ops)) [0..]]
 
-dupIx :: Ord a => [a] -> Maybe Int
+dupIx :: [Int] -> Maybe Int
 dupIx xs = dup' xs 0 Set.empty
   where
     dup' (x:xs) i s = if Set.member x s then Just i else dup' xs (i + 1) (Set.insert x s)
@@ -47,8 +47,6 @@ flipOp (Jmp n) = (Nop n)
 flipOp x = x
 
 pOp :: Parser Op
-pOp = choice [Nop <$ string' "nop", Jmp <$ string' "jmp", Acc <$ string' "acc"] <* hspace1 <*> pOffset
-
--- negate inspired by incertia.
-pOffset :: Parser Int
-pOffset = (id <$ char '+' <|> negate <$ char '-') <*> decimal
+pOp =
+  choice [Nop <$ string' "nop", Jmp <$ string' "jmp", Acc <$ string' "acc"] <* hspace1
+  <*> signed hspace decimal
