@@ -51,4 +51,8 @@ executable day08
   main-is:        Day08.hs
   build-depends:  containers ^>= 0.6,
 
+executable day09
+  import:         day
+  main-is:        Day09.hs
+
 -- Structure inspired by glguy/advent2019
