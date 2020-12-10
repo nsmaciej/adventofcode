@@ -19,8 +19,12 @@ import Text.Megaparsec.Char.Lexer (decimal, signed)
 
 inputFilePath :: IO FilePath
 inputFilePath = do
+  args <- getArgs
   day <- filter isDigit <$> getProgName
-  return $ "inputs/day" ++ day ++ ".txt"
+  return $ case args of
+    ["-"] -> "/dev/stdin"
+    [path] -> path
+    [] -> "inputs/day" ++ day ++ ".txt"
 
 runSoln :: (String -> IO ()) -> (String -> IO ()) -> IO ()
 runSoln f g = do
