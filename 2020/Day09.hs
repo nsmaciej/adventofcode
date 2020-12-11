@@ -1,5 +1,4 @@
 import Advent
-import Data.Maybe
 
 main = runSoln' (map read . lines) part1 part2
 
