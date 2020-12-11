@@ -55,4 +55,8 @@ executable day09
   import:         day
   main-is:        Day09.hs
 
+executable day10
+  import:         day
+  main-is:        Day10.hs
+
 -- Structure inspired by glguy/advent2019
