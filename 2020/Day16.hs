@@ -1,8 +1,10 @@
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings #-}
 import Advent
 import Data.Set (Set)
 import qualified Data.Set as Set
 
-data Rule = Rule String Int Int Int Int deriving (Show, Ord, Eq)
+data Rule = Rule { name :: String, lo, hi, lo', hi' :: Int } deriving (Show, Eq, Ord)
 type Ticket = [Int]
 data Input = Input {
   rules :: [Rule],
@@ -14,33 +16,25 @@ main = runSoln' (parseAll parse) part1 part2
 
 parse :: Parser Input
 parse = Input
-  <$> parseRule `endBy` newline
-  <* string "\nyour ticket:\n"
-  <*> parseTicket
-  <* string "\n\nnearby tickets:\n"
-  <*> parseTicket `endBy` newline
+  <$> pRule `endBy` newline
+  <* "\nyour ticket:\n" <*> pTicket
+  <* "\n\nnearby tickets:\n" <*> pTicket `endBy` newline
 
-parseRule :: Parser Rule
-parseRule = Rule
-  <$> try (some (anySingleBut ':') <* string ": ")
+pRule :: Parser Rule
+pRule = Rule
+  <$> try (some (anySingleBut ':') <* ": ")
   <*> decimal <* char '-' <*> decimal
-  <* string " or "
+  <* " or "
   <*> decimal <* char '-' <*> decimal
 
-parseTicket :: Parser Ticket
-parseTicket = decimal `sepBy` char ','
+pTicket :: Parser Ticket
+pTicket = decimal `sepBy` char ','
 
 checkRule :: Int -> Rule -> Bool
-checkRule n (Rule _ l h l' h') = (n >= l && n <= h) || (n >= l' && n <= h')
-
-ruleName :: Rule -> String
-ruleName (Rule name _ _ _ _) = name
+checkRule n Rule{..} = n >= lo && n <= hi || n >= lo' && n <= hi'
 
 part1 :: Input -> Int
-part1 x = sum . filter (not . validField (rules x)) . concat $ nearby x
-
-validTicket :: [Rule] -> Ticket -> Bool
-validTicket rs t = all (validField rs) t
+part1 Input{..} = sum . filter (not . validField rules) . concat $ nearby
 
 validField :: [Rule] -> Int -> Bool
 validField rs n = any (checkRule n) rs
@@ -52,17 +46,19 @@ possibleRules :: [Rule] -> [Ticket] -> [Set Rule]
 possibleRules rs = foldl1' (zipWith Set.intersection) . map (vaildRules rs)
 
 solvePossible :: [Set Rule] -> [(Int, Rule)]
-solvePossible pos = case findIndex ((1 ==) . length) pos of
-  Just i ->
-    let rule = Set.findMin (pos !! i)
-    in (i, rule) : solvePossible (map (Set.delete rule) pos)
-  Nothing -> []
+solvePossible = go Set.empty . sortOn (Set.size . snd) . zip [0..]
+  where
+    go :: Set Rule -> [(Int, Set Rule)] -> [(Int, Rule)]
+    go _ [] = []
+    go seen (r:rs) =
+      let r' = Set.findMin (snd r Set.\\ seen)
+      in (fst r, r') : go (Set.insert r' seen) rs
 
 part2 :: Input -> Int
-part2 x = product
-  . map ((your x !!) . fst)
-  . filter (isPrefixOf "departure" . ruleName . snd)
+part2 Input{..} = product
+  . map ((your !!) . fst)
+  . filter (isPrefixOf "departure" . name . snd)
   . solvePossible
-  . possibleRules (rules x)
-  . filter (validTicket (rules x))
-  $ nearby x
+  . possibleRules rules
+  . filter (all $ validField rules)
+  $ nearby
