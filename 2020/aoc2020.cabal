@@ -59,6 +59,11 @@ executable day10
   import:         day
   main-is:        Day10.hs
 
+executable day15
+  import:         day
+  main-is:        Day15.hs
+  build-depends:  containers ^>= 0.6,
+
 executable day16
   import:         day
   main-is:        Day16.hs
@@ -72,6 +77,5 @@ executable day17
 executable day18
   import:         day
   main-is:        Day18.hs
-  build-depends:  containers ^>= 0.6,
 
 -- Structure inspired by glguy/advent2019
