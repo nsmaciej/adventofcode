@@ -2,6 +2,7 @@
 import Advent (runSoln')
 import Data.Set (Set)
 import qualified Data.Set as S
+import Control.Monad (replicateM)
 
 data Point = P !Int !Int !Int !Int deriving (Show, Eq, Ord)
 type World = Set Point
@@ -20,11 +21,10 @@ step p2 w = S.union kept new
     neighbors = length . filter (`S.member` w) . (around p2)
 
 around :: Bool -> Point -> [Point]
-around vary_w (P w' x' y' z') = [P (w' + w) (x' + x) (y' + y) (z' + z) |
-  w <- if vary_w then [0] else [-1..1],
-  x <- [-1..1],
-  y <- [-1..1],
-  z <- [-1..1]
+around vary_w (P w' x' y' z') = [
+    P (w' + w) (x' + x) (y' + y) (z' + z) |
+    w <- if vary_w then [0] else [-1..1],
+    [x, y, z] <- replicateM 3 [-1..1]
   ]
 
 world :: String -> World
