@@ -18,6 +18,6 @@ pExpr :: Parser Int
 pExpr = chainl (pTerm pExpr) ((+) <$ sym "+" <|> (*) <$ sym "*")
 
 pExpr' :: Parser Int
-pExpr' = chainl term ((*) <$ sym "*") <|> term
+pExpr' = chainl term ((*) <$ sym "*")
   where
     term = chainl (pTerm pExpr') ((+) <$ sym "+")
