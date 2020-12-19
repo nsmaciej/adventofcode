@@ -17,7 +17,7 @@ step :: Int -> World -> World
 step d w = S.union kept new
   where
     kept = S.filter ((`elem` [3,4]) . neighbors) w
-    new = S.fromList . filter ((== 3) . neighbors) $ concatMap (around d) w
+    new = S.filter ((== 3) . neighbors) . S.fromList $ concatMap (around d) w
     neighbors = length . filter (`S.member` w) . (around d)
 
 around :: Int -> Point -> [Point]
