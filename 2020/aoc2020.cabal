@@ -64,6 +64,10 @@ executable day11
   main-is:        Day11.hs
   build-depends:  containers ^>= 0.6,
 
+executable day12
+  import:         day
+  main-is:        Day12.hs
+
 executable day15
   import:         day
   main-is:        Day15.hs
