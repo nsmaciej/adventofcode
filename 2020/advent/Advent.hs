@@ -44,7 +44,7 @@ runSoln' p f g = runSoln (print . f . p) (print . g . p)
 type Parser = Parsec Void String
 
 parseAll :: Parser a -> String -> a
-parseAll parser = either (error . errorBundlePretty) id . runParser parser "input"
+parseAll parser = either (error . errorBundlePretty) id . runParser (parser <* eof) "input"
 
 parseLines :: Parser a -> String -> [a]
-parseLines parser = map (parseAll parser) . lines
+parseLines parser = parseAll (parser `sepEndBy1` newline)

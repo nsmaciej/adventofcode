@@ -20,7 +20,8 @@ depCount t bs = sum . map (\(i, x) -> i + i * depCount x bs) $ bs M.! t
 pRule :: Parser (String, [Bag])
 pRule = (,)
   <$> pName <* string " contain "
-  <*> ([] <$ string "no other bags." <|> pBag `sepBy1` string ", ")
+  <*> ([] <$ string "no other bags" <|> pBag `sepBy1` string ", ")
+  <* char '.'
 
 pBag :: Parser Bag
 pBag = (,) <$> decimal <* char ' ' <*> pName

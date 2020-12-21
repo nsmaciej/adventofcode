@@ -29,7 +29,6 @@ pInput :: Parser Input
 pInput = (,) <$> (M.fromList <$> pPair `endBy` newline)
   <* newline
   <*> some letterChar `endBy` newline
-  <* eof
 
 pPair :: Parser (Int, Rule)
 pPair = (,) <$> l decimal <* l (char ':') <*> pRule
