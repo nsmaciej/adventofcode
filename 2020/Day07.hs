@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 import Advent
 import Data.Map (Map)
 import qualified Data.Map as M
@@ -19,12 +20,12 @@ depCount t bs = sum . map (\(i, x) -> i + i * depCount x bs) $ bs M.! t
 
 pRule :: Parser (String, [Bag])
 pRule = (,)
-  <$> pName <* string " contain "
-  <*> ([] <$ string "no other bags" <|> pBag `sepBy1` string ", ")
+  <$> pName <* " contain "
+  <*> ([] <$ "no other bags" <|> pBag `sepBy1` ", ")
   <* char '.'
 
 pBag :: Parser Bag
 pBag = (,) <$> decimal <* char ' ' <*> pName
 
 pName :: Parser String
-pName = manyTill (lowerChar <|> char ' ') (string " bags" <|> string " bag")
+pName = manyTill (lowerChar <|> char ' ') (" bags" <|> " bag")

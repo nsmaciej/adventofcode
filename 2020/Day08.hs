@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 import Advent
 import Data.Sequence (Seq)
 import qualified Data.IntSet as Set
@@ -47,6 +48,6 @@ flipOp (Jmp n) = (Nop n)
 flipOp x = x
 
 pOp :: Parser Op
-pOp =
-  choice [Nop <$ string' "nop", Jmp <$ string' "jmp", Acc <$ string' "acc"] <* hspace1
+pOp = choice [Nop <$  "nop", Jmp <$ "jmp", Acc <$ "acc"]
+  <* hspace1
   <*> signed hspace decimal

@@ -12,7 +12,7 @@ chainl term op = term <**> rest
     rest = (\op rhs rest lhs -> rest (op lhs rhs)) <$> op <*> term <*> rest <|> pure id
 
 pTerm :: Parser Int -> Parser Int
-pTerm expr = decimal <* hspace <|> between (sym "(") (sym ")") expr
+pTerm expr = decimal <* hspace <|> sym "(" *> expr <* sym ")"
 
 pExpr :: Parser Int
 pExpr = chainl (pTerm pExpr) ((+) <$ sym "+" <|> (*) <$ sym "*")
