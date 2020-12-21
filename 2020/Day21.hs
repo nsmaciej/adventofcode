@@ -1,4 +1,3 @@
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE OverloadedStrings #-}
 import Advent
 import Data.Set (Set)
@@ -30,4 +29,4 @@ translations foods = M.unionsWith S.intersection [M.singleton a is | (is, as) <-
 pFood :: Parser Food
 pFood = (,)
   <$> (S.fromList <$> some letterChar `endBy` hspace)
-  <*> ("(contains " *> some letterChar `sepBy` ", " <* char ')' <|> pure [])
+  <*> ("(contains " *> some letterChar `sepBy` ", " <* ")" <|> pure [])
