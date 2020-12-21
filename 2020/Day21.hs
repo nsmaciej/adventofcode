@@ -1,25 +1,22 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE OverloadedStrings #-}
 import Advent
-import Data.Maybe
 import Data.Set (Set)
 import Data.Map.Strict (Map)
 import qualified Data.Set as S
 import qualified Data.Map.Strict as M
 
-data Food = Food { ingredients :: Set String, allergens :: [String] }
-  deriving (Show, Eq)
+type Food = (Set String, [String])
 
-main = runSoln' (catMaybes . parseLines pFood) part1 part2
+main = runSoln' (parseLines pFood) part1 (Print . intercalate "," . solve)
 
 part1 :: [Food] -> Int
-part1 foods = sum $ map (\Food{..} -> S.size $ ingredients S.\\ allAllergns) foods
+part1 foods = sum . map (S.size . (S.\\ bad)) $ map fst foods
   where
-    allAllergns = S.unions . M.elems $ translations foods
+    bad = S.fromList $ solve foods
 
-part2 :: [Food] -> String
-part2 foods = intercalate "," . map fst . sortOn snd $ go queue S.empty
+solve :: [Food] -> [String]
+solve foods = map fst . sortOn snd $ go queue S.empty
   where
     queue = sortOn (S.size . snd) . M.toList $ translations foods
     go [] _ = []
@@ -28,9 +25,9 @@ part2 foods = intercalate "," . map fst . sortOn snd $ go queue S.empty
       in (use, allergen) : go xs (S.insert use used)
 
 translations :: [Food] -> Map String (Set String)
-translations foods = M.unionsWith S.intersection [M.fromList $ map (,ingredients) allergens | Food{..} <- foods]
+translations foods = M.unionsWith S.intersection [M.singleton a is | (is, as) <- foods, a <- as]
 
-pFood :: Parser (Maybe Food)
-pFood = (\x y -> Food x <$> y)
+pFood :: Parser Food
+pFood = (,)
   <$> (S.fromList <$> some letterChar `endBy` hspace)
-  <*> (optional $ "(contains " *> some letterChar `sepBy` ", " <* char ')')
+  <*> ("(contains " *> some letterChar `sepBy` ", " <* char ')' <|> pure [])

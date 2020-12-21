@@ -1,5 +1,6 @@
 module Advent (
   Parser, runSoln, runSoln', parseAll, parseLines, countp,
+  Print(Print),
   module Text.Megaparsec,
   module Text.Megaparsec.Char,
   module Text.Megaparsec.Char.Lexer,
@@ -16,6 +17,11 @@ import Text.Printf
 import Text.Megaparsec hiding (parse)
 import Text.Megaparsec.Char (char, letterChar, lowerChar, spaceChar, string, string', newline, hspace, hspace1)
 import Text.Megaparsec.Char.Lexer (decimal, signed)
+
+data Print = Print { unPrint :: String }
+
+instance Show Print where
+  show = unPrint
 
 inputFilePath :: IO FilePath
 inputFilePath = do
