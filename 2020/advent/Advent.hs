@@ -1,5 +1,7 @@
+{-# LANGUAGE BangPatterns #-}
 module Advent (
   Parser, runSoln, runSoln', parseAll, parseLines, countp,
+  (.+.),
   Print(Print),
   module Text.Megaparsec,
   module Text.Megaparsec.Char,
@@ -54,3 +56,8 @@ parseAll parser = either (error . errorBundlePretty) id . runParser (parser <* e
 
 parseLines :: Parser a -> String -> [a]
 parseLines parser = parseAll (parser `sepEndBy1` newline)
+
+
+infixl 6 .+.
+(.+.) :: (Int, Int) -> (Int, Int) -> (Int, Int)
+(!x, !y) .+. (!x', !y') = (x + x', y + y')

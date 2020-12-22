@@ -10,10 +10,6 @@ type Occupied = Seats -> Point -> Int
 
 main = runSoln' parse (const 0) (solve $ step occupied' 5)
 
-infixl 6 +.
-(+.) :: Point -> Point -> Point
-(x, y) +. (x', y') = (x + x', y + y')
-
 solve :: (Seats -> Seats) -> Seats -> Int
 solve step w
   | w == step w = M.size $ M.filter (== Full) w
