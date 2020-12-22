@@ -3,7 +3,7 @@ import Data.Function (on)
 
 type Input = (Int, [Int])
 
-main = runSoln' (parseAll pInput) part1 id
+main = runSoln' (parseAll pInput) part1 (const 0)
 
 part1 :: Input -> Int
 part1 (t, xs) = bus * (next bus - t)

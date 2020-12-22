@@ -1,6 +1,7 @@
 import Advent
-import Data.Maybe
-import Control.Monad
+import Data.Maybe (isJust)
+import Control.Monad (guard)
+import Data.Char (isDigit, isHexDigit, isSpace)
 
 type Passport = [(String, String)]
 

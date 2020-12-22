@@ -7,15 +7,17 @@ module Advent (
   module Text.Megaparsec.Char,
   module Text.Megaparsec.Char.Lexer,
   module Data.List,
-  module Data.Char,
 ) where
 
-import Data.Char
+import System.Environment (getArgs, getProgName)
+import System.CPUTime (getCPUTime)
+import Data.Void (Void)
+import Text.Printf (printf)
+import Data.Char (isDigit)
+import qualified Data.Sequence as Seq
+
+-- Imports we export.
 import Data.List
-import System.Environment
-import System.CPUTime
-import Data.Void
-import Text.Printf
 import Text.Megaparsec hiding (parse)
 import Text.Megaparsec.Char (char, letterChar, lowerChar, spaceChar, string, string', newline, hspace, hspace1)
 import Text.Megaparsec.Char.Lexer (decimal, signed)

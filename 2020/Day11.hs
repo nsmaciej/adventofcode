@@ -23,10 +23,10 @@ step occupied emtpy w = M.mapWithKey update w
     update _ Floor = Floor
 
 occupied :: Occupied
-occupied w p = length [1 | x <- [-1..1], y <- [-1..1], x /= 0 || y /= 0, w !? ((x, y) +. p) == Just Full]
+occupied w p = length [1 | x <- [-1..1], y <- [-1..1], x /= 0 || y /= 0, w !? ((x, y) .+. p) == Just Full]
 
 walk :: Seats -> Point -> Point -> Maybe Seat
-walk w p delta = fromJust $ find (/= Just Floor) . map (w !?) . tail $ iterate (+. delta) p
+walk w p delta = fromJust $ find (/= Just Floor) . map (w !?) . tail $ iterate (.+. delta) p
 
 occupied' :: Occupied
 occupied' w p = length [1 | x <- [-1..1], y <- [-1..1], x /= 0 || y /= 0, walk w p (x, y) == Just Full]
