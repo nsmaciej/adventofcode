@@ -1,16 +1,31 @@
 import Advent
 import Data.Bits
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as M
+import Data.IntMap.Strict (IntMap)
+import qualified Data.IntMap.Strict as M
 
 data Inst = Mask String | Mem Int Int deriving (Show)
+type Protocol = String -> Int -> Int -> IntMap Int
 
-main = runSoln' (parseLines pInst) (run M.empty "") id
+main = runSoln' (parseLines pInst) (run v1) (run v2)
 
-run :: Map Int Int -> String -> [Inst] -> Int
-run m _ [] = sum m
-run m _ (Mask mask:xs) = run m mask xs
-run m mask (Mem addr val:xs) = run (M.insert addr (apply mask val) m) mask xs
+run :: Protocol -> [Inst] -> Int
+run f = go M.empty ""
+  where
+    go m _ [] = sum m
+    go m _ (Mask mask:xs) = go m mask xs
+    go m mask (Mem addr val:xs) = go (M.union (f mask addr val) m) mask xs
+
+v1, v2 :: Protocol
+v1 mask addr val = M.singleton addr (apply mask val)
+v2 mask addr val = M.fromList $ zip (locations (reverse mask) addr) (repeat val)
+
+locations :: String -> Int -> [Int]
+locations [] n = [n]
+locations ('0':xs) n = map (\x -> x `shiftL` 1 .|. n .&. 1) $ locations xs (n `shiftR` 1)
+locations ('1':xs) n = map (\x -> x `shiftL` 1 .|. 1) $ locations xs (n `shiftR` 1)
+locations ('X':xs) n = n' ++ map (.|. 1) n'
+  where
+    n' = map (`shiftL` 1) $ locations xs (n `shiftR` 1)
 
 apply :: String -> Int -> Int
 apply mask n = (n .&. complement (build '0') .|. build '1') .&. (2^36 - 1)
