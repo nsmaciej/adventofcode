@@ -8,7 +8,7 @@ import qualified Data.Set as Set
 
 type Deck = Seq Int
 type Game = (Deck, Deck)
-type Key = (Integer, Integer)
+type Key = (Maybe Int, Maybe Int, Maybe Int, Maybe Int, Int)
 
 main = runSoln'
   (parseAll pGame)
@@ -39,9 +39,7 @@ playRec seen lall@(l :<| ls) rall@(r :<| rs)
     right = playRec seen' ls (rs |> r |> l)
 
 encode :: Deck -> Deck -> Key
-encode l r = (go l, go r)
-  where
-    go deck = toInteger $ foldl' (\a x -> 52 * a + x) 0 deck
+encode ls rs = (headMay ls, lastMay ls, headMay rs, lastMay rs, Seq.length ls)
 
 score :: Seq Int -> Int
 score deck = sum $ zipWith (*) [1..] (reverse $ toList deck)
