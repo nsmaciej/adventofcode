@@ -102,6 +102,12 @@ executable day19
   main-is:        Day19.hs
   build-depends:  containers ^>= 0.6,
 
+executable day20
+  import:         day
+  main-is:        Day20.hs
+  build-depends:  vector ^>= 0.12,
+                  containers ^>= 0.6,
+
 executable day21
   import:         day
   main-is:        Day21.hs
