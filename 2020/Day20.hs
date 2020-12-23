@@ -17,10 +17,10 @@ data Tile = Tile { tileId :: Int, tileVec :: Vector (Vector Char) } deriving (Sh
 instance Eq Tile where
   x == y = tileId x == tileId y
 
-main = runSoln' (parseAll $ pTile `sepEndBy` newline) (product . map (tileId . fst) . findCorners) (part2)
+main = runSoln' (parseAll $ pTile `sepEndBy` newline) (product . map (tileId . fst) . findCorners) (Print . showGrid . part2)
 
-part2 :: [Tile] -> _
-part2 tiles = V.map (V.map $ tileId . fromJust) $ solve rest (1, 0) withTop
+part2 :: [Tile] -> Grid
+part2 tiles = solve rest (1, 0) withTop
   where
     (corner, [left, top]) = head $ findCorners tiles
     Just corner' = fit (\t -> t !| 0 ==| left && t !- 0 ==| top) corner
@@ -122,8 +122,10 @@ isqrt = floor . sqrt . fromIntegral
 mapTile :: (Vector (Vector Char) -> Vector (Vector Char)) -> Tile -> Tile
 mapTile f Tile{..} = Tile tileId (f tileVec)
 
-len :: Tile -> Int
-len = V.length . tileVec
-
--- printGrid :: Int -> Grid -> IO ()
--- printGrid n grid = 
+showGrid :: Grid -> String
+showGrid grid = intercalate "\n\n" $ map (intercalate "\n" . showRow) $ V.toList grid
+  where
+    showRow :: Vector (Maybe Tile) -> [String]
+    showRow row = map (\y -> intercalate " " . map (\t -> V.toList $ (tileVec $ fromJust t) V.! y) $ V.toList row) [0..len-1]
+      where
+        len = V.length . tileVec . fromJust $ row V.! 0
