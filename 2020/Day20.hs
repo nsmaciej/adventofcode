@@ -7,8 +7,8 @@ import Data.Vector (Vector)
 import Data.Map.Strict (Map)
 import qualified Data.Vector as V
 import qualified Data.Map.Strict as M
-import Data.Maybe
-import Data.Foldable
+import Data.Maybe (fromJust, mapMaybe)
+import Data.Foldable (asum)
 
 type Grid = Vector (Vector (Maybe Tile))
 type Edge = Vector Char
@@ -17,10 +17,37 @@ data Tile = Tile { tileId :: Int, tileVec :: Vector (Vector Char) } deriving (Sh
 instance Eq Tile where
   x == y = tileId x == tileId y
 
-main = runSoln' (parseAll $ pTile `sepEndBy` newline) (product . map (tileId . fst) . findCorners) (Print . showGrid . part2)
+main = runSoln' (parseAll $ pTile `sepEndBy` newline) (product . map (tileId . fst) . findCorners) part2
 
-part2 :: [Tile] -> Grid
-part2 tiles = solve rest (1, 0) withTop
+monster :: [String]
+monster = [
+  "                  # ",
+  "#    ##    ##    ###",
+  " #  #  #  #  #  #   "]
+
+part2 :: [Tile] -> Int
+part2 = fitGrid . truncateGrid . arrange
+
+search :: [String] -> Int
+search xs = sum [fromEnum $ matchMonster (map (drop x) $ drop y xs) | y <- [0..length xs], x <- [0..length (xs !! 0)]]
+
+fitGrid :: Grid -> Int
+fitGrid grid = search . V.toList . V.map V.toList $ tileVec r
+   where
+     tile = buildTile $ showGrid grid
+     Just r = fit ((> 0) . search . V.toList . V.map V.toList . tileVec) tile
+
+matchMonster :: [String] -> Bool
+matchMonster = cmpL (cmpL (\p x -> if p == '#' then p == x else True)) monster
+
+-- Compare two list, failing if the right list is shorter than the left.
+cmpL :: (a -> a -> Bool) -> [a] -> [a] -> Bool
+cmpL _ [] _ = True
+cmpL _ _ [] = False
+cmpL f (x:xs) (p:ps) = f x p && cmpL f xs ps
+
+arrange :: [Tile] -> Grid
+arrange tiles = solve rest (1, 0) withTop
   where
     (corner, [left, top]) = head $ findCorners tiles
     Just corner' = fit (\t -> t !| 0 ==| left && t !- 0 ==| top) corner
@@ -122,10 +149,15 @@ isqrt = floor . sqrt . fromIntegral
 mapTile :: (Vector (Vector Char) -> Vector (Vector Char)) -> Tile -> Tile
 mapTile f Tile{..} = Tile tileId (f tileVec)
 
-showGrid :: Grid -> String
-showGrid grid = intercalate "\n\n" $ map (intercalate "\n" . showRow) $ V.toList grid
+truncateGrid :: Grid -> Grid
+truncateGrid = V.map (V.map go)
+  where
+    go (Just t) = Just $ mapTile (V.map (V.tail . V.init) . V.tail . V.init) t
+
+showGrid :: Grid -> [String]
+showGrid grid = concatMap showRow $ V.toList grid
   where
     showRow :: Vector (Maybe Tile) -> [String]
-    showRow row = map (\y -> intercalate " " . map (\t -> V.toList $ (tileVec $ fromJust t) V.! y) $ V.toList row) [0..len-1]
+    showRow row = map (\y -> concatMap (\t -> V.toList $ (tileVec $ fromJust t) V.! y) $ V.toList row) [0..len-1]
       where
         len = V.length . tileVec . fromJust $ row V.! 0
