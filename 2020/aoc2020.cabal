@@ -50,7 +50,7 @@ executable day07
 executable day08
   import:         day
   main-is:        Day08.hs
-  build-depends:  containers ^>= 0.6,
+  build-depends:  containers
 
 executable day09
   import:         day
@@ -63,7 +63,7 @@ executable day10
 executable day11
   import:         day
   main-is:        Day11.hs
-  build-depends:  containers ^>= 0.6,
+  build-depends:  containers
 
 executable day12
   import:         day
@@ -76,22 +76,22 @@ executable day13
 executable day14
   import:         day
   main-is:        Day14.hs
-  build-depends:  containers ^>= 0.6,
+  build-depends:  containers
 
 executable day15
   import:         day
   main-is:        Day15.hs
-  build-depends:  containers ^>= 0.6,
+  build-depends:  containers
 
 executable day16
   import:         day
   main-is:        Day16.hs
-  build-depends:  containers ^>= 0.6,
+  build-depends:  containers,
 
 executable day17
   import:         day
   main-is:        Day17.hs
-  build-depends:  containers ^>= 0.6,
+  build-depends:  containers,
 
 executable day18
   import:         day
@@ -100,22 +100,22 @@ executable day18
 executable day19
   import:         day
   main-is:        Day19.hs
-  build-depends:  containers ^>= 0.6,
+  build-depends:  containers,
 
 executable day20
   import:         day
   main-is:        Day20.hs
   build-depends:  vector ^>= 0.12,
-                  containers ^>= 0.6,
+                  containers,
 
 executable day21
   import:         day
   main-is:        Day21.hs
-  build-depends:  containers ^>= 0.6,
+  build-depends:  containers,
 
 executable day22
   import:         day
   main-is:        Day22.hs
-  build-depends:  containers ^>= 0.6,
+  build-depends:  containers,
 
 -- Structure inspired by glguy/advent2019
