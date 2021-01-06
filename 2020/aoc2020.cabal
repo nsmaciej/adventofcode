@@ -123,4 +123,9 @@ executable day23
   main-is:        Day23.hs
   build-depends:  vector ^>= 0.12,
 
+executable day24
+  import:         day
+  main-is:        Day24.hs
+  build-depends:  containers,
+
 -- Structure inspired by glguy/advent2019
