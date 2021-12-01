@@ -1,6 +1,5 @@
 from aoc import *
-from intcode import Program, Vm
-from itertools import combinations
+from intcode import Vm
 import re
 
 # Worked out with a map.

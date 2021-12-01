@@ -10,7 +10,6 @@ print(sum(p[0] * p[1] for p in hull if all(p in hull for p in around(p))))
 def find_path():
     pos = next(k for k, v in hull.items() if v in moves)
     delta = moves[hull[pos]]
-    path = []
     assert add(pos, delta) not in hull  # Assume we have to turn.
     while True:
         direction = add(pos, turn(delta, True)) in hull
