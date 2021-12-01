@@ -6,13 +6,13 @@ fn main() {
         .map(|x| x.unwrap().parse().unwrap())
         .collect();
 
-    let part1 = data.iter().tuple_windows().filter(|(x, y)| y > x).count();
-    let part2 = data
-        .windows(3)
-        .tuple_windows()
-        .filter(|(x, y)| y.iter().sum::<i32>() > x.iter().sum())
-        .count();
+    let answer = |window_size| {
+        data.windows(window_size)
+            .tuple_windows()
+            .filter(|(x, y)| y.iter().sum::<i32>() > x.iter().sum())
+            .count()
+    };
 
-    println!("{}", part1);
-    println!("{}", part2);
+    println!("{}", answer(1));
+    println!("{}", answer(3));
 }
