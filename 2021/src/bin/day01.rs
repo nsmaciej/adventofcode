@@ -1,18 +1,16 @@
 use aoc::*;
 
-fn main() {
-    let data: Vec<i32> = input_lines(1)
-        .unwrap()
-        .map(|x| x.unwrap().parse().unwrap())
-        .collect();
+fn main() -> Main {
+    let data: Vec<i32> = lines(1)?.iter().map(|x| x.parse()).try_collect()?;
 
-    let answer = |window_size| {
-        data.windows(window_size)
+    let answer = |window| {
+        data.windows(window)
             .tuple_windows()
             .filter(|(x, y)| y.iter().sum::<i32>() > x.iter().sum())
             .count()
     };
 
-    println!("{}", answer(1));
-    println!("{}", answer(3));
+    puts(answer(1));
+    puts(answer(3));
+    Ok(())
 }
