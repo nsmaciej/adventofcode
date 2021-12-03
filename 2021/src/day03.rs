@@ -1,5 +1,3 @@
-use itertools::Itertools;
-
 #[inline]
 fn getbit(n: u32, bit: u32) -> bool {
     n & (1u32 << bit) > 0
@@ -28,17 +26,15 @@ pub fn solve(input: Vec<String>) -> (u32, u32) {
     let data: Vec<u32> = input
         .into_iter()
         .map(|x| u32::from_str_radix(&x, 2).unwrap())
-        .collect_vec();
+        .collect();
 
     let mut gamma = 0;
     let mut epsilon = 0;
     for i in (0..n).rev() {
-        gamma *= 2;
-        epsilon *= 2;
         if common(&data, i) {
-            gamma += 1;
+            gamma += 1 << i;
         } else {
-            epsilon += 1;
+            epsilon += 1 << i;
         }
     }
 
