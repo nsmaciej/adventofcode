@@ -1,13 +1,13 @@
-use aoc::*;
+use crate::aoc::*;
 
-fn main() -> Main {
+pub fn solve(lines: Vec<String>) -> (i32, i32) {
     let mut pos = 0;
     let mut aim = 0;
     let mut depth = 0;
 
-    for line in lines(2)? {
+    for line in lines {
         let (cmd, n) = line.split_ascii_whitespace().collect_tuple().unwrap();
-        let n: i32 = n.parse()?;
+        let n: i32 = n.parse().unwrap();
         match cmd {
             "forward" => {
                 pos += n;
@@ -19,7 +19,5 @@ fn main() -> Main {
         }
     }
 
-    puts(pos * aim);
-    puts(pos * depth);
-    Ok(())
+    (pos * aim, pos * depth)
 }
