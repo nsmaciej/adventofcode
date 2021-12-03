@@ -4,4 +4,6 @@
 *.o
 *.swp
 .DS_Store
-dist-newstyle
+dist-newstyle/
+target/
+.aocf/
