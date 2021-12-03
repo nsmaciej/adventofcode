@@ -1,52 +1,47 @@
-fn common(data: &[String], pos: usize) -> char {
-    let mut count = 0;
-    for x in data {
-        if x.chars().nth(pos).unwrap() == '1' {
-            count += 1;
-        }
-    }
-    if count == data.len() / 2 && data.len() % 2 == 0 {
-        return '1';
-    }
-    if count > data.len() / 2 {
-        '1'
-    } else {
-        '0'
-    }
+use itertools::Itertools;
+
+#[inline]
+fn getbit(n: u32, bit: u32) -> bool {
+    n & (1u32 << bit) > 0
 }
 
-pub fn solve(data: Vec<String>) -> (i32, i32) {
-    let n = data[0].len();
+fn common(data: &[u32], bit: u32) -> bool {
+    let count = data.iter().filter(|x| getbit(**x, bit)).count();
+    // Note it's important we return true if the there is no majority.
+    count >= data.len() - count
+}
+
+fn iterate(n: u32, data: &[u32], invert: bool) -> u32 {
+    let mut data = data.to_vec();
+    for i in (0..n).rev() {
+        let common = common(&data, i) ^ invert;
+        data.retain(|x| getbit(*x, i) == common);
+        if data.len() == 1 {
+            return data[0];
+        }
+    }
+    panic!();
+}
+
+pub fn solve(input: Vec<String>) -> (u32, u32) {
+    let n = input[0].len() as u32; // We can't find this easily once we convert to u32.
+    let data: Vec<u32> = input
+        .into_iter()
+        .map(|x| u32::from_str_radix(&x, 2).unwrap())
+        .collect_vec();
+
     let mut gamma = 0;
     let mut epsilon = 0;
-    for i in 0..n {
+    for i in (0..n).rev() {
         gamma *= 2;
         epsilon *= 2;
-        if common(&data, i) == '1' {
+        if common(&data, i) {
             gamma += 1;
         } else {
             epsilon += 1;
         }
     }
 
-    let mut oxygen = data.clone();
-    for i in 0..n {
-        let c = common(&oxygen, i);
-        oxygen.retain(|x| x.chars().nth(i).unwrap() == c);
-        if oxygen.len() == 1 {
-            break;
-        }
-    }
-
-    let mut scrubber = data.clone();
-    for i in 0..n {
-        let c = common(&scrubber, i);
-        scrubber.retain(|x| x.chars().nth(i).unwrap() != c);
-        if scrubber.len() <= 1 {
-            break;
-        }
-    }
-    let r =
-        i32::from_str_radix(&scrubber[0], 2).unwrap() * i32::from_str_radix(&oxygen[0], 2).unwrap();
-    (gamma * epsilon, r)
+    let rating = iterate(n, &data, false) * iterate(n, &data, true);
+    (gamma * epsilon, rating)
 }
