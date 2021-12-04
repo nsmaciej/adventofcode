@@ -1,3 +1,5 @@
+cargo-features = ["strip"]
+
 [package]
 name = "aoc"
 version = "0.1.0"
@@ -7,3 +9,8 @@ publish = false
 [dependencies]
 itertools = "0.10.1"
 pico-args = { version = "0.4.2", default-features = false, features = ["combined-flags"] }
+
+[profile.release]
+lto = true
+panic = "abort"
+strip = true
