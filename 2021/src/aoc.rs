@@ -1,11 +1,12 @@
 pub use itertools::Itertools;
 
 use std::fmt::{Debug, Display};
-use std::fs;
 use std::str::FromStr;
 
 pub trait AocInput {
-    fn make(input: String) -> Self;
+    fn make(input: String) -> Self
+    where
+        Self: Sized;
 }
 
 pub trait AocOutput {
@@ -48,11 +49,10 @@ impl<A: Display, B: Display> AocOutput for (A, B) {
     }
 }
 
-pub fn run<T, R>(day: u32, solution: impl Fn(T) -> R)
+pub fn run<T, R>(solution: impl Fn(T) -> R, input: String)
 where
     T: AocInput,
     R: AocOutput,
 {
-    let input = fs::read_to_string(format!("inputs/day{day:02}.txt")).expect("input file");
     solution(T::make(input)).show();
 }

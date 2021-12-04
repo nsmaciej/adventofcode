@@ -11,7 +11,7 @@ struct Bingo {
 
 impl Bingo {
     fn parse(lines: &[String]) -> Bingo {
-        fn parse_row(row: &String) -> Vec<Field> {
+        fn parse_row(row: &str) -> Vec<Field> {
             row.split_whitespace()
                 .map(|x| Field {
                     value: x.parse().unwrap(),
@@ -21,7 +21,7 @@ impl Bingo {
         }
 
         Bingo {
-            board: lines.iter().map(parse_row).collect(),
+            board: lines.iter().map(|x| parse_row(x)).collect(),
         }
     }
 

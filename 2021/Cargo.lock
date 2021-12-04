@@ -7,6 +7,7 @@ name = "aoc"
 version = "0.1.0"
 dependencies = [
  "itertools",
+ "pico-args",
 ]
 
 [[package]]
@@ -23,3 +24,9 @@ checksum = "69ddb889f9d0d08a67338271fa9b62996bc788c7796a5c18cf057420aaed5eaf"
 dependencies = [
  "either",
 ]
+
+[[package]]
+name = "pico-args"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db8bcd96cb740d03149cbad5518db9fd87126a10ab519c011893b1754134c468"
