@@ -13,6 +13,7 @@ use pico_args::Arguments;
 use std::error::Error;
 use std::fs::read_to_string;
 use std::io::{self, prelude::*};
+use std::time::Instant;
 
 fn run_day(day: u32, input: String) {
     use aoc::run;
@@ -38,10 +39,14 @@ fn read_stdin() -> io::Result<String> {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args = Arguments::from_env();
-    if args.contains("--help") || args.contains("-h") {
-        eprint!("aoc [--help] [<day> <input>]");
+    if args.contains(["-h", "--help"]) {
+        eprintln!("aoc [-h -t -p] [<day> <input>]");
         return Ok(());
     }
+    let time = args.contains(["-t", "--time"]);
+    let pretty = args.contains(["-p", "--pretty"]);
+
+    let start = Instant::now();
 
     if let Some(day) = args.opt_free_from_str()? {
         let input = match args.opt_free_from_str::<String>()?.as_deref() {
@@ -52,9 +57,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         run_day(day, input);
     } else {
         for day in 1..=4 {
+            if pretty {
+                eprintln!("   Day {}", day);
+            }
             run_day(day, read_to_string(&day_input_path(day))?);
         }
     }
 
+    if time {
+        eprintln!("\n{:.2?}", start.elapsed());
+    }
     Ok(())
 }
