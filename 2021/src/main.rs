@@ -57,15 +57,20 @@ fn main() -> Result<(), Box<dyn Error>> {
         run_day(day, input);
     } else {
         for day in 1..=4 {
-            if pretty {
-                eprintln!("   Day {}", day);
-            }
+            let day_start = Instant::now();
             run_day(day, read_to_string(&day_input_path(day))?);
+            if pretty {
+                if time {
+                    eprintln!("\x1b[3m↑ Day {} - {:.2?}\x1b[0m", day, day_start.elapsed());
+                } else {
+                    eprintln!("\x1b[3m↑ Day {}\x1b[0m", day);
+                }
+            }
         }
     }
 
     if time {
-        eprintln!("\n{:.2?}", start.elapsed());
+        eprintln!("\n\x1b[3m{:.2?}\x1b[0m", start.elapsed());
     }
     Ok(())
 }
