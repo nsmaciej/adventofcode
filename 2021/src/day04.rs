@@ -1,7 +1,3 @@
-use std::fmt::Debug;
-
-use crate::aoc::*;
-
 #[derive(Debug)]
 struct Field {
     marked: bool,
@@ -9,27 +5,26 @@ struct Field {
 }
 
 #[derive(Debug)]
-struct Board {
+struct Bingo {
     board: Vec<Vec<Field>>,
-    won: bool,
 }
 
-fn parse_board(lines: &[String]) -> Board {
-    let board = lines
-        .iter()
-        .map(|x| {
-            x.split_ascii_whitespace()
+impl Bingo {
+    fn parse(lines: &[String]) -> Bingo {
+        fn parse_row(row: &String) -> Vec<Field> {
+            row.split_whitespace()
                 .map(|x| Field {
                     value: x.parse().unwrap(),
                     marked: false,
                 })
-                .collect_vec()
-        })
-        .collect();
-    Board { board, won: false }
-}
+                .collect()
+        }
 
-impl Board {
+        Bingo {
+            board: lines.iter().map(parse_row).collect(),
+        }
+    }
+
     fn mark(&mut self, num: i32) {
         for y in 0..5 {
             for x in 0..5 {
@@ -41,50 +36,38 @@ impl Board {
     }
 
     fn won(&self) -> bool {
-        for y in 0..5 {
-            if self.board[y].iter().all(|x| x.marked) {
-                return true;
-            }
-        }
-
-        for x in 0..5 {
-            if (0..5).all(|y| self.board[y][x].marked) {
-                return true;
-            }
-        }
-
-        return false;
+        (0..5).any(|i| {
+            let rows = (0..5).all(|j| self.board[i][j].marked);
+            let cols = (0..5).all(|j| self.board[j][i].marked);
+            rows || cols
+        })
     }
 
     fn unmarked_sum(&self) -> i32 {
         self.board
             .iter()
-            .map(|row| {
-                row.iter()
-                    .filter(|x| !x.marked)
-                    .map(|x| x.value)
-                    .sum::<i32>()
-            })
+            .flatten()
+            .filter(|x| !x.marked)
+            .map(|x| x.value)
             .sum()
     }
 }
 
 pub fn solve(input: Vec<String>) -> (i32, i32) {
     let numbers: Vec<i32> = input[0].split(',').map(|x| x.parse().unwrap()).collect();
-    let mut boards = input[2..].chunks(6).map(parse_board).collect_vec();
+    let mut boards: Vec<Bingo> = input[2..].chunks(6).map(Bingo::parse).collect();
 
     let mut scores = Vec::new();
     for num in numbers {
-        for board in &mut boards {
-            if board.won {
-                continue;
-            }
+        boards.retain_mut(|board| {
             board.mark(num);
-            if board.won() {
-                board.won = true;
+            let won = board.won();
+            if won {
                 scores.push(board.unmarked_sum() * num);
             }
-        }
+            !won
+        })
     }
-    (scores[0], *scores.last().unwrap())
+
+    (*scores.first().unwrap(), *scores.last().unwrap())
 }

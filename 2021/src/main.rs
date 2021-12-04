@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+#![feature(vec_retain_mut)]
+
 mod aoc;
 mod day01;
 mod day02;
