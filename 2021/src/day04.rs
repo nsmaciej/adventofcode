@@ -9,6 +9,7 @@ struct Field {
 #[derive(Debug)]
 struct Bingo {
     board: Vec<Vec<Field>>,
+    won: bool,
 }
 
 impl Bingo {
@@ -24,25 +25,23 @@ impl Bingo {
 
         Bingo {
             board: lines.iter().map(|x| parse_row(x)).collect(),
+            won: false,
         }
     }
 
-    fn mark(&mut self, num: i32) {
+    fn mark(&mut self, num: i32) -> bool {
         for y in 0..5 {
             for x in 0..5 {
                 if self.board[y][x].value == num {
                     self.board[y][x].marked = true;
+                    // Clever idea from Jesse - only check the row/col we just marked.
+                    let row = self.board[y].iter().all(|x| x.marked);
+                    let col = (0..5).all(|i| self.board[i][x].marked);
+                    return row || col;
                 }
             }
         }
-    }
-
-    fn won(&self) -> bool {
-        (0..5).any(|i| {
-            let rows = (0..5).all(|j| self.board[i][j].marked);
-            let cols = (0..5).all(|j| self.board[j][i].marked);
-            rows || cols
-        })
+        return false;
     }
 
     fn unmarked_sum(&self) -> i32 {
@@ -59,16 +58,17 @@ pub fn solve(input: Vec<String>) -> (i32, i32) {
     let numbers: Vec<i32> = input[0].split(',').map(|x| x.parse().unwrap()).collect();
     let mut boards: Vec<Bingo> = input[2..].chunks(6).map(Bingo::parse).collect();
 
-    let mut scores = Vec::new();
+    let mut scores = Vec::with_capacity(numbers.len());
     for num in numbers {
-        boards.retain_mut(|board| {
-            board.mark(num);
-            let won = board.won();
-            if won {
-                scores.push(board.unmarked_sum() * num);
+        for board in &mut boards {
+            if board.won {
+                continue;
             }
-            !won
-        })
+            if board.mark(num) {
+                scores.push(board.unmarked_sum() * num);
+                board.won = true;
+            }
+        }
     }
 
     (*scores.first().unwrap(), *scores.last().unwrap())
