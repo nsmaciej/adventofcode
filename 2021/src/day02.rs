@@ -1,3 +1,5 @@
+//! Dive!
+
 use crate::aoc::*;
 
 pub fn solve(lines: Vec<String>) -> (i32, i32) {

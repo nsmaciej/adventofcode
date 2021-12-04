@@ -1,3 +1,5 @@
+//! Giant Squid
+
 #[derive(Debug)]
 struct Field {
     marked: bool,

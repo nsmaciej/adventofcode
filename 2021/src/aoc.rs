@@ -1,3 +1,5 @@
+//! Advent of Code utilities.
+
 pub use itertools::Itertools;
 
 use std::fmt::{Debug, Display};

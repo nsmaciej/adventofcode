@@ -1,3 +1,5 @@
+//! Sonar Sweep
+
 use crate::aoc::*;
 
 fn answer(data: &[i32], window: usize) -> usize {

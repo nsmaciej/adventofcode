@@ -1,3 +1,5 @@
+//! Binary Diagnostic
+
 #[inline]
 fn getbit(n: u32, bit: u32) -> bool {
     n & (1u32 << bit) > 0
