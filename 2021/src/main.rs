@@ -60,8 +60,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         run_day(day, input);
     } else {
         for day in 1..=DAYS {
-            let input = read_to_string(day_input_path(day))?;
             let day_start = Instant::now();
+            let input = read_to_string(day_input_path(day))?;
             run_day(day, input);
             if pretty {
                 if time {
