@@ -19,41 +19,38 @@ fn parse_point(point: &str) -> Point {
 }
 
 fn parse_line(line: String) -> Line {
-    let (lhs, rhs) = line.split(" -> ").collect_tuple().unwrap();
-    Line {
-        start: parse_point(lhs),
-        end: parse_point(rhs),
-    }
+    let (start, end) = line.split(" -> ").map(parse_point).collect_tuple().unwrap();
+    Line { start, end }
 }
 
 fn sign(n: i32) -> i32 {
     (n > 0) as i32 - (n < 0) as i32
 }
 
-pub fn solve(input: Vec<String>) -> (usize, usize) {
-    let lines = input.into_iter().map(|x| parse_line(x)).collect_vec();
-    let mut overlap1: HashMap<Point, i32> = HashMap::new();
-    let mut overlap2: HashMap<Point, i32> = HashMap::new();
-
+fn add_lines(overlap: &mut HashMap<Point, i32>, lines: Vec<Line>) -> usize {
     for line in lines {
-        let straight = line.start.0 == line.end.0 || line.start.1 == line.end.1;
+        *overlap.entry(line.start).or_default() += 1;
         let dx = sign(line.end.0 - line.start.0);
         let dy = sign(line.end.1 - line.start.1);
-        let mut start = line.start;
-        *overlap2.entry(start).or_insert(0) += 1;
-        if straight {
-            *overlap1.entry(start).or_insert(0) += 1;
-        }
-        while start != line.end {
-            start.0 += dx;
-            start.1 += dy;
-            *overlap2.entry(start).or_insert(0) += 1;
-            if straight {
-                *overlap1.entry(start).or_insert(0) += 1;
-            }
+        let mut point = line.start;
+        while point != line.end {
+            point.0 += dx;
+            point.1 += dy;
+            *overlap.entry(point).or_default() += 1;
         }
     }
-    let part1 = overlap1.values().filter(|x| **x >= 2).count();
-    let part2 = overlap2.values().filter(|x| **x >= 2).count();
-    (part1, part2)
+    overlap.values().filter(|x| **x >= 2).count()
+}
+
+pub fn solve(input: Vec<String>) -> (usize, usize) {
+    let (straight, diagonal): (Vec<Line>, Vec<Line>) = input
+        .into_iter()
+        .map(|x| parse_line(x))
+        .partition(|x| x.start.0 == x.end.0 || x.start.1 == x.end.1);
+
+    let mut overlap: HashMap<Point, i32> = HashMap::new();
+    (
+        add_lines(&mut overlap, straight),
+        add_lines(&mut overlap, diagonal),
+    )
 }

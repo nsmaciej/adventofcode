@@ -1,7 +1,6 @@
 //! Advent of Code 2021 solutions by Maciej Goszczycki.
 
 #![allow(dead_code)]
-#![feature(vec_retain_mut)]
 
 mod aoc;
 mod day01;
