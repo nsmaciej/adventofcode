@@ -1,54 +1,37 @@
-use std::collections::HashMap;
+use itertools::Itertools;
 
-use crate::aoc::*;
+type Line = (i32, i32, i32, i32);
 
-type Point = (i32, i32);
-
-#[derive(Debug)]
-struct Line {
-    start: Point,
-    end: Point,
-}
-
-fn parse_point(point: &str) -> Point {
-    point
-        .split(",")
+fn parse_line(line: String) -> Line {
+    line.split(" -> ")
+        .map(|x| x.split(','))
+        .flatten()
         .map(|x| x.parse().unwrap())
         .collect_tuple()
         .unwrap()
 }
 
-fn parse_line(line: String) -> Line {
-    let (start, end) = line.split(" -> ").map(parse_point).collect_tuple().unwrap();
-    Line { start, end }
-}
-
-fn sign(n: i32) -> i32 {
-    (n > 0) as i32 - (n < 0) as i32
-}
-
-fn add_lines(overlap: &mut HashMap<Point, i32>, lines: Vec<Line>) -> usize {
-    for line in lines {
-        *overlap.entry(line.start).or_default() += 1;
-        let dx = sign(line.end.0 - line.start.0);
-        let dy = sign(line.end.1 - line.start.1);
-        let mut point = line.start;
-        while point != line.end {
-            point.0 += dx;
-            point.1 += dy;
-            *overlap.entry(point).or_default() += 1;
+fn add_lines(overlap: &mut Vec<Vec<i32>>, lines: Vec<Line>) -> usize {
+    for (mut x1, mut y1, x2, y2) in lines {
+        let dx = (x2 - x1).signum();
+        let dy = (y2 - y1).signum();
+        overlap[x1 as usize][y1 as usize] += 1;
+        while x1 != x2 || y1 != y2 {
+            x1 += dx;
+            y1 += dy;
+            overlap[x1 as usize][y1 as usize] += 1;
         }
     }
-    overlap.values().filter(|x| **x >= 2).count()
+    // Number of overlapping lines.
+    overlap.iter().flatten().filter(|x| **x >= 2).count()
 }
 
 pub fn solve(input: Vec<String>) -> (usize, usize) {
-    let (straight, diagonal): (Vec<Line>, Vec<Line>) = input
+    let (straight, diagonal) = input
         .into_iter()
-        .map(|x| parse_line(x))
-        .partition(|x| x.start.0 == x.end.0 || x.start.1 == x.end.1);
-
-    let mut overlap: HashMap<Point, i32> = HashMap::new();
+        .map(parse_line)
+        .partition(|(x1, y1, x2, y2)| x1 == x2 || y1 == y2);
+    let mut overlap = vec![vec![0; 1000]; 1000]; // Don't worry about it.
     (
         add_lines(&mut overlap, straight),
         add_lines(&mut overlap, diagonal),

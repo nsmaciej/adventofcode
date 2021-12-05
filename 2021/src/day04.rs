@@ -41,7 +41,7 @@ impl Bingo {
                 }
             }
         }
-        return false;
+        false
     }
 
     fn unmarked_sum(&self) -> i32 {
