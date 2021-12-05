@@ -57,8 +57,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         run_day(day, input);
     } else {
         for day in 1..=4 {
+            let input = read_to_string(day_input_path(day))?;
             let day_start = Instant::now();
-            run_day(day, read_to_string(&day_input_path(day))?);
+            run_day(day, input);
             if pretty {
                 if time {
                     eprintln!("\x1b[3m↑ Day {} - {:.2?}\x1b[0m", day, day_start.elapsed());
