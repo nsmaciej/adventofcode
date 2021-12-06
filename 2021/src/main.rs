@@ -8,6 +8,7 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
 
 use pico_args::Arguments;
 use std::error::Error;
@@ -15,17 +16,19 @@ use std::fs::read_to_string;
 use std::io::{self, prelude::*};
 use std::time::Instant;
 
-const DAYS: u32 = 5;
+const DAYS: u32 = 6;
 
 fn run_day(day: u32, input: String) {
     use aoc::run;
 
     match day {
+        // Do not forget to update the DAYS constant too.
         1 => run(day01::solve, input),
         2 => run(day02::solve, input),
         3 => run(day03::solve, input),
         4 => run(day04::solve, input),
         5 => run(day05::solve, input),
+        6 => run(day06::solve, input),
         _ => panic!("day not implemented"),
     }
 }
