@@ -1,5 +1,7 @@
 //! Giant Squid
 
+use crate::aoc::*;
+
 #[derive(Debug)]
 struct Field {
     marked: bool,
@@ -55,7 +57,7 @@ impl Bingo {
 }
 
 pub fn solve(input: Vec<String>) -> (i32, i32) {
-    let numbers: Vec<i32> = input[0].split(',').map(|x| x.parse().unwrap()).collect();
+    let numbers: Vec<i32> = numbers(&input[0], ',').collect();
     let mut boards: Vec<Bingo> = input[2..].chunks(6).map(Bingo::parse).collect();
 
     let mut scores = Vec::with_capacity(numbers.len());

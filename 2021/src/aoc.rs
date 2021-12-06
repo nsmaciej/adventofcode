@@ -58,3 +58,11 @@ where
 {
     solution(T::make(input)).show();
 }
+
+pub fn numbers<T>(line: &str, sep: char) -> impl Iterator<Item = T> + '_
+where
+    T: FromStr,
+    <T as FromStr>::Err: Debug,
+{
+    line.split(sep).map(|x| x.parse::<T>().unwrap())
+}
