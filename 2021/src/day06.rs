@@ -1,8 +1,7 @@
 fn simulate(fish: &mut [usize; 9], n: usize) -> usize {
     for _ in 0..n {
-        let born = fish[0];
         fish.rotate_left(1);
-        fish[6] += born;
+        fish[6] += fish[8];
     }
     fish.iter().sum()
 }
