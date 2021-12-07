@@ -2,27 +2,27 @@
 
 use crate::aoc::*;
 
-fn find_min(iter: impl Iterator<Item = i32>) -> i32 {
-    for (x, y) in iter.tuple_windows() {
-        if y > x {
-            return x;
-        }
-    }
-    panic!();
-}
-
 pub fn solve(input: Vec<String>) -> (i32, i32) {
-    let crabs = numbers(&input[0], ',').collect::<Vec<_>>();
-    let max: i32 = *crabs.iter().max().unwrap();
+    let mut crabs: Vec<_> = numbers(&input[0], ',').collect();
 
-    let part1 = (0..=max).map(|i| crabs.iter().map(|x| (x - i).abs()).sum::<i32>());
-    let part2 = (0..=max).map(|i| {
+    let midpoint = crabs.len() / 2;
+    let median = *crabs.select_nth_unstable(midpoint).1;
+
+    // As Reddit points out, you need to check both ceil and floor.
+    let sum: i32 = crabs.iter().sum();
+    let mean_floor = sum / crabs.len() as i32;
+    let mean_ceil = (sum + 1) / crabs.len() as i32;
+
+    let with_mean = |mean: i32| -> i32 {
         crabs
             .iter()
-            .map(|x| (x - i).abs())
+            .map(|x| (x - mean).abs())
             .map(|x| x * (x + 1) / 2)
-            .sum::<i32>()
-    });
+            .sum()
+    };
 
-    (find_min(part1), find_min(part2))
+    (
+        crabs.iter().map(|x| (x - median).abs()).sum(),
+        with_mean(mean_floor).min(with_mean(mean_ceil)),
+    )
 }
