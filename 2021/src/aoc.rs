@@ -11,10 +11,6 @@ pub trait AocInput {
         Self: Sized;
 }
 
-pub trait AocOutput {
-    fn show(self);
-}
-
 impl AocInput for String {
     fn make(input: String) -> String {
         input
@@ -34,29 +30,14 @@ where
     }
 }
 
-impl AocOutput for () {
-    fn show(self) {}
-}
-
-impl<A: Display> AocOutput for (A,) {
-    fn show(self) {
-        println!("{}", self.0);
-    }
-}
-
-impl<A: Display, B: Display> AocOutput for (A, B) {
-    fn show(self) {
-        println!("{}", self.0);
-        println!("{}", self.1);
-    }
-}
-
-pub fn run<T, R>(solution: impl Fn(T) -> R, input: String)
+pub fn run<T, A, B>(solution: impl Fn(T) -> (A, B), input: String) -> (String, String)
 where
     T: AocInput,
-    R: AocOutput,
+    A: Display,
+    B: Display,
 {
-    solution(T::make(input)).show();
+    let (a, b) = solution(T::make(input));
+    (a.to_string(), b.to_string())
 }
 
 pub fn numbers<T>(line: &str, sep: char) -> impl Iterator<Item = T> + '_

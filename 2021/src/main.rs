@@ -11,7 +11,9 @@ mod day05;
 mod day06;
 mod day07;
 
+use owo_colors::OwoColorize;
 use pico_args::Arguments;
+
 use std::error::Error;
 use std::fs::read_to_string;
 use std::io::{self, prelude::*};
@@ -19,9 +21,8 @@ use std::time::Instant;
 
 const DAYS: u32 = 7;
 
-fn run_day(day: u32, input: String) {
+fn run_day(day: u32, input: String) -> (String, String) {
     use aoc::run;
-
     match day {
         // Do not forget to update the DAYS constant too.
         1 => run(day01::solve, input),
@@ -62,24 +63,30 @@ fn main() -> Result<(), Box<dyn Error>> {
             Some(path) => read_to_string(path)?,
             None => read_to_string(&day_input_path(day))?,
         };
-        run_day(day, input);
+        let (a, b) = run_day(day, input);
+        println!("{}\n{}", a, b);
     } else {
         for day in 1..=DAYS {
             let input = read_to_string(day_input_path(day))?;
             let day_start = Instant::now();
-            run_day(day, input);
+            let (a, b) = run_day(day, input);
             if pretty {
+                let desc = format!("Day {}", day);
                 if time {
-                    eprintln!("\x1b[3m↑ Day {} - {:.2?}\x1b[0m", day, day_start.elapsed());
+                    eprintln!("{} took {:.2?}", desc.bold(), day_start.elapsed());
                 } else {
-                    eprintln!("\x1b[3m↑ Day {}\x1b[0m", day);
+                    eprintln!("{:12}", desc.bold());
                 }
+                let sep = '│'.dimmed();
+                println!("   {} {}\n   {} {}\n", sep, a.dimmed(), sep, b.dimmed())
+            } else {
+                println!("{}\n{}", a, b);
             }
         }
     }
 
     if time {
-        eprintln!("\n\x1b[3m{:.2?}\x1b[0m", start.elapsed());
+        eprintln!("{} in {:.2?}", "Finished".bold(), start.elapsed());
     }
     Ok(())
 }
