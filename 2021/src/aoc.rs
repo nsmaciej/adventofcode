@@ -64,18 +64,19 @@ where
 {
     line.split(sep).map(|x| x.parse::<T>().unwrap())
 }
-pub fn around(
-    width: usize,
-    height: usize,
-    y: usize,
-    x: usize,
-) -> impl Iterator<Item = (usize, usize)> {
-    [
-        (x > 0).then(|| (y, x - 1)),
-        (x < width - 1).then(|| (y, x + 1)),
-        (y > 0).then(|| (y - 1, x)),
-        (y < height - 1).then(|| (y + 1, x)),
-    ]
-    .into_iter()
-    .flatten()
+pub trait Grid<T> {
+    fn getyx(&self, y: usize, x: usize) -> Option<&T>;
+    fn getyx_mut(&mut self, y: usize, x: usize) -> Option<&mut T>;
+}
+
+impl<T> Grid<T> for Vec<Vec<T>> {
+    #[inline(always)]
+    fn getyx(&self, y: usize, x: usize) -> Option<&T> {
+        self.get(y).and_then(|row| row.get(x))
+    }
+
+    #[inline(always)]
+    fn getyx_mut(&mut self, y: usize, x: usize) -> Option<&mut T> {
+        self.get_mut(y).and_then(|row| row.get_mut(x))
+    }
 }
