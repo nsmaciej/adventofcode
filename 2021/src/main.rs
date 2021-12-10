@@ -11,6 +11,7 @@ mod day05;
 mod day06;
 mod day07;
 mod day08;
+mod day09;
 
 use owo_colors::OwoColorize;
 use pico_args::Arguments;
@@ -20,7 +21,7 @@ use std::fs::read_to_string;
 use std::io::{self, prelude::*};
 use std::time::Instant;
 
-const DAYS: u32 = 8;
+const DAYS: u32 = 9;
 
 fn run_day(day: u32, input: String) -> (String, String) {
     use aoc::run;
@@ -34,6 +35,7 @@ fn run_day(day: u32, input: String) -> (String, String) {
         6 => run(day06::solve, input),
         7 => run(day07::solve, input),
         8 => run(day08::solve, input),
+        9 => run(day09::solve, input),
         _ => panic!("day not implemented"),
     }
 }

@@ -32,7 +32,7 @@ impl<'a> Search<'a> {
         }
     }
 
-    fn assume<'k, 'b: 'a>(&'k mut self, n: u8, pat: &'b str) -> bool {
+    fn assume<'b: 'a>(&mut self, n: u8, pat: &'b str) -> bool {
         for k in 0..8 {
             if (segments(n) >> (7 - k)) & 1 > 0 {
                 self.segment_candidates[k].retain(|x| pat.as_bytes().contains(&(x + 'a' as u8)));

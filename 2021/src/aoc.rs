@@ -17,8 +17,19 @@ impl AocInput for String {
     }
 }
 
+pub trait AocNumber {}
+
+macro_rules! impl_aoc_number {
+    ($($ty:ty),*) => {
+        $(impl AocNumber for $ty {})*
+    };
+}
+
+impl_aoc_number!(u8, u16, u32, u64, i8, i16, i32, i64, usize, isize);
+
 impl<T> AocInput for Vec<T>
 where
+    T: AocNumber,
     T: FromStr,
     T::Err: Debug,
 {
@@ -27,6 +38,12 @@ where
             .lines()
             .map(|x| x.parse().expect("parse failed"))
             .collect()
+    }
+}
+
+impl AocInput for Vec<String> {
+    fn make(input: String) -> Vec<String> {
+        input.lines().map(|x| x.to_string()).collect()
     }
 }
 
@@ -46,4 +63,19 @@ where
     <T as FromStr>::Err: Debug,
 {
     line.split(sep).map(|x| x.parse::<T>().unwrap())
+}
+pub fn around(
+    width: usize,
+    height: usize,
+    y: usize,
+    x: usize,
+) -> impl Iterator<Item = (usize, usize)> {
+    [
+        (x > 0).then(|| (y, x - 1)),
+        (x < width - 1).then(|| (y, x + 1)),
+        (y > 0).then(|| (y - 1, x)),
+        (y < height - 1).then(|| (y + 1, x)),
+    ]
+    .into_iter()
+    .flatten()
 }
