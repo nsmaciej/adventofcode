@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use crate::aoc::Itertools;
+use crate::utils::Itertools;
 
 fn segments(n: u8) -> u8 {
     [

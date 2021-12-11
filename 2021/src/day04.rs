@@ -1,6 +1,6 @@
 //! Giant Squid
 
-use crate::aoc::numbers;
+use crate::utils::numbers;
 
 #[derive(Debug)]
 struct Field {

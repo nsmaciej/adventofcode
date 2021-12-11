@@ -1,6 +1,6 @@
 //! Sonar Sweep
 
-use crate::aoc::Itertools;
+use crate::utils::Itertools;
 
 fn answer(data: &[i32], window: usize) -> usize {
     data.windows(window)

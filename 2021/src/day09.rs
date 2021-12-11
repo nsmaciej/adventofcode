@@ -6,7 +6,7 @@
 // unsafe code it bundles the `visited` and `grid` vectors together, and uses
 // `Vec::get()` whenever possible.
 
-use crate::aoc::Grid;
+use crate::utils::Grid;
 
 fn flood(grid: &mut Vec<Vec<(u8, bool)>>, y: usize, x: usize) -> i32 {
     if let Some((height, visited)) = grid.getyx_mut(y, x) {
