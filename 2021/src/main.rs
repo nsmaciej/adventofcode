@@ -1,5 +1,4 @@
-//! Advent of Code 2021 solutions by Maciej Goszczycki.
-
+#![doc = include_str!("../README.md")]
 #![allow(dead_code)]
 
 mod aoc;
