@@ -1,6 +1,6 @@
 //! Lanternfish
 
-use crate::aoc::*;
+use crate::aoc::numbers;
 
 fn simulate(fish: &mut [usize; 9], n: usize) -> usize {
     for _ in 0..n {

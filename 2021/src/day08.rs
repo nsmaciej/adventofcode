@@ -1,6 +1,8 @@
+//! Seven Segment Search
+
 use std::collections::HashMap;
 
-use crate::aoc::*;
+use crate::aoc::Itertools;
 
 fn segments(n: u8) -> u8 {
     [

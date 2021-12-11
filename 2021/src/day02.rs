@@ -1,6 +1,6 @@
 //! Dive!
 
-use crate::aoc::*;
+use crate::aoc::Itertools;
 
 pub fn solve(lines: Vec<String>) -> (i32, i32) {
     let mut pos = 0;

@@ -1,6 +1,6 @@
 //! The Treachery of Whales
 
-use crate::aoc::*;
+use crate::aoc::numbers;
 
 pub fn solve(input: Vec<String>) -> (i32, i32) {
     let mut crabs: Vec<i32> = numbers(&input[0], ',').collect();
