@@ -1,10 +1,8 @@
-use std::collections::HashSet;
-
 use crate::utils::Grid;
 
 fn step(grid: &mut Vec<Vec<u8>>) -> i64 {
     let mut stack = Vec::new();
-    let mut flashed = HashSet::new();
+    let mut flashed = vec![vec![false; grid.width()]; grid.height()];
 
     for y in 0..grid.width() {
         for x in 0..grid.height() {
@@ -16,15 +14,15 @@ fn step(grid: &mut Vec<Vec<u8>>) -> i64 {
     }
 
     while let Some((y, x)) = stack.pop() {
-        if flashed.contains(&(y, x)) {
+        if flashed[y][x] {
             continue;
         }
-        flashed.insert((y, x));
+        flashed[y][x] = true;
         macro_rules! flash {
             ($y:expr, $x:expr) => {
                 if let Some(cell) = grid.getyx_mut($y, $x) {
                     *cell += 1;
-                    if *cell > 9 {
+                    if *cell > 9 && !flashed[$y][$x] {
                         stack.push(($y, $x));
                     }
                 }
@@ -42,11 +40,16 @@ fn step(grid: &mut Vec<Vec<u8>>) -> i64 {
         flash!(y.overflowing_sub(1).0, x.overflowing_sub(1).0);
     }
 
-    for (y, x) in &flashed {
-        grid[*y][*x] = 0;
+    let mut r = 0;
+    for y in 0..grid.width() {
+        for x in 0..grid.height() {
+            if flashed[y][x] {
+                r += 1;
+                grid[y][x] = 0;
+            }
+        }
     }
-
-    flashed.len() as i64
+    r
 }
 
 pub fn solve(input: String) -> (i64, i64) {
