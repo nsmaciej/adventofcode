@@ -1,3 +1,5 @@
+#![feature(let_else)]
+
 use wasm_bindgen::prelude::*;
 
 pub const DAYS: u32 = 11;

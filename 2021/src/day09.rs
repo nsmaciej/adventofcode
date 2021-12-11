@@ -9,18 +9,17 @@
 use crate::utils::Grid;
 
 fn flood(grid: &mut Vec<Vec<(u8, bool)>>, y: usize, x: usize) -> i32 {
-    if let Some((height, visited)) = grid.getyx_mut(y, x) {
-        if *visited || *height == b'9' {
-            0
-        } else {
-            *visited = true;
-            1 + flood(grid, y, x.overflowing_sub(1).0)
-                + flood(grid, y, x + 1)
-                + flood(grid, y.overflowing_sub(1).0, x)
-                + flood(grid, y + 1, x)
-        }
-    } else {
+    let Some((height, visited)) = grid.getyx_mut(y, x) else {
+        return 0
+    };
+    if *visited || *height == b'9' {
         0
+    } else {
+        *visited = true;
+        1 + flood(grid, y, x.overflowing_sub(1).0)
+            + flood(grid, y, x + 1)
+            + flood(grid, y.overflowing_sub(1).0, x)
+            + flood(grid, y + 1, x)
     }
 }
 
