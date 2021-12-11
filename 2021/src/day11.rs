@@ -15,7 +15,7 @@ fn around(y: usize, x: usize) -> [(i64, i64); 8] {
     ]
 }
 
-fn flood(grid: &mut Vec<Vec<i8>>, ys: usize, xs: usize) {
+fn flood(grid: &mut [[i8; 10]; 10], ys: usize, xs: usize) {
     for (y, x) in around(ys, xs) {
         let Some(cell) = grid.getyx_mut(y as usize, x as usize) else {
             continue; // Out of bounds.
@@ -31,7 +31,7 @@ fn flood(grid: &mut Vec<Vec<i8>>, ys: usize, xs: usize) {
     }
 }
 
-fn step(grid: &mut Vec<Vec<i8>>) -> usize {
+fn step(grid: &mut [[i8; 10]; 10]) -> usize {
     grid.iter_mut().flatten().for_each(|x| *x += 1);
 
     for y in 0..grid.width() {
@@ -51,10 +51,12 @@ fn step(grid: &mut Vec<Vec<i8>>) -> usize {
 }
 
 pub fn solve(input: String) -> (usize, usize) {
-    let mut grid: Vec<Vec<i8>> = input
-        .lines()
-        .map(|line| line.bytes().map(|x| x as i8 - b'0' as i8).collect())
-        .collect();
+    let mut grid = [[0; 10]; 10];
+    for (y, row) in input.lines().enumerate() {
+        for (x, lvl) in row.bytes().enumerate() {
+            grid[y][x] = lvl as i8 - b'0' as i8;
+        }
+    }
 
     let part1 = (0..100).map(|_| step(&mut grid)).sum();
 
