@@ -1,3 +1,5 @@
+//! Dumbo Octopus
+
 use crate::utils::Grid;
 
 fn around(y: usize, x: usize) -> [(i64, i64); 8] {
@@ -16,6 +18,8 @@ fn around(y: usize, x: usize) -> [(i64, i64); 8] {
 }
 
 fn flood(grid: &mut [[i8; 10]; 10], ys: usize, xs: usize) {
+    // The compiler can't actually see through `around` here, but in practice it
+    // doesn't matter much.
     for (y, x) in around(ys, xs) {
         let Some(cell) = grid.getyx_mut(y as usize, x as usize) else {
             continue; // Out of bounds.
@@ -25,7 +29,7 @@ fn flood(grid: &mut [[i8; 10]; 10], ys: usize, xs: usize) {
         }
         *cell += 1;
         if *cell > 9 {
-            *cell = -1;
+            *cell = -1; // Flash!
             flood(grid, y as usize, x as usize);
         }
     }

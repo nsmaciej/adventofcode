@@ -1,4 +1,5 @@
 #![feature(let_else)]
+#![feature(array_windows)]
 
 use wasm_bindgen::prelude::*;
 
