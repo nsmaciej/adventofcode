@@ -46,6 +46,13 @@ where
     }
 }
 
+/// Treat the input string as a bytestring.
+impl AocInput for Vec<Vec<u8>> {
+    fn make(input: String) -> Vec<Vec<u8>> {
+        input.lines().map(|x| x.bytes().collect()).collect()
+    }
+}
+
 impl AocInput for Vec<String> {
     fn make(input: String) -> Vec<String> {
         input.lines().map(|x| x.to_string()).collect()
@@ -106,7 +113,7 @@ pub trait Grid<T> {
     /// Should the grid be sparse (`getyx()` returns `None` within the
     /// width/height bounds), "X" is printed for the missing elements instead.
     /// If every element within the grid is one character long, separating
-    /// spaces are ommited.
+    /// spaces are omitted.
     fn show_map<V: Display>(&self, f: impl Fn(&T) -> V) {
         let mut widths: Vec<u8> = Vec::with_capacity(self.width());
         for x in 0..self.width() {
@@ -124,9 +131,9 @@ pub trait Grid<T> {
             for x in 0..self.width() {
                 let width = widths[x] as usize + !all1s as usize;
                 if let Some(value) = self.getyx(y, x) {
-                    print!("{:<w$}", format!("{:}", f(value)), w = width);
+                    print!("{:>w$}", format!("{:}", f(value)), w = width);
                 } else {
-                    print!("{:^w$}", "X", w = width);
+                    print!("{:>w$}", "X", w = width);
                 }
             }
             println!();

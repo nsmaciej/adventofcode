@@ -24,9 +24,9 @@ fn flood(grid: &mut Vec<Vec<(u8, bool)>>, y: usize, x: usize) -> i32 {
     }
 }
 
-pub fn solve(input: Vec<String>) -> (i32, i32) {
+pub fn solve(input: String) -> (i32, i32) {
     let mut grid: Vec<Vec<(u8, bool)>> = input
-        .iter()
+        .lines()
         .map(|line| line.bytes().map(|x| (x, false)).collect())
         .collect();
 
