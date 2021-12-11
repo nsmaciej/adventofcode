@@ -12,6 +12,7 @@ mod day07;
 mod day08;
 mod day09;
 mod day10;
+mod day11;
 
 mod utils;
 
@@ -35,6 +36,7 @@ pub fn run_day(day: u32, input: String) -> (String, String) {
         8 => run(day08::solve, input),
         9 => run(day09::solve, input),
         10 => run(day10::solve, input),
+        11 => run(day11::solve, input),
         _ => panic!("day not implemented"),
     }
 }
