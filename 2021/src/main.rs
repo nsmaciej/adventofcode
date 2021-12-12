@@ -7,7 +7,7 @@ use pico_args::Arguments;
 use std::error::Error;
 use std::fs::read_to_string;
 use std::io::{self, prelude::*};
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use aoclib::{run_day, DAYS};
 
@@ -21,16 +21,52 @@ fn read_stdin() -> io::Result<String> {
     Ok(buf)
 }
 
+fn run_all(time: bool) -> Result<(), Box<dyn Error>> {
+    if time {
+        eprintln!();
+        eprintln!(
+            "{:7} {:>8}  {:>10} {:>14}",
+            "Task".bold(),
+            "Time",
+            "Part 1".dimmed(),
+            "Part 2".dimmed(),
+        );
+        eprintln!("{}", "―".repeat(43));
+    }
+    let mut total = Duration::ZERO;
+    for day in 1..=DAYS {
+        let input = read_to_string(day_input_path(day))?;
+        let day_start = Instant::now();
+        let solution = run_day(day, input);
+        if time {
+            let desc = format!("Day {:}", day);
+            let elapsed = day_start.elapsed();
+            total += elapsed;
+            eprintln!(
+                "{:7} {:5} µs  {:>10} {:>14}",
+                desc.bold(),
+                elapsed.as_micros(),
+                solution.part1().dimmed(),
+                solution.part2().dimmed(),
+            )
+        } else {
+            println!("{}\n{}", solution.part1(), solution.part2());
+        }
+    }
+    if time {
+        eprintln!("{}", "―".repeat(43));
+        eprintln!("{:7} {:5} µs\n", "Total".bold(), total.as_micros());
+    }
+    Ok(())
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args = Arguments::from_env();
     if args.contains(["-h", "--help"]) {
-        eprintln!("aoc [-h -t -p] [<day> <input>]");
+        eprintln!("aoc [-h -t] [<day> <input>]");
         return Ok(());
     }
     let time = args.contains(["-t", "--time"]);
-    let pretty = args.contains(["-p", "--pretty"]);
-
-    let start = Instant::now();
 
     if let Some(day) = args.opt_free_from_str()? {
         let input = match args.opt_free_from_str::<String>()?.as_deref() {
@@ -38,30 +74,15 @@ fn main() -> Result<(), Box<dyn Error>> {
             Some(path) => read_to_string(path)?,
             None => read_to_string(&day_input_path(day))?,
         };
-        let (a, b) = run_day(day, input);
-        println!("{}\n{}", a, b);
-    } else {
-        for day in 1..=DAYS {
-            let input = read_to_string(day_input_path(day))?;
-            let day_start = Instant::now();
-            let (a, b) = run_day(day, input);
-            if pretty {
-                let desc = format!("Day {}", day);
-                if time {
-                    eprintln!("{} took {:.2?}", desc.bold(), day_start.elapsed());
-                } else {
-                    eprintln!("{:12}", desc.bold());
-                }
-                let sep = '│'.dimmed();
-                println!("   {} {}\n   {} {}\n", sep, a.dimmed(), sep, b.dimmed())
-            } else {
-                println!("{}\n{}", a, b);
-            }
+        let start = Instant::now();
+        let solution = run_day(day, input);
+        println!("{}\n{}", solution.part1(), solution.part2());
+        if time {
+            eprintln!("{} in {:.2?}", "Finished".bold(), start.elapsed());
         }
+    } else {
+        run_all(time)?;
     }
 
-    if time {
-        eprintln!("{} in {:.2?}", "Finished".bold(), start.elapsed());
-    }
     Ok(())
 }

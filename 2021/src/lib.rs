@@ -1,6 +1,8 @@
 #![feature(let_else)]
 #![feature(array_windows)]
 
+use std::fmt::Display;
+use utils::AocInput;
 use wasm_bindgen::prelude::*;
 
 pub const DAYS: u32 = 11;
@@ -20,13 +22,23 @@ mod day11;
 mod utils;
 
 #[wasm_bindgen]
-pub fn run_day_wasm(day: u32, input: String) -> String {
-    let (a, b) = run_day(day, input);
-    format!("{} {}", a, b)
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Solution(String, String);
+
+#[wasm_bindgen]
+impl Solution {
+    #[wasm_bindgen(getter)]
+    pub fn part1(&self) -> String {
+        self.0.clone()
+    }
+    #[wasm_bindgen(getter)]
+    pub fn part2(&self) -> String {
+        self.1.clone()
+    }
 }
 
-pub fn run_day(day: u32, input: String) -> (String, String) {
-    use utils::run;
+#[wasm_bindgen]
+pub fn run_day(day: u32, input: String) -> Solution {
     match day {
         // Do not forget to update the DAYS constant too.
         1 => run(day01::solve, input),
@@ -42,4 +54,14 @@ pub fn run_day(day: u32, input: String) -> (String, String) {
         11 => run(day11::solve, input),
         _ => panic!("day not implemented"),
     }
+}
+
+fn run<T, A, B>(solution: impl Fn(T) -> (A, B), input: String) -> Solution
+where
+    T: AocInput,
+    A: Display,
+    B: Display,
+{
+    let (a, b) = solution(T::make(input));
+    Solution(a.to_string(), b.to_string())
 }

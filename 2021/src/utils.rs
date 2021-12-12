@@ -59,18 +59,6 @@ impl AocInput for Vec<String> {
     }
 }
 
-/// A convinience function for running a single Advent of Code solution with a
-/// given input.
-pub fn run<T, A, B>(solution: impl Fn(T) -> (A, B), input: String) -> (String, String)
-where
-    T: AocInput,
-    A: Display,
-    B: Display,
-{
-    let (a, b) = solution(T::make(input));
-    (a.to_string(), b.to_string())
-}
-
 /// A convinience function for splitting and parsing a string.
 pub fn numbers<T>(line: &str, sep: char) -> impl Iterator<Item = T> + '_
 where
