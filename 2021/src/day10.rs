@@ -1,3 +1,5 @@
+//! Syntax Scoring
+
 fn part1_points(bracket: u8) -> i64 {
     match bracket {
         b')' => 3,
