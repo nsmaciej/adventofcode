@@ -5,7 +5,7 @@ use std::fmt::Display;
 use utils::AocInput;
 use wasm_bindgen::prelude::*;
 
-pub const DAYS: u32 = 11;
+pub const DAYS: u32 = 12;
 
 mod day01;
 mod day02;
@@ -18,6 +18,7 @@ mod day08;
 mod day09;
 mod day10;
 mod day11;
+mod day12;
 
 mod utils;
 
@@ -52,6 +53,7 @@ pub fn run_day(day: u32, input: String) -> Solution {
         9 => run(day09::solve, input),
         10 => run(day10::solve, input),
         11 => run(day11::solve, input),
+        12 => run(day12::solve, input),
         _ => panic!("day not implemented"),
     }
 }
