@@ -16,7 +16,7 @@ fn visit(graph: &[Vec<i8>], visited: u32, node: i8, visited_twice: bool) -> i64 
     let mut i = 0;
     let mut sum = 0;
 
-    // Small caves.
+    // Small caves, x < 0.
     while i < edges.len() && edges[i] < 0 {
         let seen = visited & (1 << edges[i].abs()) > 0;
         if !seen || !visited_twice {
@@ -30,13 +30,13 @@ fn visit(graph: &[Vec<i8>], visited: u32, node: i8, visited_twice: bool) -> i64 
         i += 1;
     }
 
-    // End.
+    // End, x == 0.
     if edges.get(i) == Some(&END) {
         sum += 1;
         i += 1;
     }
 
-    // Big caves.
+    // Big caves, x > 0.
     while i < edges.len() {
         sum += visit(graph, visited, edges[i], visited_twice);
         i += 1;
