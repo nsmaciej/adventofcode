@@ -21,6 +21,14 @@ fn read_stdin() -> io::Result<String> {
     Ok(buf)
 }
 
+fn truncate(text: &str) -> &str {
+    if text.contains("\n") {
+        "(muti-line)"
+    } else {
+        text
+    }
+}
+
 fn run_all(time: bool) -> Result<(), Box<dyn Error>> {
     if time {
         eprintln!();
@@ -46,9 +54,9 @@ fn run_all(time: bool) -> Result<(), Box<dyn Error>> {
                 "{:7} {:5} µs  {:>10} {:>14}",
                 desc.bold(),
                 elapsed.as_micros(),
-                solution.part1().dimmed(),
-                solution.part2().dimmed(),
-            )
+                truncate(&solution.part1()).dimmed(),
+                truncate(&solution.part2()).dimmed(),
+            );
         } else {
             println!("{}\n{}", solution.part1(), solution.part2());
         }
