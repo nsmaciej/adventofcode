@@ -13,12 +13,13 @@ const END: i8 = 0;
 
 fn visit(
     graph: &[Vec<i8>],
-    cache: &mut HashMap<(u32, i8, bool), i64>,
+    cache: &mut HashMap<u64, i64>,
     visited: u32,
     node: i8,
     visited_twice: bool,
 ) -> i64 {
-    if let Some(last) = cache.get(&(visited, node, visited_twice)) {
+    let key = (visited as u64) << 9 | (visited_twice as u64) << 8 | node.abs() as u64;
+    if let Some(last) = cache.get(&key) {
         return *last;
     }
 
@@ -45,17 +46,17 @@ fn visit(
         })
         .sum();
 
-    cache.insert((visited, node, visited_twice), paths);
+    cache.insert(key, paths);
     paths
 }
 
-pub fn solve(input: Vec<String>) -> (i64, i64) {
+pub fn solve(input: String) -> (i64, i64) {
     let mut strings = BTreeMap::<String, i8>::new();
     strings.insert("end".to_string(), END);
     strings.insert("start".to_string(), START);
 
     let mut graph = vec![Vec::new(); input.len()]; // More than enough.
-    for line in input {
+    for line in input.lines() {
         let intern = |x: &str| {
             let small = x.chars().next().unwrap().is_lowercase();
             let id = strings.len() as i8;
@@ -73,8 +74,9 @@ pub fn solve(input: Vec<String>) -> (i64, i64) {
         }
     }
 
+    let mut cache = HashMap::new();
     (
-        visit(&graph, &mut HashMap::new(), 1 << START, START, true),
-        visit(&graph, &mut HashMap::new(), 1 << START, START, false),
+        visit(&graph, &mut cache, 1 << START, START, true),
+        visit(&graph, &mut cache, 1 << START, START, false),
     )
 }
