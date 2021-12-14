@@ -3,14 +3,14 @@ use std::collections::HashSet;
 use crate::utils::*;
 use itertools::Itertools;
 
-fn fold_grid(grid: HashSet<(u32, u32)>, fold: (char, u32)) -> HashSet<(u32, u32)> {
-    let (axis, k) = fold;
+fn fold_points(grid: HashSet<(u32, u32)>, folds: &[(char, u32)]) -> HashSet<(u32, u32)> {
     let mut next = HashSet::new();
-    for (x, y) in grid {
-        next.insert((
-            if x < k || axis == 'y' { x } else { k * 2 - x },
-            if y < k || axis == 'x' { y } else { k * 2 - y },
-        ));
+    for (mut x, mut y) in grid {
+        for (axis, k) in folds {
+            x = if x < *k || *axis == 'y' { x } else { k * 2 - x };
+            y = if y < *k || *axis == 'x' { y } else { k * 2 - y };
+        }
+        next.insert((x, y));
     }
     next
 }
@@ -32,9 +32,9 @@ pub fn solve(input: String) -> (usize, String) {
         })
         .collect_vec();
 
-    let grid = fold_grid(grid, folds[0]);
+    let grid = fold_points(grid, &folds[0..1]);
     let part1 = grid.len();
-    let grid = folds[1..].iter().fold(grid, |g, x| fold_grid(g, x.clone()));
+    let grid = fold_points(grid, &folds[1..]);
 
     let max_y = grid.iter().map(|x| x.1).max().unwrap();
     let max_x = grid.iter().map(|x| x.0).max().unwrap();
