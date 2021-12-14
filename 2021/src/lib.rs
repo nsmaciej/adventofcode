@@ -6,7 +6,7 @@ use std::fmt::Display;
 use utils::AocInput;
 use wasm_bindgen::prelude::*;
 
-pub const DAYS: u32 = 12;
+pub const DAYS: u32 = 13;
 
 mod day01;
 mod day02;
