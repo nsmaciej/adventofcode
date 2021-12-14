@@ -1,5 +1,6 @@
 #![feature(let_else)]
 #![feature(array_windows)]
+#![feature(step_trait)]
 
 use std::fmt::Display;
 use utils::AocInput;
@@ -19,6 +20,7 @@ mod day09;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 
 mod utils;
 
@@ -54,6 +56,7 @@ pub fn run_day(day: u32, input: String) -> Solution {
         10 => run(day10::solve, input),
         11 => run(day11::solve, input),
         12 => run(day12::solve, input),
+        13 => run(day13::solve, input),
         _ => panic!("day not implemented"),
     }
 }
