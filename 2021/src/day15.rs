@@ -15,7 +15,12 @@ fn find_path(grid: &mut Vec<Vec<u8>>) -> i32 {
             continue;
         }
 
-        for (y, x) in [(y, x - 1), (y, x + 1), (y - 1, x), (y + 1, x)] {
+        for (y, x) in [
+            (y, x.overflowing_sub(1).0),
+            (y, x + 1),
+            (y.overflowing_sub(1).0, x),
+            (y + 1, x),
+        ] {
             let Some(cell_cost) = grid.getyx(y, x) else { continue };
             let next_cost = -cost + *cell_cost as i32;
             if next_cost < dist[y][x] {
