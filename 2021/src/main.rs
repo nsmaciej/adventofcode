@@ -17,7 +17,7 @@ fn day_input_path(day: u32) -> String {
 
 fn read_stdin() -> io::Result<String> {
     let mut buf = String::new();
-    std::io::stdin().read_to_string(&mut buf)?;
+    io::stdin().read_to_string(&mut buf)?;
     Ok(buf)
 }
 
@@ -71,10 +71,11 @@ fn run_all(time: bool) -> Result<(), Box<dyn Error>> {
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args = Arguments::from_env();
     if args.contains(["-h", "--help"]) {
-        eprintln!("aoc [-h -t] [<day> <input>]");
+        eprintln!("aoc [-h -t -s] [<day> <input>]");
         return Ok(());
     }
     let time = args.contains(["-t", "--time"]);
+    let snapshot = args.contains(["-s", "--snapshot"]);
 
     if let Some(day) = args.opt_free_from_str()? {
         let input = match args.opt_free_from_str::<String>()?.as_deref() {
@@ -88,6 +89,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         if time {
             eprintln!("{} in {:.2?}", "Finished".bold(), start.elapsed());
         }
+    } else if snapshot {
+        use json::*;
+        let mut outputs = Vec::new();
+        for day in 1..=DAYS {
+            let input = read_to_string(day_input_path(day))?;
+            let solution = run_day(day, input);
+            outputs.push(object! {
+                "day": day,
+                "part1": solution.part1(),
+                "part2": solution.part2()
+            });
+        }
+        println!("{}", stringify_pretty(outputs, 4));
     } else {
         run_all(time)?;
     }
