@@ -33,13 +33,13 @@ fn run_all(time: bool) -> Result<(), Box<dyn Error>> {
     if time {
         eprintln!();
         eprintln!(
-            "{:7} {:>8}  {:>10} {:>14}",
+            "{:7} {:>9}  {:>10} {:>14}",
             "Task".bold(),
             "Time",
             "Part 1".dimmed(),
             "Part 2".dimmed(),
         );
-        eprintln!("{}", "―".repeat(43));
+        eprintln!("{}", "―".repeat(44));
     }
     let mut total = Duration::ZERO;
     for day in 1..=DAYS {
@@ -51,7 +51,7 @@ fn run_all(time: bool) -> Result<(), Box<dyn Error>> {
             let elapsed = day_start.elapsed();
             total += elapsed;
             eprintln!(
-                "{:7} {:5} µs  {:>10} {:>14}",
+                "{:7} {:6} µs  {:>10} {:>14}",
                 desc.bold(),
                 elapsed.as_micros(),
                 truncate(&solution.part1()).dimmed(),
@@ -62,8 +62,8 @@ fn run_all(time: bool) -> Result<(), Box<dyn Error>> {
         }
     }
     if time {
-        eprintln!("{}", "―".repeat(43));
-        eprintln!("{:7} {:5} µs\n", "Total".bold(), total.as_micros());
+        eprintln!("{}", "―".repeat(44));
+        eprintln!("{:7} {:6} µs\n", "Total".bold(), total.as_micros());
     }
     Ok(())
 }
