@@ -1,5 +1,4 @@
 use crate::utils::Grid;
-use itertools::Itertools;
 use std::collections::BinaryHeap;
 
 fn find_path(grid: &mut Vec<Vec<u8>>) -> i32 {
@@ -33,14 +32,14 @@ fn find_path(grid: &mut Vec<Vec<u8>>) -> i32 {
 }
 
 pub fn solve(input: String) -> (i32, i32) {
-    let mut grid1 = input
+    let mut grid1: Vec<Vec<u8>> = input
         .lines()
-        .map(|x| x.bytes().map(|x| x - b'0').collect_vec())
-        .collect_vec();
+        .map(|x| x.bytes().map(|x| x - b'0').collect())
+        .collect();
 
     let mut grid2 = vec![vec![0; grid1.width() * 5]; grid1.height() * 5];
     for y in 0..grid2.height() {
-        for x in 0..grid2.height() {
+        for x in 0..grid2.width() {
             let diff = (y / grid1.height() + x / grid1.width()) as u8;
             let v = grid1[y % grid1.height()][x % grid1.width()] + diff;
             grid2[y][x] = if v < 10 { v } else { 1 + (v % 10) };
