@@ -130,36 +130,44 @@ pub trait Grid<T> {
 }
 
 impl<T> Grid<T> for Vec<Vec<T>> {
+    #[inline]
     fn getyx(&self, y: usize, x: usize) -> Option<&T> {
         self.get(y).and_then(|row| row.get(x))
     }
 
+    #[inline]
     fn getyx_mut(&mut self, y: usize, x: usize) -> Option<&mut T> {
         self.get_mut(y).and_then(|row| row.get_mut(x))
     }
 
+    #[inline]
     fn width(&self) -> usize {
         self.get(0).map_or(0, |x| x.len())
     }
 
+    #[inline]
     fn height(&self) -> usize {
         self.len()
     }
 }
 
 impl<T, const W: usize, const H: usize> Grid<T> for [[T; W]; H] {
+    #[inline]
     fn getyx(&self, y: usize, x: usize) -> Option<&T> {
         self.get(y).and_then(|row| row.get(x))
     }
 
+    #[inline]
     fn getyx_mut(&mut self, y: usize, x: usize) -> Option<&mut T> {
         self.get_mut(y).and_then(|row| row.get_mut(x))
     }
 
+    #[inline]
     fn width(&self) -> usize {
         W
     }
 
+    #[inline]
     fn height(&self) -> usize {
         H
     }

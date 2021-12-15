@@ -3,26 +3,25 @@ use itertools::Itertools;
 use std::collections::BinaryHeap;
 
 fn find_path(grid: &mut Vec<Vec<u8>>) -> i32 {
-    let start_lvl = grid[0][0] as i32;
     let mut heap = BinaryHeap::new();
+    let mut dist = vec![vec![i32::MAX; grid.width()]; grid.height()];
     heap.push((0, 0, 0));
 
-    while let Some((lvl, y, x)) = heap.pop() {
-        let Some(grid_cell) = grid.getyx_mut(y, x) else { continue };
-
-        if *grid_cell == 0 {
+    while let Some((cost, y, x)) = heap.pop() {
+        if y == grid.height() - 1 && x == grid.width() - 1 {
+            return -cost;
+        }
+        if -cost > dist[y][x] {
             continue;
         }
-        let new_lvl = lvl - *grid_cell as i32;
-        *grid_cell = 0;
 
-        if y == grid.height() - 1 && x == grid.width() - 1 {
-            return -start_lvl - new_lvl; // Flip from negatives.
-        } else {
-            heap.push((new_lvl, y, x + 1));
-            heap.push((new_lvl, y + 1, x));
-            heap.push((new_lvl, y.overflowing_sub(1).0, x));
-            heap.push((new_lvl, y, x.overflowing_sub(1).0));
+        for (y, x) in [(y, x - 1), (y, x + 1), (y - 1, x), (y + 1, x)] {
+            let Some(cell_cost) = grid.getyx(y, x) else { continue };
+            let next_cost = -cost + *cell_cost as i32;
+            if next_cost < dist[y][x] {
+                dist[y][x] = next_cost;
+                heap.push((-next_cost, y, x));
+            }
         }
     }
     panic!("no path found");
