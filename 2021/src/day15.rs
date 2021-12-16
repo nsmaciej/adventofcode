@@ -1,3 +1,5 @@
+//! Chiton
+
 use crate::utils::Grid;
 use std::collections::BinaryHeap;
 
@@ -42,7 +44,7 @@ pub fn solve(input: String) -> (i32, i32) {
         for x in 0..grid2.width() {
             let diff = (y / grid1.height() + x / grid1.width()) as u8;
             let v = grid1[y % grid1.height()][x % grid1.width()] + diff;
-            grid2[y][x] = if v < 10 { v } else { 1 + (v % 10) };
+            grid2[y][x] = (v - 1) % 9 + 1;
         }
     }
 
