@@ -33,7 +33,7 @@ pub fn solve(input: String) -> (usize, usize) {
 
         let out: Vec<usize> = outputs
             .split_ascii_whitespace()
-            .map(|x| deduce_digit(&counts, &x))
+            .map(|x| deduce_digit(&counts, x))
             .collect();
 
         part1 += out.iter().filter(|x| matches!(x, 1 | 4 | 7 | 8)).count();

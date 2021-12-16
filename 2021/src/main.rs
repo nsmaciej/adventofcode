@@ -22,7 +22,7 @@ fn read_stdin() -> io::Result<String> {
 }
 
 fn truncate(text: &str) -> &str {
-    if text.contains("\n") {
+    if text.contains('\n') {
         "(muti-line)"
     } else {
         text

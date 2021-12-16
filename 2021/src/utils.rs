@@ -1,8 +1,5 @@
 //! Advent of Code utilities.
 
-#[doc(no_inline)]
-pub use itertools::Itertools;
-
 use std::fmt::{Debug, Display};
 use std::str::FromStr;
 
@@ -60,6 +57,7 @@ impl AocInput for Vec<String> {
 }
 
 /// A convinience function for splitting and parsing a string.
+#[inline]
 pub fn numbers<T>(line: &str, sep: char) -> impl Iterator<Item = T> + '_
 where
     T: FromStr,
@@ -116,8 +114,8 @@ pub trait Grid<T> {
         let all1s = widths.iter().all(|x| *x == 1);
 
         for y in 0..self.height() {
-            for x in 0..self.width() {
-                let width = widths[x] as usize + !all1s as usize;
+            for (x, width) in widths.iter().enumerate() {
+                let width = *width as usize + !all1s as usize;
                 if let Some(value) = self.getyx(y, x) {
                     print!("{:>w$}", format!("{:}", f(value)), w = width);
                 } else {
