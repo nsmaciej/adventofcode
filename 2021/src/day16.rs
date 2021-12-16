@@ -1,81 +1,81 @@
+//! Packet Decoder
+
 use bitvec::prelude::*;
 
-struct ParseResult {
-    len: usize,
-    version_sum: u64,
-    result: u64,
+#[derive(Debug)]
+struct Reader {
+    packet: BitVec<Msb0, u8>,
+    pos: usize,
 }
 
-fn parse_packet(packet: &BitSlice<Msb0, u8>) -> ParseResult {
-    let version: u8 = packet[0..3].load_be();
-    let type_id: u8 = packet[3..6].load_be();
+impl Reader {
+    fn slice(&mut self, k: usize) -> &BitSlice<Msb0, u8> {
+        let r = &self.packet[self.pos..self.pos + k];
+        self.pos += k;
+        r
+    }
+    fn bit(&mut self) -> bool {
+        let r = self.packet[self.pos];
+        self.pos += 1;
+        r
+    }
+    fn load<T: bitvec::mem::BitMemory>(&mut self, k: usize) -> T {
+        self.slice(k).load_be()
+    }
+}
+
+fn parse_packet(reader: &mut Reader) -> (u64, u64) {
+    let version: u8 = reader.load(3);
+    let type_id: u8 = reader.load(3);
 
     if type_id == 4 {
-        let mut len = 6;
         let mut value = BitVec::<Msb0, u8>::new();
         loop {
-            let last = !packet[len];
-            value.extend(&packet[len + 1..len + 5]);
-            len += 5;
+            let last = !reader.bit();
+            value.extend(reader.slice(4));
             if last {
                 break;
             }
         }
-        return ParseResult {
-            len,
-            result: value.load_be(),
-            version_sum: version as u64,
-        };
+        return (version as u64, value.load_be());
     }
 
-    let mut len;
-    let mut version_sum = version as u64;
-
-    let mut results = Vec::new();
-    if packet[6] {
-        let ops_count: u64 = packet[7..18].load_be();
-        len = 18;
-        for _ in 0..ops_count {
-            let op = parse_packet(&packet[len..]);
-            len += op.len;
-            version_sum += op.version_sum;
-            results.push(op.result);
-        }
+    let results = if reader.bit() {
+        let ops_count: u64 = reader.load(11);
+        (0..ops_count).map(|_| parse_packet(reader)).collect()
     } else {
-        let ops_len: usize = packet[7..22].load_be();
-        len = 22;
-        while len != 22 + ops_len {
-            let op = parse_packet(&packet[len..]);
-            len += op.len;
-            version_sum += op.version_sum;
-            results.push(op.result);
+        let ops_len = reader.load::<usize>(15);
+        let target_pos = reader.pos + ops_len;
+        let mut results = Vec::new();
+        while reader.pos != target_pos {
+            results.push(parse_packet(reader));
         }
-    }
+        results
+    };
 
+    let mut values = results.iter().map(|x| x.1);
     let result = match type_id {
-        0 => results.iter().sum(),
-        1 => results.iter().product(),
-        2 => *results.iter().min().unwrap(),
-        3 => *results.iter().max().unwrap(),
-        5 => (results[0] > results[1]) as u64,
-        6 => (results[0] < results[1]) as u64,
-        7 => (results[0] == results[1]) as u64,
+        0 => values.sum(),
+        1 => values.product(),
+        2 => values.min().unwrap(),
+        3 => values.max().unwrap(),
+        5 => (values.next().unwrap() > values.next().unwrap()) as u64,
+        6 => (values.next().unwrap() < values.next().unwrap()) as u64,
+        7 => (values.next().unwrap() == values.next().unwrap()) as u64,
         _ => panic!("invalid type id"),
     };
 
-    ParseResult {
-        len,
-        version_sum,
-        result,
-    }
+    let version_sum = results.iter().map(|x| x.0).sum();
+    (version_sum, result)
 }
 
 pub fn solve(input: String) -> (u64, u64) {
-    let mut bytes = Vec::new();
-    for i in (0..input.len()).step_by(2) {
-        bytes.push(u8::from_str_radix(&input[i..i + 2], 16).unwrap());
-    }
-    let packet = BitVec::<Msb0, _>::from_vec(bytes);
-    let parsed = parse_packet(&packet);
-    (parsed.version_sum, parsed.result)
+    let bytes = (0..input.len())
+        .step_by(2)
+        .map(|i| u8::from_str_radix(&input[i..i + 2], 16).unwrap())
+        .collect();
+    parse_packet(&mut Reader {
+        packet: BitVec::from_vec(bytes),
+        pos: 0,
+    })
 }
