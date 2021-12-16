@@ -1,6 +1,6 @@
-use std::collections::BTreeMap;
+//! Extended Polymerization
 
-use itertools::Itertools;
+use std::{collections::BTreeMap, mem};
 
 #[inline]
 fn key(a: u8, b: u8) -> u16 {
@@ -22,13 +22,14 @@ fn simulate(
     let mut pairs = pairs_orig.clone();
     for _ in 0..k {
         let mut next = BTreeMap::new();
-        for (ab, k) in pairs {
-            let (a, b) = unkey(ab);
-            let result = rules[&ab];
-            *next.entry(key(a, result)).or_default() += k;
-            *next.entry(key(result, b)).or_default() += k;
+        for (ab, k) in &mut pairs {
+            let (a, b) = unkey(*ab);
+            let result = rules[ab];
+            *next.entry(key(a, result)).or_default() += *k;
+            *next.entry(key(result, b)).or_default() += *k;
+            *k = 0;
         }
-        pairs = next;
+        mem::swap(&mut pairs, &mut next);
     }
 
     let mut counts: BTreeMap<u8, u64> = BTreeMap::new();
@@ -49,18 +50,18 @@ fn simulate(
 pub fn solve(input: String) -> (u64, u64) {
     let mut lines = input.lines();
     let mut pairs: BTreeMap<u16, u64> = BTreeMap::new();
-    let template = lines.next().unwrap().bytes().collect_vec();
+    let template: Vec<u8> = lines.next().unwrap().bytes().collect();
     let first = *template.first().unwrap();
-    let last = *template.first().unwrap();
-    for (a, b) in template.iter().tuple_windows() {
+    let last = *template.last().unwrap();
+    for (a, b) in template.iter().zip(template.iter().skip(1)) {
         *pairs.entry(key(*a, *b)).or_default() += 1;
     }
     lines.next(); // Skip the blank line.
     let rules: BTreeMap<u16, u8> = lines
         .map(|rule| {
-            let (pair, result) = rule.split(" -> ").collect_tuple().unwrap();
-            let (a, b) = pair.bytes().collect_tuple().unwrap();
-            (key(a, b), result.bytes().next().unwrap())
+            let (pair, result) = rule.split_once(" -> ").unwrap();
+            let pair = pair.as_bytes();
+            (key(pair[0], pair[1]), result.bytes().next().unwrap())
         })
         .collect();
 

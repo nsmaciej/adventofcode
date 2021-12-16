@@ -1,7 +1,7 @@
-use std::collections::HashSet;
+//! Transparent Origami
 
-use crate::utils::*;
 use itertools::Itertools;
+use std::collections::HashSet;
 
 fn fold_points(grid: HashSet<(u32, u32)>, folds: &[(char, u32)]) -> HashSet<(u32, u32)> {
     let mut next = HashSet::new();
@@ -19,23 +19,24 @@ pub fn solve(input: String) -> (usize, String) {
     let mut input = input.lines();
     let mut grid = HashSet::<(u32, u32)>::new();
     for line in &mut input {
-        if line == "" {
+        if line.is_empty() {
             break;
         }
-        grid.insert(numbers(line, ',').collect_tuple().unwrap());
+        let (x, y) = line.split_once(',').unwrap();
+        grid.insert((x.parse().unwrap(), y.parse().unwrap()));
     }
 
-    let folds = input
+    let folds: Vec<(char, u32)> = input
         .map(|line| {
-            let (axis, k) = line[11..].split('=').collect_tuple().unwrap();
+            let (axis, k) = line[11..].split_once('=').unwrap();
             (axis.chars().next().unwrap(), k.parse().unwrap())
         })
-        .collect_vec();
+        .collect();
 
     let grid = fold_points(grid, &folds[0..1]);
     let part1 = grid.len();
-    let grid = fold_points(grid, &folds[1..]);
 
+    let grid = fold_points(grid, &folds[1..]);
     let max_y = grid.iter().map(|x| x.1).max().unwrap();
     let max_x = grid.iter().map(|x| x.0).max().unwrap();
     let part2 = (0..=max_y)

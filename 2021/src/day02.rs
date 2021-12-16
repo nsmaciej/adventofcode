@@ -1,14 +1,12 @@
 //! Dive!
 
-use crate::utils::Itertools;
-
-pub fn solve(lines: Vec<String>) -> (i32, i32) {
+pub fn solve(input: String) -> (i32, i32) {
     let mut pos = 0;
     let mut aim = 0;
     let mut depth = 0;
 
-    for line in lines {
-        let (cmd, n) = line.split_ascii_whitespace().collect_tuple().unwrap();
+    for line in input.lines() {
+        let (cmd, n) = line.split_once(" ").unwrap();
         let n: i32 = n.parse().unwrap();
         match cmd {
             "forward" => {

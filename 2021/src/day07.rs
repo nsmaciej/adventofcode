@@ -2,8 +2,8 @@
 
 use crate::utils::numbers;
 
-pub fn solve(input: Vec<String>) -> (i32, i32) {
-    let mut crabs: Vec<i32> = numbers(&input[0], ',').collect();
+pub fn solve(input: String) -> (i32, i32) {
+    let mut crabs: Vec<i32> = numbers(&input, ',').collect();
 
     let midpoint = crabs.len() / 2;
     let median = *crabs.select_nth_unstable(midpoint).1;

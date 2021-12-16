@@ -1,6 +1,5 @@
 #![feature(let_else)]
 #![feature(array_windows)]
-#![feature(step_trait)]
 
 use std::fmt::Display;
 use utils::AocInput;
@@ -43,7 +42,9 @@ impl Solution {
 }
 
 #[wasm_bindgen]
-pub fn run_day(day: u32, input: String) -> Solution {
+pub fn run_day(day: u32, mut input: String) -> Solution {
+    let trimmed_len = input.trim_end().len();
+    input.truncate(trimmed_len);
     match day {
         // Do not forget to update the DAYS constant too.
         1 => run(day01::solve, input),

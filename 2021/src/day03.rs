@@ -23,11 +23,11 @@ fn iterate(n: u32, data: &[u32], invert: bool) -> u32 {
     panic!();
 }
 
-pub fn solve(input: Vec<String>) -> (u32, u32) {
-    let n = input[0].len() as u32; // We can't find this easily once we convert to u32.
+pub fn solve(input: String) -> (u32, u32) {
+    let n = input.lines().next().unwrap().len() as u32; // We can't get this once we convert.
     let data: Vec<u32> = input
-        .into_iter()
-        .map(|x| u32::from_str_radix(&x, 2).unwrap())
+        .lines()
+        .map(|x| u32::from_str_radix(x, 2).unwrap())
         .collect();
 
     let mut gamma = 0;

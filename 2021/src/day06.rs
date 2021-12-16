@@ -10,9 +10,9 @@ fn simulate(fish: &mut [usize; 9], n: usize) -> usize {
     fish.iter().sum()
 }
 
-pub fn solve(input: Vec<String>) -> (usize, usize) {
+pub fn solve(input: String) -> (usize, usize) {
     let mut fish = [0; 9];
-    for timer in numbers::<usize>(&input[0], ',') {
+    for timer in numbers::<usize>(&input, ',') {
         fish[timer] += 1;
     }
     (simulate(&mut fish, 80), simulate(&mut fish, 256 - 80))

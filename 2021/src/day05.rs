@@ -1,16 +1,17 @@
 //! Hydrothermal Venture
 
-use itertools::Itertools;
-
 type Line = (i32, i32, i32, i32);
 
-fn parse_line(line: String) -> Line {
-    line.split(" -> ")
-        .map(|x| x.split(','))
-        .flatten()
-        .map(|x| x.parse().unwrap())
-        .collect_tuple()
-        .unwrap()
+fn parse_line(line: &str) -> Line {
+    let (lhs, rhs) = line.split_once(" -> ").unwrap();
+    let (x1, y1) = lhs.split_once(',').unwrap();
+    let (x2, y2) = rhs.split_once(',').unwrap();
+    (
+        x1.parse().unwrap(),
+        y1.parse().unwrap(),
+        x2.parse().unwrap(),
+        y2.parse().unwrap(),
+    )
 }
 
 fn add_lines(overlap: &mut [[u8; 1000]; 1000], lines: Vec<Line>) -> usize {
@@ -31,9 +32,9 @@ fn add_lines(overlap: &mut [[u8; 1000]; 1000], lines: Vec<Line>) -> usize {
     result // How many new overlaps did we add.
 }
 
-pub fn solve(input: Vec<String>) -> (usize, usize) {
+pub fn solve(input: String) -> (usize, usize) {
     let (straight, diagonal) = input
-        .into_iter()
+        .lines()
         .map(parse_line)
         .partition(|(x1, y1, x2, y2)| x1 == x2 || y1 == y2);
     let mut overlap = [[0; 1000]; 1000];
