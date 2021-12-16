@@ -19,6 +19,7 @@ pico-args = { version = "0.4.2", default-features = false, features = ["combined
 owo-colors = "3.1.0"
 wasm-bindgen = "0.2"
 json = "0.12.4"
+bitvec = "0.22.3"
 
 [profile.release]
 lto = true
