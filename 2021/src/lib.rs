@@ -5,7 +5,9 @@ use std::fmt::Display;
 use utils::AocInput;
 use wasm_bindgen::prelude::*;
 
-pub const DAYS: u32 = 16;
+pub type Day = u32;
+
+pub const DAYS: Day = 16;
 
 mod day01;
 mod day02;
@@ -43,7 +45,7 @@ impl Solution {
 }
 
 #[wasm_bindgen]
-pub fn run_day(day: u32, mut input: String) -> Solution {
+pub fn run_day(day: Day, mut input: String) -> Solution {
     let trimmed_len = input.trim_end().len();
     input.truncate(trimmed_len);
     match day {
