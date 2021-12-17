@@ -4,7 +4,7 @@ fn parse_range(text: &str) -> (i32, i32) {
     (start.parse().unwrap(), end.parse::<i32>().unwrap())
 }
 
-fn simulate((x1, x2, y1, y2): (i32, i32, i32, i32), mut dx: i32, mut dy: i32) -> Option<i32> {
+fn simulate(x1: i32, x2: i32, y1: i32, y2: i32, mut dx: i32, mut dy: i32) -> Option<i32> {
     let mut x = 0;
     let mut y = 0;
     let mut peak = 0;
@@ -30,13 +30,19 @@ pub fn solve(input: String) -> (i32, i32) {
 
     let mut best = 0;
     let mut hit = 0;
-    for dx in 0..=x2 {
-        for dy in y1..=300 {
-            if let Some(r) = simulate((x1, x2, y1, y2), dx, dy) {
+    // Quadratic to solve which triangular number will reach the target.
+    let min_x = (1 + (1. + 8. * x1 as f32).sqrt() as i32) / 2;
+    for dx in min_x..=(1 + x2 / 2) {
+        for dy in y1..=y1.abs() {
+            if let Some(r) = simulate(x1, x2, y1, y2, dx, dy) {
                 hit += 1;
                 best = best.max(r);
             }
         }
     }
-    (best, hit)
+    // If we shoot directly at the platform we only get one chance.
+    // This assumes the platform width is smaller than it's x1 - 1.
+    let trival_y = 1 + y2 - y1;
+    let trival_x = 1 + x2 - x1;
+    (best, hit + trival_y * trival_x)
 }
