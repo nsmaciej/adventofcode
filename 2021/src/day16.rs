@@ -15,9 +15,7 @@ impl Reader {
         r
     }
     fn bit(&mut self) -> bool {
-        let r = self.packet[self.pos];
-        self.pos += 1;
-        r
+        self.slice(1)[0]
     }
     fn load<T: bitvec::mem::BitMemory>(&mut self, k: usize) -> T {
         self.slice(k).load_be()
