@@ -7,7 +7,7 @@ use wasm_bindgen::prelude::*;
 
 pub type Day = u32;
 
-pub const DAYS: Day = 16;
+pub const DAYS: Day = 17;
 
 mod day01;
 mod day02;
@@ -25,6 +25,7 @@ mod day13;
 mod day14;
 mod day15;
 mod day16;
+mod day17;
 
 mod utils;
 
@@ -66,6 +67,7 @@ pub fn run_day(day: Day, mut input: String) -> Solution {
         14 => run(day14::solve, input),
         15 => run(day15::solve, input),
         16 => run(day16::solve, input),
+        17 => run(day17::solve, input),
         _ => panic!("day not implemented"),
     }
 }
