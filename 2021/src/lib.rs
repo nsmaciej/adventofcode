@@ -1,3 +1,4 @@
+#![feature(linked_list_cursors)]
 #![feature(let_else)]
 #![feature(array_windows)]
 
@@ -7,7 +8,7 @@ use wasm_bindgen::prelude::*;
 
 pub type Day = u32;
 
-pub const DAYS: Day = 17;
+pub const DAYS: Day = 18;
 
 mod day01;
 mod day02;
@@ -26,6 +27,7 @@ mod day14;
 mod day15;
 mod day16;
 mod day17;
+mod day18;
 
 mod utils;
 
@@ -47,8 +49,10 @@ impl Solution {
 
 #[wasm_bindgen]
 pub fn run_day(day: Day, mut input: String) -> Solution {
+    // Trim trailing newlines so the rest of the code doesn't have to.
     let trimmed_len = input.trim_end().len();
     input.truncate(trimmed_len);
+    assert!(input.is_ascii(), "non-ascii input");
     match day {
         // Do not forget to update the DAYS constant too.
         1 => run(day01::solve, input),
@@ -68,6 +72,7 @@ pub fn run_day(day: Day, mut input: String) -> Solution {
         15 => run(day15::solve, input),
         16 => run(day16::solve, input),
         17 => run(day17::solve, input),
+        18 => run(day18::solve, input),
         _ => panic!("day not implemented"),
     }
 }
