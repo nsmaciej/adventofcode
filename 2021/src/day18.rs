@@ -1,57 +1,37 @@
-use arrayvec::ArrayVec;
 use itertools::Itertools;
 
 const PAIR: i32 = -1;
 
 fn parse_sfn(line: &str) -> Vec<i32> {
-    let mut r = Vec::new();
-    for x in line.bytes() {
-        match x {
-            b'[' => r.push(PAIR),
-            b'0'..=b'9' => r.push((x - b'0') as i32),
-            b']' | b',' | b' ' => {}
+    line.bytes()
+        .flat_map(|x| match x {
+            b'[' => Some(PAIR),
+            b'0'..=b'9' => Some((x - b'0') as i32),
+            b']' | b',' | b' ' => None,
             _ => panic!("unexpected character"),
-        }
-    }
-    r
-}
-
-fn explode_sfn_at_index(sfn: &mut Vec<i32>, i: usize) {
-    let a = sfn[i + 1];
-    let b = sfn[i + 2];
-    sfn.splice(i..i + 3, [0]);
-    let mut j = i; // Left destination.
-    while j > 0 {
-        j -= 1;
-        if sfn[j] != PAIR {
-            sfn[j] += a;
-            break;
-        }
-    }
-    let mut j = i + 1; // Right destination.
-    while j < sfn.len() {
-        if sfn[j] != PAIR {
-            sfn[j] += b;
-            break;
-        }
-        j += 1;
-    }
+        })
+        .collect()
 }
 
 fn explode_sfn(sfn: &mut Vec<i32>) -> bool {
-    let mut pairs = ArrayVec::<_, 5>::new();
+    let mut pairs: u8 = 1;
     for i in 0..sfn.len() {
-        if sfn[i] == PAIR {
-            pairs.push(true);
-            if pairs.len() > 4 {
-                explode_sfn_at_index(sfn, i);
-                return true;
+        if sfn[i] != PAIR {
+            pairs = pairs >> pairs.trailing_zeros() & 0xfe;
+            continue;
+        }
+        pairs = pairs << 1 | 1;
+        if pairs.leading_zeros() == 2 {
+            let a = sfn[i + 1];
+            let b = sfn[i + 2];
+            sfn.splice(i..i + 3, [0]);
+            if let Some(x) = sfn[..i].iter_mut().rev().find(|x| **x != PAIR) {
+                *x += a;
             }
-        } else {
-            while let Some(false) = pairs.last() {
-                pairs.pop();
+            if let Some(x) = sfn[i + 1..].iter_mut().find(|x| **x != PAIR) {
+                *x += b;
             }
-            pairs.last_mut().map(|x| *x = false);
+            return true;
         }
     }
     false
@@ -76,23 +56,24 @@ fn add_sfn(mut dest: Vec<i32>, rhs: &[i32]) -> Vec<i32> {
 }
 
 fn magnitude_sfn(sfn: &[i32]) -> i32 {
-    let mut pairs = ArrayVec::<_, 4>::new();
-    let mut mags = ArrayVec::<_, 5>::new();
+    let mut pairs: u8 = 1;
+    let mut mags = [0; 5];
+    let mut i = 0;
     for x in sfn {
         if *x == PAIR {
-            pairs.push(true);
-        } else {
-            mags.push(*x);
-            while let Some(false) = pairs.last() {
-                let b = mags.pop().unwrap();
-                let a = mags.pop().unwrap();
-                mags.push(2 * b + 3 * a);
-                pairs.pop();
-            }
-            pairs.last_mut().map(|x| *x = false);
+            pairs = pairs << 1 | 1;
+            continue;
         }
+        mags[i] = *x;
+        i += 1;
+        while pairs & 1 == 0 {
+            mags[i - 2] = 3 * mags[i - 2] + 2 * mags[i - 1];
+            pairs >>= 1;
+            i -= 1;
+        }
+        pairs &= 0xfe;
     }
-    mags.pop().unwrap()
+    mags[i - 1]
 }
 
 pub fn solve(input: String) -> (i32, i32) {
