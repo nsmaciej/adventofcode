@@ -149,9 +149,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         };
         let start = Instant::now();
         let solution = run_day(day, input);
+        let elapsed = start.elapsed();
         println!("{}\n{}", solution.part1(), solution.part2());
         if time {
-            eprintln!("{} in {:.2?}", "Finished".bold(), start.elapsed());
+            eprintln!("{} in {:.2?}", "Finished".bold(), elapsed);
         }
         if check {
             compare_snapshot(&get_snapshots()?, day, &solution);
