@@ -1,24 +1,6 @@
-[package]
-name = "aoc"
-version = "0.1.0"
-edition = "2021"
-publish = false
-
-[lib]
-name = "aoclib"
-crate-type = ["cdylib", "rlib"]
-path = "src/lib.rs"
-
-[[bin]]
-name = "runaoc"
-path = "src/main.rs"
-
-[dependencies]
-itertools = "0.10.1"
-pico-args = { version = "0.4.2", default-features = false, features = ["combined-flags"] }
-owo-colors = "3.1.0"
-wasm-bindgen = "0.2"
-json = "0.12.4"
+[workspace]
+members = ["solutions", "runaoc"]
 
 [profile.release]
 lto = true
+panic = "abort"

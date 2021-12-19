@@ -3,7 +3,6 @@
 
 use std::fmt::Display;
 use utils::AocInput;
-use wasm_bindgen::prelude::*;
 
 pub type Day = u32;
 
@@ -30,23 +29,12 @@ mod day18;
 
 mod utils;
 
-#[wasm_bindgen]
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Solution(String, String);
-
-#[wasm_bindgen]
-impl Solution {
-    #[wasm_bindgen(getter)]
-    pub fn part1(&self) -> String {
-        self.0.clone()
-    }
-    #[wasm_bindgen(getter)]
-    pub fn part2(&self) -> String {
-        self.1.clone()
-    }
+pub struct Solution {
+    pub part1: String,
+    pub part2: String,
 }
 
-#[wasm_bindgen]
 pub fn run_day(day: Day, mut input: String) -> Solution {
     // Trim trailing newlines so the rest of the code doesn't have to.
     let trimmed_len = input.trim_end().len();
@@ -83,5 +71,8 @@ where
     B: Display,
 {
     let (a, b) = solution(T::make(input));
-    Solution(a.to_string(), b.to_string())
+    Solution {
+        part1: a.to_string(),
+        part2: b.to_string(),
+    }
 }

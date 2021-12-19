@@ -1,6 +1,4 @@
 #![feature(let_else)]
-#![allow(dead_code)]
-#![doc = include_str!("../README.md")]
 
 use owo_colors::OwoColorize;
 use pico_args::Arguments;
@@ -11,7 +9,7 @@ use std::fs;
 use std::io::{self, prelude::*};
 use std::time::{Duration, Instant};
 
-use aoclib::{run_day, Day, Solution, DAYS};
+use solutions::{run_day, Day, Solution, DAYS};
 
 type Snapshots = BTreeMap<Day, (String, String)>;
 
@@ -59,8 +57,8 @@ fn compare_snapshot(snapshots: &Snapshots, day: Day, solution: &Solution) -> boo
         return false;
     };
 
-    let part1 = show_diff(1, &solution.part1(), expected1);
-    let part2 = show_diff(2, &solution.part2(), expected2);
+    let part1 = show_diff(1, &solution.part1, expected1);
+    let part2 = show_diff(2, &solution.part2, expected2);
     let failed = part1 || part2;
     if failed {
         eprintln!(); // Diffs start and end with a newline.
@@ -108,11 +106,11 @@ fn run_all(time: bool, check: bool) -> Result<(), Box<dyn Error>> {
                 "{:7} {:6} µs  {:>10} {:>14}",
                 title.bold(),
                 elapsed.as_micros(),
-                truncate(&solution.part1()).dimmed(),
-                truncate(&solution.part2()).dimmed(),
+                truncate(&solution.part1).dimmed(),
+                truncate(&solution.part2).dimmed(),
             );
         } else {
-            println!("{}\n{}", solution.part1(), solution.part2());
+            println!("{}\n{}", solution.part1, solution.part2);
         }
         if let Some(snapshots) = &snapshots {
             compare_snapshot(snapshots, day, &solution);
@@ -150,7 +148,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let start = Instant::now();
         let solution = run_day(day, input);
         let elapsed = start.elapsed();
-        println!("{}\n{}", solution.part1(), solution.part2());
+        println!("{}\n{}", solution.part1, solution.part2);
         if time {
             eprintln!("{} in {:.2?}", "Finished".bold(), elapsed);
         }
@@ -165,8 +163,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             let solution = run_day(day, input);
             outputs.push(object! {
                 "day": day,
-                "part1": solution.part1(),
-                "part2": solution.part2()
+                "part1": solution.part1,
+                "part2": solution.part2
             });
         }
         println!("{}", stringify_pretty(outputs, 4));
