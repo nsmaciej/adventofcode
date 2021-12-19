@@ -76,8 +76,8 @@ pub fn solve(input: String) -> (i32, i32) {
     let part1 = magnitude_sfn(&nums.iter().fold(nums[0].clone(), |a, x| add_sfn(a, x)));
     let part2 = nums
         .iter()
-        .tuple_combinations()
-        .map(|(x, y)| magnitude_sfn(&add_sfn(x.clone(), y)))
+        .permutations(2)
+        .map(|xs| magnitude_sfn(&add_sfn(xs[0].clone(), &xs[1])))
         .max()
         .unwrap();
 
