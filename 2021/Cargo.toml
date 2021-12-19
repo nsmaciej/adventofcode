@@ -1,5 +1,5 @@
 [workspace]
-members = ["solutions", "runaoc"]
+members = ["solutions", "runaoc", "web"]
 
 [profile.release]
 lto = true
