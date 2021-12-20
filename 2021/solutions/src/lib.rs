@@ -1,6 +1,5 @@
 #![feature(let_else)]
 #![feature(array_windows)]
-#![feature(destructuring_assignment)]
 #![feature(int_abs_diff)]
 #![feature(drain_filter)]
 

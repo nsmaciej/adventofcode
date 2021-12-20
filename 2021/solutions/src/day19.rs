@@ -1,6 +1,5 @@
-use std::collections::BTreeSet;
-
 use itertools::Itertools;
+use std::collections::BTreeSet;
 
 type Point = [i32; 3];
 
@@ -14,66 +13,58 @@ static DIRECTIONS: [Point; 6] = [
 ];
 static ROTATIONS: [[i32; 2]; 4] = [[1, 2], [-2, 1], [-1, -2], [2, -1]];
 
-/// 1-based index which copies the sign of the index.
 fn ix(point: Point, i: i32) -> i32 {
+    // 1-based index which copies the sign of the index.
     point[i.abs() as usize - 1] * i.signum()
 }
 
-/// Apply one of the 24 orientations.
-fn orient(pt: Point, t: u8) -> Point {
+fn orient(point: Point, t: u8) -> Point {
     let dirs = DIRECTIONS[t as usize / 4];
     let [rx, ry] = ROTATIONS[t as usize % 4];
-    [ix(pt, ix(dirs, rx)), ix(pt, ix(dirs, ry)), ix(pt, dirs[2])]
-}
-
-fn parse_scanners(input: String) -> Vec<Vec<Point>> {
-    let mut lines = input.lines();
-    let mut scanners = Vec::new();
-    while let Some(scanner_line) = lines.next() {
-        assert!(scanner_line.starts_with("--- scanner"));
-        let mut probes = Vec::new();
-        while let Some(probe_line) = lines.next() {
-            if probe_line.is_empty() {
-                break;
-            }
-            let mut point = [0; 3];
-            for (i, x) in probe_line.split(',').enumerate() {
-                point[i] = x.parse().unwrap();
-            }
-            probes.push(point);
-        }
-        scanners.push(probes);
-    }
-    scanners
+    [
+        ix(point, ix(dirs, rx)),
+        ix(point, ix(dirs, ry)),
+        // z axis unchanged by the rotation.
+        ix(point, dirs[2]),
+    ]
 }
 
 fn sub([x1, y1, z1]: Point, [x2, y2, z2]: Point) -> Point {
     [x1 - x2, y1 - y2, z1 - z2]
 }
 
-/// Shifts rhs in place if successful.
-fn find_overlap(
-    lhs: &[Point],
-    rhs: &mut [Point],
-    positions: &mut BTreeSet<Point>,
-) -> Option<Point> {
-    for lhs_ref in lhs {
-        let lhs_deltas: BTreeSet<Point> = lhs.iter().map(|x| sub(*x, *lhs_ref)).collect();
-        for rhs_ref in rhs.iter() {
-            for rhs_dir in 0..24 {
-                let common = rhs
+fn dist([x1, y1, z1]: Point, [x2, y2, z2]: Point) -> u32 {
+    x1.abs_diff(x2) + y1.abs_diff(y2) + z1.abs_diff(z2)
+}
+
+fn parse(line: &str) -> Point {
+    let mut point = [0; 3];
+    for (i, x) in line.split(',').enumerate() {
+        point[i] = x.parse().unwrap();
+    }
+    point
+}
+
+fn parse_scanners(input: String) -> Vec<Vec<Point>> {
+    input
+        .split("\n\n")
+        .map(|scanner| scanner.lines().skip(1).map(parse).collect())
+        .collect()
+}
+
+fn find_overlap(located: &[Point], target: &[Point]) -> Option<(u8, Point)> {
+    for located_point in located {
+        let deltas: BTreeSet<Point> = located.iter().map(|x| sub(*x, *located_point)).collect();
+        for target_reference in target.iter() {
+            for dir in 0..24 {
+                let common = target
                     .iter()
-                    .map(|x| orient(sub(*x, *rhs_ref), rhs_dir))
-                    .filter(|x| lhs_deltas.contains(x))
+                    .map(|x| orient(sub(*x, *target_reference), dir))
+                    .filter(|x| deltas.contains(x))
                     .count();
                 if common >= 12 {
-                    // rhs_ref is the same beacon as lhs_ref.
-                    let diff = sub(orient(*rhs_ref, rhs_dir), *lhs_ref);
-                    for x in rhs {
-                        *x = sub(orient(*x, rhs_dir), diff);
-                        positions.insert(*x);
-                    }
-                    return Some([-diff[0], -diff[1], -diff[2]]);
+                    let diff = sub(orient(*target_reference, dir), *located_point);
+                    return Some((dir, diff));
                 }
             }
         }
@@ -83,25 +74,27 @@ fn find_overlap(
 
 pub fn solve(input: String) -> (usize, u32) {
     let mut scanners = parse_scanners(input);
-    let mut beacon_positions = scanners[0].iter().cloned().collect();
-    let mut located_scanners = vec![scanners.remove(0)];
+    let mut beacon_positions: BTreeSet<Point> = scanners[0].iter().cloned().collect();
+    let mut located_scanners = vec![scanners.swap_remove(0)];
     let mut scanner_positions = Vec::new();
 
     while !scanners.is_empty() {
-        let lhs = located_scanners.pop().unwrap();
-        located_scanners.extend(scanners.drain_filter(|rhs| {
-            if let Some(pos) = find_overlap(&lhs, rhs, &mut beacon_positions) {
-                scanner_positions.push(pos);
-                return true;
+        let located = located_scanners.pop().unwrap();
+        located_scanners.extend(scanners.drain_filter(|target| {
+            let Some((dir, diff)) = find_overlap(&located, target) else { return false };
+            scanner_positions.push(diff);
+            for x in target {
+                *x = sub(orient(*x, dir), diff);
+                beacon_positions.insert(*x);
             }
-            false
+            true
         }));
     }
 
     let part2 = scanner_positions
         .iter()
         .tuple_combinations()
-        .map(|([x1, y1, z1], [x2, y2, z2])| x2.abs_diff(*x1) + y2.abs_diff(*y1) + z2.abs_diff(*z1))
+        .map(|(a, b)| dist(*a, *b))
         .max()
         .unwrap();
     (beacon_positions.len(), part2)
