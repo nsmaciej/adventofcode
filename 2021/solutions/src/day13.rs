@@ -1,10 +1,10 @@
 //! Transparent Origami
 
-use hashbrown::HashSet;
+use ahash::AHashSet;
 use itertools::Itertools;
 
-fn fold_points(grid: HashSet<(u32, u32)>, folds: &[(char, u32)]) -> HashSet<(u32, u32)> {
-    let mut next = HashSet::new();
+fn fold_points(grid: AHashSet<(u32, u32)>, folds: &[(char, u32)]) -> AHashSet<(u32, u32)> {
+    let mut next = AHashSet::new();
     for (mut x, mut y) in grid {
         for (axis, k) in folds {
             x = if x < *k || *axis == 'y' { x } else { k * 2 - x };
@@ -17,7 +17,7 @@ fn fold_points(grid: HashSet<(u32, u32)>, folds: &[(char, u32)]) -> HashSet<(u32
 
 pub fn solve(input: String) -> (usize, String) {
     let mut input = input.lines();
-    let mut grid = HashSet::<(u32, u32)>::new();
+    let mut grid = AHashSet::<(u32, u32)>::new();
     for line in &mut input {
         if line.is_empty() {
             break;

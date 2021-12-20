@@ -1,9 +1,9 @@
-use hashbrown::HashSet;
+use ahash::AHashSet;
 use itertools::Itertools;
 
 type Fingerprint = u32;
 type Point = [i32; 3];
-type Scanner = (Vec<Point>, HashSet<Fingerprint>);
+type Scanner = (Vec<Point>, AHashSet<Fingerprint>);
 
 #[rustfmt::skip]
 static ORIENTATIONS: [Point; 24] = [
@@ -40,7 +40,7 @@ fn fingerprint(a: Point, b: Point) -> Fingerprint {
     i << 16 | j & 0xffff
 }
 
-fn find_fingerprints(scanner: &[Point]) -> HashSet<Fingerprint> {
+fn find_fingerprints(scanner: &[Point]) -> AHashSet<Fingerprint> {
     scanner
         .iter()
         .tuple_combinations()
@@ -62,7 +62,7 @@ fn find_overlap(located: &Scanner, target: &Scanner) -> Option<(u8, Point)> {
         return None;
     }
     for located_point in &located.0 {
-        let deltas: HashSet<Point> = located.0.iter().map(|x| sub(*x, *located_point)).collect();
+        let deltas: AHashSet<Point> = located.0.iter().map(|x| sub(*x, *located_point)).collect();
         for target_reference in &target.0 {
             'next_dir: for dir in 0..24 {
                 let mut common = 0;
@@ -95,7 +95,7 @@ pub fn solve(input: String) -> (usize, u32) {
             (scanner, fingerprints)
         })
         .collect_vec();
-    let mut beacon_positions: HashSet<Point> = scanners[0].0.iter().cloned().collect();
+    let mut beacon_positions: AHashSet<Point> = scanners[0].0.iter().cloned().collect();
     let mut located_scanners = vec![scanners.swap_remove(0)];
     let mut scanner_positions = Vec::new();
 

@@ -5,14 +5,14 @@
 // batches by sorting the adjacency list. We also use the fact that there are
 // very few nodes to encode the visit state into a u32 integer.
 
-use hashbrown::HashMap;
+use ahash::AHashMap;
 
 const START: i8 = 1;
 const END: i8 = 0;
 
 fn visit(
     graph: &[Vec<i8>],
-    cache: &mut HashMap<u64, i64>,
+    cache: &mut AHashMap<u64, i64>,
     visited: u32,
     node: i8,
     visited_twice: bool,
@@ -50,7 +50,7 @@ fn visit(
 }
 
 pub fn solve(input: String) -> (i64, i64) {
-    let mut strings = HashMap::<String, i8>::new();
+    let mut strings = AHashMap::new();
     strings.insert("end".to_string(), END);
     strings.insert("start".to_string(), START);
 
@@ -74,7 +74,7 @@ pub fn solve(input: String) -> (i64, i64) {
         }
     }
 
-    let mut cache = HashMap::new();
+    let mut cache = AHashMap::new();
     (
         visit(&graph, &mut cache, 1 << START, START, true),
         visit(&graph, &mut cache, 1 << START, START, false),
