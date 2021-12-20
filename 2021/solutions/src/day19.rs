@@ -83,27 +83,26 @@ fn find_overlap(
 
 pub fn solve(input: String) -> (usize, u32) {
     let mut scanners = parse_scanners(input);
-    let mut positions = scanners[0].iter().cloned().collect();
-    let mut ref_scanners = vec![scanners.remove(0)];
-    let mut poses = Vec::new();
+    let mut located_scanners = vec![scanners.remove(0)];
+    let mut beacon_positions = scanners[0].iter().cloned().collect();
+    let mut scanner_positions = Vec::new();
+
     while !scanners.is_empty() {
-        // println!("{} vs. {}", ref_scanners.len(), scanners.len());
-        'search: for lhs in &ref_scanners {
-            for (rhs_ix, rhs) in scanners.iter_mut().enumerate() {
-                if let Some(pos) = find_overlap(&lhs, rhs, &mut positions) {
-                    ref_scanners.push(scanners.remove(rhs_ix));
-                    poses.push(pos);
-                    break 'search;
-                }
+        let lhs = located_scanners.pop().unwrap();
+        located_scanners.extend(scanners.drain_filter(|rhs| {
+            if let Some(pos) = find_overlap(&lhs, rhs, &mut beacon_positions) {
+                scanner_positions.push(pos);
+                return true;
             }
-        }
+            false
+        }));
     }
 
-    let part2 = poses
+    let part2 = scanner_positions
         .iter()
         .tuple_combinations()
         .map(|([x1, y1, z1], [x2, y2, z2])| x2.abs_diff(*x1) + y2.abs_diff(*y1) + z2.abs_diff(*z1))
         .max()
         .unwrap();
-    (positions.len(), part2)
+    (beacon_positions.len(), part2)
 }

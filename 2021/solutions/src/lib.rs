@@ -2,6 +2,7 @@
 #![feature(array_windows)]
 #![feature(destructuring_assignment)]
 #![feature(int_abs_diff)]
+#![feature(drain_filter)]
 
 use std::fmt::Display;
 use utils::AocInput;
