@@ -3,15 +3,15 @@ use std::collections::BTreeSet;
 
 type Point = [i32; 3];
 
-static DIRECTIONS: [Point; 6] = [
-    [1, 2, 3],
-    [2, 1, -3],
-    [3, 1, 2],
-    [1, 3, -2],
-    [2, 3, 1],
-    [3, 2, -1],
+#[rustfmt::skip]
+static ORIENTATIONS: [Point; 24] = [
+    [1, 2, 3], [-2, 1, 3], [-1, -2, 3], [2, -1, 3],
+    [2, 1, -3], [-1, 2, -3], [-2, -1, -3], [1, -2, -3],
+    [3, 1, 2], [-1, 3, 2], [-3, -1, 2], [1, -3, 2],
+    [1, 3, -2], [-3, 1, -2], [-1, -3, -2], [3, -1, -2],
+    [2, 3, 1], [-3, 2, 1], [-2, -3, 1], [3, -2, 1],
+    [3, 2, -1], [-2, 3, -1], [-3, -2, -1], [2, -3, -1],
 ];
-static ROTATIONS: [[i32; 2]; 4] = [[1, 2], [-2, 1], [-1, -2], [2, -1]];
 
 fn ix(point: Point, i: i32) -> i32 {
     // 1-based index which copies the sign of the index.
@@ -19,14 +19,8 @@ fn ix(point: Point, i: i32) -> i32 {
 }
 
 fn orient(point: Point, t: u8) -> Point {
-    let dirs = DIRECTIONS[t as usize / 4];
-    let [rx, ry] = ROTATIONS[t as usize % 4];
-    [
-        ix(point, ix(dirs, rx)),
-        ix(point, ix(dirs, ry)),
-        // z axis unchanged by the rotation.
-        ix(point, dirs[2]),
-    ]
+    let [ox, oy, oz] = ORIENTATIONS[t as usize];
+    [ix(point, ox), ix(point, oy), ix(point, oz)]
 }
 
 fn sub([x1, y1, z1]: Point, [x2, y2, z2]: Point) -> Point {
@@ -37,7 +31,7 @@ fn dist([x1, y1, z1]: Point, [x2, y2, z2]: Point) -> u32 {
     x1.abs_diff(x2) + y1.abs_diff(y2) + z1.abs_diff(z2)
 }
 
-fn parse(line: &str) -> Point {
+fn parse_point(line: &str) -> Point {
     let mut point = [0; 3];
     for (i, x) in line.split(',').enumerate() {
         point[i] = x.parse().unwrap();
@@ -48,7 +42,7 @@ fn parse(line: &str) -> Point {
 fn parse_scanners(input: String) -> Vec<Vec<Point>> {
     input
         .split("\n\n")
-        .map(|scanner| scanner.lines().skip(1).map(parse).collect())
+        .map(|scanner| scanner.lines().skip(1).map(parse_point).collect())
         .collect()
 }
 
