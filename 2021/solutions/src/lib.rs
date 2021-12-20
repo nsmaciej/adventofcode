@@ -1,12 +1,14 @@
 #![feature(let_else)]
 #![feature(array_windows)]
+#![feature(destructuring_assignment)]
+#![feature(int_abs_diff)]
 
 use std::fmt::Display;
 use utils::AocInput;
 
 pub type Day = u32;
 
-pub const DAYS: Day = 18;
+pub const DAYS: Day = 19;
 
 mod day01;
 mod day02;
@@ -26,6 +28,7 @@ mod day15;
 mod day16;
 mod day17;
 mod day18;
+mod day19;
 
 mod utils;
 
@@ -60,6 +63,7 @@ pub fn run_day(day: Day, mut input: String) -> Solution {
         16 => run(day16::solve, input),
         17 => run(day17::solve, input),
         18 => run(day18::solve, input),
+        19 => run(day19::solve, input),
         _ => panic!("day not implemented"),
     }
 }
