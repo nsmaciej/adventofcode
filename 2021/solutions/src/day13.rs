@@ -1,7 +1,7 @@
 //! Transparent Origami
 
+use hashbrown::HashSet;
 use itertools::Itertools;
-use std::collections::HashSet;
 
 fn fold_points(grid: HashSet<(u32, u32)>, folds: &[(char, u32)]) -> HashSet<(u32, u32)> {
     let mut next = HashSet::new();

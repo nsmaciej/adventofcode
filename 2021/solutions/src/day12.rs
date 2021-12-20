@@ -5,7 +5,7 @@
 // batches by sorting the adjacency list. We also use the fact that there are
 // very few nodes to encode the visit state into a u32 integer.
 
-use std::collections::{BTreeMap, HashMap};
+use hashbrown::HashMap;
 
 const START: i8 = 1;
 const END: i8 = 0;
@@ -50,7 +50,7 @@ fn visit(
 }
 
 pub fn solve(input: String) -> (i64, i64) {
-    let mut strings = BTreeMap::<String, i8>::new();
+    let mut strings = HashMap::<String, i8>::new();
     strings.insert("end".to_string(), END);
     strings.insert("start".to_string(), START);
 

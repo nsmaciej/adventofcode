@@ -1,6 +1,7 @@
 //! Extended Polymerization
 
-use std::{collections::BTreeMap, mem};
+use std::collections::BTreeMap;
+use std::mem::swap;
 
 #[inline]
 fn key(a: u8, b: u8) -> u16 {
@@ -29,10 +30,10 @@ fn simulate(
             *next.entry(key(result, b)).or_default() += *k;
             *k = 0;
         }
-        mem::swap(&mut pairs, &mut next);
+        swap(&mut pairs, &mut next);
     }
 
-    let mut counts: BTreeMap<u8, u64> = BTreeMap::new();
+    let mut counts = BTreeMap::<u8, u64>::new();
     for (ab, k) in &pairs {
         let (a, b) = unkey(*ab);
         *counts.entry(a).or_default() += k;
@@ -49,7 +50,7 @@ fn simulate(
 
 pub fn solve(input: String) -> (u64, u64) {
     let mut lines = input.lines();
-    let mut pairs: BTreeMap<u16, u64> = BTreeMap::new();
+    let mut pairs = BTreeMap::<u16, u64>::new();
     let template: Vec<u8> = lines.next().unwrap().bytes().collect();
     let first = *template.first().unwrap();
     let last = *template.last().unwrap();
