@@ -1,7 +1,9 @@
+use hashbrown::HashSet;
 use itertools::Itertools;
-use std::collections::BTreeSet;
 
+type Fingerprint = u32;
 type Point = [i32; 3];
+type Scanner = (Vec<Point>, HashSet<Fingerprint>);
 
 #[rustfmt::skip]
 static ORIENTATIONS: [Point; 24] = [
@@ -31,6 +33,21 @@ fn dist([x1, y1, z1]: Point, [x2, y2, z2]: Point) -> u32 {
     x1.abs_diff(x2) + y1.abs_diff(y2) + z1.abs_diff(z2)
 }
 
+fn fingerprint(a: Point, b: Point) -> Fingerprint {
+    let [x, y, z] = sub(a, b);
+    let i = (x.abs() + y.abs() + z.abs()) as u32;
+    let j = (x * x + y * y + z * z) as u32;
+    i << 16 | j & 0xffff
+}
+
+fn find_fingerprints(scanner: &[Point]) -> HashSet<Fingerprint> {
+    scanner
+        .iter()
+        .tuple_combinations()
+        .map(|(a, b)| fingerprint(*a, *b))
+        .collect()
+}
+
 fn parse_point(line: &str) -> Point {
     let mut point = [0; 3];
     for (i, x) in line.split(',').enumerate() {
@@ -39,26 +56,29 @@ fn parse_point(line: &str) -> Point {
     point
 }
 
-fn parse_scanners(input: String) -> Vec<Vec<Point>> {
-    input
-        .split("\n\n")
-        .map(|scanner| scanner.lines().skip(1).map(parse_point).collect())
-        .collect()
-}
-
-fn find_overlap(located: &[Point], target: &[Point]) -> Option<(u8, Point)> {
-    for located_point in located {
-        let deltas: BTreeSet<Point> = located.iter().map(|x| sub(*x, *located_point)).collect();
-        for target_reference in target.iter() {
-            for dir in 0..24 {
-                let common = target
-                    .iter()
-                    .map(|x| orient(sub(*x, *target_reference), dir))
-                    .filter(|x| deltas.contains(x))
-                    .count();
-                if common >= 12 {
-                    let diff = sub(orient(*target_reference, dir), *located_point);
-                    return Some((dir, diff));
+fn find_overlap(located: &Scanner, target: &Scanner) -> Option<(u8, Point)> {
+    // Fingerprint colisions happen, so don't check against 66.
+    if located.1.intersection(&target.1).count() < 50 {
+        return None;
+    }
+    for located_point in &located.0 {
+        let deltas: HashSet<Point> = located.0.iter().map(|x| sub(*x, *located_point)).collect();
+        for target_reference in &target.0 {
+            'next_dir: for dir in 0..24 {
+                let mut common = 0;
+                for (i, x) in target.0.iter().enumerate() {
+                    if deltas.contains(&orient(sub(*x, *target_reference), dir)) {
+                        common += 1;
+                        if common >= 12 {
+                            // Enough of a match in practice.
+                            let diff = sub(orient(*target_reference, dir), *located_point);
+                            return Some((dir, diff));
+                        }
+                    }
+                    if target.0.len() - i < 12 - common {
+                        // We would've found at least one match by now.
+                        continue 'next_dir;
+                    }
                 }
             }
         }
@@ -67,17 +87,24 @@ fn find_overlap(located: &[Point], target: &[Point]) -> Option<(u8, Point)> {
 }
 
 pub fn solve(input: String) -> (usize, u32) {
-    let mut scanners = parse_scanners(input);
-    let mut beacon_positions: BTreeSet<Point> = scanners[0].iter().cloned().collect();
+    let mut scanners = input
+        .split("\n\n")
+        .map(|scanner| {
+            let scanner = scanner.lines().skip(1).map(parse_point).collect_vec();
+            let fingerprints = find_fingerprints(&scanner);
+            (scanner, fingerprints)
+        })
+        .collect_vec();
+    let mut beacon_positions: HashSet<Point> = scanners[0].0.iter().cloned().collect();
     let mut located_scanners = vec![scanners.swap_remove(0)];
     let mut scanner_positions = Vec::new();
 
-    while !scanners.is_empty() {
+    while !scanners.is_empty() && !located_scanners.is_empty() {
         let located = located_scanners.pop().unwrap();
         located_scanners.extend(scanners.drain_filter(|target| {
             let Some((dir, diff)) = find_overlap(&located, target) else { return false };
             scanner_positions.push(diff);
-            for x in target {
+            for x in &mut target.0 {
                 *x = sub(orient(*x, dir), diff);
                 beacon_positions.insert(*x);
             }
