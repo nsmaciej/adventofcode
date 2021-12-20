@@ -83,8 +83,8 @@ fn find_overlap(
 
 pub fn solve(input: String) -> (usize, u32) {
     let mut scanners = parse_scanners(input);
-    let mut located_scanners = vec![scanners.remove(0)];
     let mut beacon_positions = scanners[0].iter().cloned().collect();
+    let mut located_scanners = vec![scanners.remove(0)];
     let mut scanner_positions = Vec::new();
 
     while !scanners.is_empty() {
