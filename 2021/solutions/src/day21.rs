@@ -9,10 +9,10 @@ fn part1(mut x: i32, mut y: i32) -> i32 {
     let mut y_score = 0;
     let mut rolls = 1;
     while y_score < 1000 {
-        rolls += 3;
-        let d = (rolls * 3) % 100;
+        let d = (rolls * 3 + 3) % 100;
         x = (x + d - 1) % 10 + 1;
         x_score += x;
+        rolls += 3;
         swap(&mut x, &mut y);
         swap(&mut x_score, &mut y_score);
     }
