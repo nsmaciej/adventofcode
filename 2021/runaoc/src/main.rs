@@ -136,7 +136,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let check = args.contains(["-c", "--check"]);
 
     if let Some(day) = args.opt_free_from_str()? {
-        let input = match args.opt_free_from_str::<String>()?.as_deref() {
+        let arg_input_path = args.opt_free_from_str::<String>()?;
+        let input = match arg_input_path.as_deref() {
             Some("-") => {
                 let mut buf = String::new();
                 io::stdin().read_to_string(&mut buf)?;
@@ -152,7 +153,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         if time {
             eprintln!("{} in {:.2?}", "Finished".bold(), elapsed);
         }
-        if check {
+        // Don't check if we are using a custom input path.
+        if check && arg_input_path.is_none() {
             compare_snapshot(&get_snapshots()?, day, &solution);
         }
     } else if snapshot {
