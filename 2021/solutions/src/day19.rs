@@ -1,3 +1,5 @@
+//! Beacon Scanner
+
 use ahash::AHashSet;
 use itertools::Itertools;
 

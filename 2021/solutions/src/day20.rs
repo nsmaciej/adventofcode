@@ -1,3 +1,5 @@
+//! Trench Map
+
 use crate::utils::Grid;
 
 type Image = Vec<Vec<bool>>;

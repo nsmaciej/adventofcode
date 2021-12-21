@@ -1,3 +1,5 @@
+//! Trick Shot
+
 fn parse_range(text: &str) -> (i32, i32) {
     let text = text.split_once("=").unwrap().1;
     let (start, end) = text.split_once("..").unwrap();

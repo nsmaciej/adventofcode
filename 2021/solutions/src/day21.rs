@@ -1,3 +1,5 @@
+//! Dirac Dice
+
 use itertools::Itertools;
 
 fn parse(line: &str) -> i32 {
