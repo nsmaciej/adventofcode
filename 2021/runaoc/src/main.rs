@@ -82,13 +82,13 @@ fn run_all(time: bool, check: bool) -> Result<(), Box<dyn Error>> {
     if time {
         eprintln!();
         eprintln!(
-            "{:7} {:>9}  {:>10} {:>14}",
+            "{:7} {:>9}  {:>8} {:>17}",
             "Task".bold(),
             "Time",
             "Part 1".dimmed(),
             "Part 2".dimmed(),
         );
-        eprintln!("{}", "―".repeat(44));
+        eprintln!("{}", "―".repeat(46));
     }
 
     let snapshots = if check { Some(get_snapshots()?) } else { None };
@@ -103,7 +103,7 @@ fn run_all(time: bool, check: bool) -> Result<(), Box<dyn Error>> {
             let title = format!("Day {:}", day);
             total += elapsed;
             eprintln!(
-                "{:7} {:6} µs  {:>10} {:>14}",
+                "{:7} {:7} µs  {:>8} {:>17}",
                 title.bold(),
                 elapsed.as_micros(),
                 truncate(&solution.part1).dimmed(),
@@ -118,8 +118,8 @@ fn run_all(time: bool, check: bool) -> Result<(), Box<dyn Error>> {
     }
 
     if time {
-        eprintln!("{}", "―".repeat(44));
-        eprintln!("{:7} {:6} µs\n", "Total".bold(), total.as_micros());
+        eprintln!("{}", "―".repeat(46));
+        eprintln!("{:7} {:7} µs\n", "Total".bold(), total.as_micros());
     }
 
     Ok(())
