@@ -151,7 +151,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let elapsed = start.elapsed();
         println!("{}\n{}", solution.part1, solution.part2);
         if time {
-            eprintln!("{} in {:.2?}", "Finished".bold(), elapsed);
+            eprintln!("{} {:.2?} µs", "Took".bold(), elapsed.as_micros());
         }
         // Don't check if we are using a custom input path.
         if check && arg_input_path.is_none() {
