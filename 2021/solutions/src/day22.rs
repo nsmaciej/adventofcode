@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use smallvec::SmallVec;
 
 type Range = (i32, i32);
 type Step = (bool, Range, Range, Range);
@@ -13,7 +14,7 @@ fn clip((start, end): Range, (clip_start, clip_end): Range) -> Option<Range> {
 }
 
 fn count_untouched((_, xs, ys, zs): Step, remaining_steps: &[Step]) -> i64 {
-    let conflicts: Vec<Step> = remaining_steps
+    let conflicts: SmallVec<[Step; 8]> = remaining_steps // Covers 99% cases.
         .iter()
         .cloned()
         .flat_map(|(s, xt, yt, zt)| Some((s, clip(xs, xt)?, clip(ys, yt)?, clip(zs, zt)?)))
