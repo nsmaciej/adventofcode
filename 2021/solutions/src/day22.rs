@@ -1,5 +1,3 @@
-use std::collections::BTreeSet;
-
 use itertools::Itertools;
 
 type Range = (i32, i32);
@@ -10,27 +8,31 @@ fn parse_range(text: &str) -> Range {
 }
 
 fn count(steps: &[(bool, Range, Range, Range)]) -> i64 {
-    let mut xs = BTreeSet::new();
-    let mut ys = BTreeSet::new();
-    let mut zs = BTreeSet::new();
+    let mut xs = Vec::new();
+    let mut ys = Vec::new();
+    let mut zs = Vec::new();
     for (_, x, y, z) in steps {
-        xs.insert(x.0);
-        xs.insert(x.1 + 1);
-        ys.insert(y.0);
-        ys.insert(y.1 + 1);
-        zs.insert(z.0);
-        zs.insert(z.1 + 1);
+        xs.push(x.0);
+        xs.push(x.1 + 1);
+        ys.push(y.0);
+        ys.push(y.1 + 1);
+        zs.push(z.0);
+        zs.push(z.1 + 1);
     }
+    xs.sort();
+    ys.sort();
+    zs.sort();
+    xs.dedup();
+    ys.dedup();
+    zs.dedup();
 
     let mut sum = 0;
-    for x2 in xs.iter().rev().skip(1).cloned() {
-        let x3 = *xs.range(x2..).skip(1).next().unwrap();
-        // println!("now on {x2}..{x3}");
-        for y2 in ys.iter().rev().skip(1).cloned() {
-            let y3 = *ys.range(y2..).skip(1).next().unwrap();
-            for z2 in zs.iter().rev().skip(1).cloned() {
-                let z3 = *zs.range(z2..).skip(1).next().unwrap();
-                // See if the x1..x2, y1..y2, z1..z2 range is on or off.
+    for x in 0..xs.len() - 1 {
+        let (x2, x3) = (xs[x], xs[x + 1]);
+        for y in 0..ys.len() - 1 {
+            let (y2, y3) = (ys[y], ys[y + 1]);
+            for z in 0..zs.len() - 1 {
+                let (z2, z3) = (zs[z], zs[z + 1]);
                 let mut on = false;
                 for (state, (x1, x4), (y1, y4), (z1, z4)) in steps.iter().cloned() {
                     if (x2 >= x1 && x3 <= x4 + 1)
