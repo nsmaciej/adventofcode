@@ -1,73 +1,53 @@
 use itertools::Itertools;
 
 type Range = (i32, i32);
+type Step = (bool, Range, Range, Range);
 
 fn parse_range(text: &str) -> Range {
     let (start, end) = text.split_once("=").unwrap().1.split_once("..").unwrap();
-    (start.parse().unwrap(), end.parse().unwrap())
+    (start.parse().unwrap(), end.parse::<i32>().unwrap() + 1)
 }
 
-fn count(steps: &[(bool, Range, Range, Range)]) -> i64 {
-    let mut xs = Vec::new();
-    let mut ys = Vec::new();
-    let mut zs = Vec::new();
-    for (_, x, y, z) in steps {
-        xs.push(x.0);
-        xs.push(x.1 + 1);
-        ys.push(y.0);
-        ys.push(y.1 + 1);
-        zs.push(z.0);
-        zs.push(z.1 + 1);
-    }
-    xs.sort();
-    ys.sort();
-    zs.sort();
-    xs.dedup();
-    ys.dedup();
-    zs.dedup();
+fn clip((start, end): Range, (clip_start, clip_end): Range) -> Option<Range> {
+    (end > clip_start && start < clip_end).then(|| (clip_start.max(start), clip_end.min(end)))
+}
 
-    let mut sum = 0;
-    for x in 0..xs.len() - 1 {
-        let (x2, x3) = (xs[x], xs[x + 1]);
-        for y in 0..ys.len() - 1 {
-            let (y2, y3) = (ys[y], ys[y + 1]);
-            for z in 0..zs.len() - 1 {
-                let (z2, z3) = (zs[z], zs[z + 1]);
-                let mut on = false;
-                for (state, (x1, x4), (y1, y4), (z1, z4)) in steps.iter().cloned() {
-                    if (x2 >= x1 && x3 <= x4 + 1)
-                        && (y2 >= y1 && y3 <= y4 + 1)
-                        && (z2 >= z1 && z3 <= z4 + 1)
-                    {
-                        on = state;
-                    }
-                }
-                if on {
-                    sum += (x3 - x2) as i64 * (y3 - y2) as i64 * (z3 - z2) as i64;
-                }
-            }
-        }
-    }
-    sum
+fn count_untouched((_, xs, ys, zs): Step, remaining_steps: &[Step]) -> i64 {
+    let conflicts: Vec<Step> = remaining_steps
+        .iter()
+        .cloned()
+        .flat_map(|(s, xt, yt, zt)| Some((s, clip(xs, xt)?, clip(ys, yt)?, clip(zs, zt)?)))
+        .collect();
+    let original = (xs.1 - xs.0) as i64 * (ys.1 - ys.0) as i64 * (zs.1 - zs.0) as i64;
+    let removed: i64 = (0..conflicts.len())
+        .map(|i| count_untouched(conflicts[i], &conflicts[i + 1..]))
+        .sum();
+    original - removed
+}
+
+fn solve_steps(steps: Vec<Step>) -> i64 {
+    (0..steps.len())
+        .filter(|i| steps[*i].0) // Only on steps.
+        .map(|i| count_untouched(steps[i], &steps[i + 1..]))
+        .sum()
 }
 
 pub fn solve(input: String) -> (i64, i64) {
-    let steps = input
+    let steps: Vec<Step> = input
         .lines()
         .map(|line| {
             let (state, rest) = line.split_once(' ').unwrap();
             let (x, y, z) = rest.split(',').map(parse_range).collect_tuple().unwrap();
             (state == "on", x, y, z)
         })
-        .collect_vec();
+        .collect();
 
+    let init = (-50, 51);
     let init_steps = steps
         .iter()
         .cloned()
-        .filter(|(_, x, y, z)| {
-            x.0 >= -50 && x.1 <= 50 && y.0 >= -50 && y.1 <= 50 && z.0 >= -50 && z.1 < 50
-        })
+        .flat_map(|(s, xs, ys, zs)| Some((s, clip(xs, init)?, clip(ys, init)?, clip(zs, init)?)))
         .collect_vec();
 
-    (count(&init_steps), count(&steps))
+    (solve_steps(init_steps), solve_steps(steps))
 }
