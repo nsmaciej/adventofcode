@@ -8,7 +8,9 @@
 
 use crate::utils::Grid;
 
-fn flood(grid: &mut Vec<Vec<(u8, bool)>>, y: usize, x: usize) -> i32 {
+type Basin = [[(u8, bool); 100]; 100];
+
+fn flood(grid: &mut Basin, y: usize, x: usize) -> i32 {
     let Some((height, visited)) = grid.getyx_mut(y, x) else {
         return 0
     };
@@ -24,10 +26,12 @@ fn flood(grid: &mut Vec<Vec<(u8, bool)>>, y: usize, x: usize) -> i32 {
 }
 
 pub fn solve(input: String) -> (i32, i32) {
-    let mut grid: Vec<Vec<(u8, bool)>> = input
-        .lines()
-        .map(|line| line.bytes().map(|x| (x, false)).collect())
-        .collect();
+    let mut grid: Basin = [[(0, false); 100]; 100];
+    for (y, line) in input.lines().enumerate() {
+        for (x, c) in line.bytes().enumerate() {
+            grid[y][x] = (c, false);
+        }
+    }
 
     let mut sum_risk = 0;
     let mut basins = Vec::new();

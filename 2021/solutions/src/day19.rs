@@ -72,7 +72,6 @@ fn find_overlap(located: &Scanner, target: &Scanner) -> Option<(u8, Point)> {
                     if deltas.contains(&orient(sub(*x, *target_reference), dir)) {
                         common += 1;
                         if common >= 12 {
-                            // Enough of a match in practice.
                             let diff = sub(orient(*target_reference, dir), *located_point);
                             return Some((dir, diff));
                         }
