@@ -1,3 +1,4 @@
+use ahash::AHashMap;
 use std::collections::BinaryHeap;
 
 const FREE: i8 = -1;
@@ -12,17 +13,13 @@ const EXITS: [usize; 4] = [2, 4, 6, 8];
 // Energy for a given amphipod.
 const ENERGIES: [usize; 4] = [1, 10, 100, 1000];
 
-#[derive(Debug, PartialEq, Eq, Clone, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
 struct State {
     rooms: [i8; 8],
     hallway: [i8; 11],
 }
 
 impl State {
-    fn solved(&self) -> bool {
-        self.rooms == [0, 1, 2, 3, 0, 1, 2, 3]
-    }
-
     fn hallway_to_room(&self, e: i32, h: usize, t: usize, depth: usize) -> Option<(i32, State)> {
         // Check there is nothing in our way. Note we skip h itself.
         let range = if h < EXITS[t] {
@@ -97,13 +94,20 @@ fn show(state: &State) {
 
 fn find_soln(state: State) -> i32 {
     let mut heap = BinaryHeap::<(i32, State)>::new();
+    let mut best = AHashMap::<State, i32>::new();
     heap.push((0, state));
 
     while let Some((e, state @ State { rooms, hallway, .. })) = heap.pop() {
-        if state.solved() {
+        if rooms[0..4] == [0, 1, 2, 3] {
             return -e;
         }
 
+        if *best.get(&state).unwrap_or(&i32::MAX) < -e {
+            continue;
+        }
+
+        let mut futures = Vec::new();
+        let mut solved_one = false;
         for h in 0..HALLWAY.len() {
             if hallway[h] < 0 {
                 continue;
@@ -111,18 +115,31 @@ fn find_soln(state: State) -> i32 {
             // Move into the bottom-most free room.
             let t = hallway[h] as usize;
             if rooms[4 + t] == FREE {
-                heap.extend(state.hallway_to_room(e, h, t, 1));
+                futures.extend(state.hallway_to_room(e, h, t, 1));
+                solved_one = true;
+                break;
             } else if rooms[4 + t] == t as i8 && rooms[t] == FREE {
-                heap.extend(state.hallway_to_room(e, h, t, 0));
+                futures.extend(state.hallway_to_room(e, h, t, 0));
+                solved_one = true;
+                break;
             }
         }
 
-        for t in 0..4 {
-            // Move top ap if it's in the wrong room OR there is one under it that is.
-            if rooms[t] >= 0 && (rooms[t] != t as i8 || rooms[4 + t] != t as i8) {
-                heap.extend(state.try_hallways(e, t, 0));
-            } else if rooms[t] == FREE && rooms[4 + t] >= 0 && rooms[4 + t] != t as i8 {
-                heap.extend(state.try_hallways(e, t, 1));
+        if !solved_one {
+            for t in 0..4 {
+                // Move top ap if it's in the wrong room OR there is one under it that is.
+                if rooms[t] >= 0 && (rooms[t] != t as i8 || rooms[4 + t] != t as i8) {
+                    futures.extend_from_slice(&state.try_hallways(e, t, 0));
+                } else if rooms[t] == FREE && rooms[4 + t] >= 0 && rooms[4 + t] != t as i8 {
+                    futures.extend_from_slice(&state.try_hallways(e, t, 1));
+                }
+            }
+        }
+
+        for (next_e, next) in futures {
+            if -next_e < *best.get(&next).unwrap_or(&i32::MAX) {
+                best.insert(next.clone(), -next_e);
+                heap.push((next_e, next));
             }
         }
     }
