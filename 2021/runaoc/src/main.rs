@@ -82,7 +82,7 @@ fn run_all(time: bool, check: bool) -> Result<(), Box<dyn Error>> {
     if time {
         eprintln!();
         eprintln!(
-            "{:7} {:>9}  {:>8} {:>17}",
+            "{:7} {:>10} {:>9} {:>17}",
             "Task".bold(),
             "Time",
             "Part 1".dimmed(),
