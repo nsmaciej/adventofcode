@@ -32,6 +32,7 @@ mod day19;
 mod day20;
 mod day21;
 mod day22;
+mod day23;
 
 mod utils;
 
@@ -70,6 +71,7 @@ pub fn run_day(day: Day, mut input: String) -> Solution {
         20 => run(day20::solve, input),
         21 => run(day21::solve, input),
         22 => run(day22::solve, input),
+        23 => run(day23::solve, input),
         _ => panic!("day not implemented"),
     }
 }
