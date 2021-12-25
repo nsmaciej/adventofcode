@@ -14,7 +14,7 @@ const ENERGY: [usize; 4] = [1, 10, 100, 1000]; // Energy for a given amphipod.
 // it made the cost maths prohibitively complex. Rooms would also be cleaner as
 // a multi-dimensional array, but that actually makes the program quite a bit
 // slower (I checked).
-#[derive(Debug, PartialEq, Eq, Clone, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 struct State<const R: usize> {
     rooms: [i8; R],
     hallway: [i8; HALLWAY_LEN],
@@ -37,20 +37,18 @@ impl<const R: usize> PartialOrd for Entry<R> {
 }
 
 impl<const R: usize> State<R> {
-    fn find_move_into_room(&self) -> Option<(i32, State<R>)> {
+    fn find_move_into_room(&self) -> Option<Entry<R>> {
         let State { rooms, hallway } = self;
-        for h in 0..HALLWAY_LEN {
-            if hallway[h] < 0 {
+        for (h, &t) in hallway.iter().enumerate() {
+            if t < 0 {
                 continue; // Not an amphipod.
             }
-
-            let t = hallway[h] as usize;
+            let t = t as usize;
             if h < EXIT[t] && self.hallway[h + 1..=EXIT[t] - 1].iter().any(|x| *x >= 0)
                 || h >= EXIT[t] && self.hallway[EXIT[t] + 1..=h - 1].iter().any(|x| *x >= 0)
             {
                 continue; // Hallway collision.
             }
-
             let Some(depth) = (0..R / 4).take_while(|d| rooms[4 * d + t] == FREE).last() else {
                 continue; // No spare room.
             };
@@ -58,33 +56,33 @@ impl<const R: usize> State<R> {
                 continue; // Stragglers in the destination room.
             }
 
-            let mut next = self.clone();
+            let mut next = *self;
             next.rooms[4 * depth + t] = self.hallway[h];
             next.hallway[h] = FREE;
             let cost = (1 + depth + EXIT[t].abs_diff(h)) * ENERGY[t];
             // Simply moving into the destination room is always the best move.
-            return Some((cost as i32, next));
+            return Some(Entry(cost as i32, next));
         }
         None
     }
 
-    fn move_into_hallway(&self, t: usize, depth: usize, h: usize) -> (i32, State<R>) {
-        let mut next = self.clone();
+    fn move_into_hallway(&self, t: usize, depth: usize, h: usize) -> Entry<R> {
+        let mut next = *self;
         next.hallway[h] = self.rooms[t + depth * 4];
         next.rooms[t + depth * 4] = FREE;
         // Note t here is room we are in, not our identity, check the energy accordingly.
         let cost = (1 + depth + EXIT[t].abs_diff(h)) * ENERGY[next.hallway[h] as usize];
-        (cost as i32, next)
+        Entry(cost as i32, next)
     }
 
-    fn find_moves(&self) -> SmallVec<[(i32, State<R>); 6]> {
+    fn find_moves(&self) -> SmallVec<[Entry<R>; 6]> {
         if let Some(next) = self.find_move_into_room() {
             return smallvec![next];
         }
 
         // Otherwise try moving into the hallway.
         let mut nexts = SmallVec::new(); // Covers 95% of the lengths.
-        for t in 0..4 {
+        for (t, &exit) in EXIT.iter().enumerate() {
             let top_depth = (0..R / 4)
                 .take_while(|d| self.rooms[4 * d + t] == FREE)
                 .count();
@@ -93,14 +91,14 @@ impl<const R: usize> State<R> {
             }
 
             // Move left and right, skipping over doors (room entrances).
-            for i in (0..EXIT[t]).rev() {
+            for i in (0..exit).rev() {
                 match self.hallway[i] {
                     FREE => nexts.push(self.move_into_hallway(t, top_depth, i)),
                     DOOR => continue,
                     _ => break,
                 };
             }
-            for i in EXIT[t] + 1..HALLWAY_LEN {
+            for i in exit + 1..HALLWAY_LEN {
                 match self.hallway[i] {
                     FREE => nexts.push(self.move_into_hallway(t, top_depth, i)),
                     DOOR => continue,
@@ -113,25 +111,25 @@ impl<const R: usize> State<R> {
 }
 
 fn solve_rooms<const R: usize>(rooms: Vec<i8>) -> i32 {
-    let mut best = AHashMap::<State<R>, i32>::new();
-    let mut heap = BinaryHeap::<Entry<R>>::new();
+    let mut best = AHashMap::new();
+    let mut heap = BinaryHeap::new();
 
-    let start = State {
+    let start = State::<R> {
         rooms: rooms.try_into().unwrap(),
         hallway: [
             FREE, FREE, DOOR, FREE, DOOR, FREE, DOOR, FREE, DOOR, FREE, FREE,
         ],
     };
-    best.insert(start.clone(), 0);
+    best.insert(start, 0);
     heap.push(Entry(0, start));
 
     while let Some(Entry(e, state)) = heap.pop() {
         if state.rooms[0..4] == [0, 1, 2, 3] {
             return e;
         }
-        for (cost, next) in state.find_moves() {
+        for Entry(cost, next) in state.find_moves() {
             if e + cost < *best.get(&next).unwrap_or(&i32::MAX) {
-                best.insert(next.clone(), e + cost);
+                best.insert(next, e + cost);
                 heap.push(Entry(e + cost, next));
             }
         }
