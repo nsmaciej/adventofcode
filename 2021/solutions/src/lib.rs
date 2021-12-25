@@ -8,7 +8,7 @@ use utils::AocInput;
 
 pub type Day = u32;
 
-pub const DAYS: Day = 22;
+pub const DAYS: Day = 23;
 
 mod day01;
 mod day02;
