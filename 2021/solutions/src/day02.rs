@@ -6,7 +6,7 @@ pub fn solve(input: String) -> (i32, i32) {
     let mut depth = 0;
 
     for line in input.lines() {
-        let (cmd, n) = line.split_once(" ").unwrap();
+        let (cmd, n) = line.split_once(' ').unwrap();
         let n: i32 = n.parse().unwrap();
         match cmd {
             "forward" => {

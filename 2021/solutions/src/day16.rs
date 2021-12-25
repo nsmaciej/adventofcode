@@ -8,7 +8,7 @@ struct Reader {
 
 impl Reader {
     fn bit(&mut self) -> bool {
-        let r = self.packet[self.pos / 4] & (1 << 3 - self.pos % 4) > 0;
+        let r = self.packet[self.pos / 4] & 1 << (3 - self.pos % 4) > 0;
         self.pos += 1;
         r
     }

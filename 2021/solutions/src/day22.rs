@@ -5,7 +5,7 @@ type Range = (i32, i32);
 type Step = (bool, Range, Range, Range);
 
 fn parse_range(text: &str) -> Range {
-    let (start, end) = text.split_once("=").unwrap().1.split_once("..").unwrap();
+    let (start, end) = text.split_once('=').unwrap().1.split_once("..").unwrap();
     (start.parse().unwrap(), end.parse::<i32>().unwrap() + 1)
 }
 

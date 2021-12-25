@@ -104,8 +104,7 @@ pub trait Grid<T> {
         let mut widths: Vec<u8> = Vec::with_capacity(self.width());
         for x in 0..self.width() {
             let max_width = (0..self.height())
-                .map(|y| self.getyx(y, x))
-                .flatten()
+                .filter_map(|y| self.getyx(y, x))
                 .map(|x| f(x).to_string().len())
                 .max();
             widths.push(max_width.unwrap_or(0) as u8);
