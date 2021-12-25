@@ -9,6 +9,10 @@ const HALLWAY_LEN: usize = 11;
 const EXIT: [usize; 4] = [2, 4, 6, 8]; // Exit indices into the hallway.
 const ENERGY: [usize; 4] = [1, 10, 100, 1000]; // Energy for a given amphipod.
 
+// Implementation note: I tried making the hallway length use only 7 bytes, but
+// it made the cost maths prohibitively complex. Rooms would also probably be
+// cleaner as a multi-dimensional array, but that actually makes the program
+// quite a bit slower.
 #[derive(Debug, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
 struct State<const R: usize> {
     rooms: [i8; R],
