@@ -1,5 +1,6 @@
 use ahash::AHashMap;
 use smallvec::{smallvec, SmallVec};
+use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
 const FREE: i8 = -1;
@@ -13,10 +14,26 @@ const ENERGY: [usize; 4] = [1, 10, 100, 1000]; // Energy for a given amphipod.
 // it made the cost maths prohibitively complex. Rooms would also be cleaner as
 // a multi-dimensional array, but that actually makes the program quite a bit
 // slower (I checked).
-#[derive(Debug, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash)]
 struct State<const R: usize> {
     rooms: [i8; R],
     hallway: [i8; HALLWAY_LEN],
+}
+
+// Binary heap entry so we don't waste time comparing states.
+#[derive(Debug, PartialEq, Eq)]
+struct Entry<const R: usize>(i32, State<R>);
+
+impl<const R: usize> Ord for Entry<R> {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.0.cmp(&self.0) // Reverse for the heap.
+    }
+}
+
+impl<const R: usize> PartialOrd for Entry<R> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl<const R: usize> State<R> {
@@ -69,24 +86,24 @@ impl<const R: usize> State<R> {
         let mut nexts = SmallVec::new(); // Covers 95% of the lengths.
         for t in 0..4 {
             let top_depth = (0..R / 4)
-                .take_while(|dt| self.rooms[4 * dt + t] == FREE)
+                .take_while(|d| self.rooms[4 * d + t] == FREE)
                 .count();
-            if (top_depth..R / 4).all(|dt| self.rooms[4 * dt + t] == t as i8) {
+            if (top_depth..R / 4).all(|d| self.rooms[4 * d + t] == t as i8) {
                 continue; // Everyone in this room belongs there.
             }
 
             // Move left and right, skipping over doors (room entrances).
             for i in (0..EXIT[t]).rev() {
                 match self.hallway[i] {
-                    DOOR => continue,
                     FREE => nexts.push(self.move_into_hallway(t, top_depth, i)),
+                    DOOR => continue,
                     _ => break,
                 };
             }
             for i in EXIT[t] + 1..HALLWAY_LEN {
                 match self.hallway[i] {
-                    DOOR => continue,
                     FREE => nexts.push(self.move_into_hallway(t, top_depth, i)),
+                    DOOR => continue,
                     _ => break,
                 };
             }
@@ -97,7 +114,7 @@ impl<const R: usize> State<R> {
 
 fn solve_rooms<const R: usize>(rooms: Vec<i8>) -> i32 {
     let mut best = AHashMap::<State<R>, i32>::new();
-    let mut heap = BinaryHeap::<(i32, State<R>)>::new();
+    let mut heap = BinaryHeap::<Entry<R>>::new();
 
     let start = State {
         rooms: rooms.try_into().unwrap(),
@@ -106,16 +123,16 @@ fn solve_rooms<const R: usize>(rooms: Vec<i8>) -> i32 {
         ],
     };
     best.insert(start.clone(), 0);
-    heap.push((0, start));
+    heap.push(Entry(0, start));
 
-    while let Some((e, state)) = heap.pop() {
+    while let Some(Entry(e, state)) = heap.pop() {
         if state.rooms[0..4] == [0, 1, 2, 3] {
-            return -e;
+            return e;
         }
         for (cost, next) in state.find_moves() {
-            if e - cost > *best.get(&next).unwrap_or(&i32::MIN) {
-                best.insert(next.clone(), e - cost);
-                heap.push((e - cost, next));
+            if e + cost < *best.get(&next).unwrap_or(&i32::MAX) {
+                best.insert(next.clone(), e + cost);
+                heap.push(Entry(e + cost, next));
             }
         }
     }
