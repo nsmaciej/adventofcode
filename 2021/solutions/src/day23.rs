@@ -10,9 +10,9 @@ const EXIT: [usize; 4] = [2, 4, 6, 8]; // Exit indices into the hallway.
 const ENERGY: [usize; 4] = [1, 10, 100, 1000]; // Energy for a given amphipod.
 
 // Implementation note: I tried making the hallway length use only 7 bytes, but
-// it made the cost maths prohibitively complex. Rooms would also probably be
-// cleaner as a multi-dimensional array, but that actually makes the program
-// quite a bit slower.
+// it made the cost maths prohibitively complex. Rooms would also be cleaner as
+// a multi-dimensional array, but that actually makes the program quite a bit
+// slower (I checked).
 #[derive(Debug, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
 struct State<const R: usize> {
     rooms: [i8; R],
@@ -24,19 +24,21 @@ impl<const R: usize> State<R> {
         let State { rooms, hallway } = self;
         for h in 0..HALLWAY_LEN {
             if hallway[h] < 0 {
-                continue; // Not a creature.
+                continue; // Not an amphipod.
             }
+
             let t = hallway[h] as usize;
+            if h < EXIT[t] && self.hallway[h + 1..=EXIT[t] - 1].iter().any(|x| *x >= 0)
+                || h >= EXIT[t] && self.hallway[EXIT[t] + 1..=h - 1].iter().any(|x| *x >= 0)
+            {
+                continue; // Hallway collision.
+            }
+
             let Some(depth) = (0..R / 4).take_while(|d| rooms[4 * d + t] == FREE).last() else {
                 continue; // No spare room.
             };
             if (depth + 1..R / 4).any(|d| rooms[4 * d + t] != t as i8) {
                 continue; // Stragglers in the destination room.
-            }
-            if h < EXIT[t] && self.hallway[h + 1..=EXIT[t] - 1].iter().any(|x| *x >= 0)
-                || h >= EXIT[t] && self.hallway[EXIT[t] + 1..=h - 1].iter().any(|x| *x >= 0)
-            {
-                continue; // Hallway collision.
             }
 
             let mut next = self.clone();
