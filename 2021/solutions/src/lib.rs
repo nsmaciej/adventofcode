@@ -9,7 +9,7 @@ use utils::AocInput;
 
 pub type Day = u32;
 
-pub const DAYS: Day = 24;
+pub const DAYS: Day = 25;
 
 mod day01;
 mod day02;
@@ -35,6 +35,7 @@ mod day21;
 mod day22;
 mod day23;
 mod day24;
+mod day25;
 
 mod utils;
 
@@ -75,6 +76,7 @@ pub fn run_day(day: Day, mut input: String) -> Solution {
         22 => run(day22::solve, input),
         23 => run(day23::solve, input),
         24 => run(day24::solve, input),
+        25 => run(day25::solve, input),
         _ => panic!("day not implemented"),
     }
 }

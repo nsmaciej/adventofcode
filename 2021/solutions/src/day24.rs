@@ -10,7 +10,7 @@ use ahash::AHashMap;
 //     for y in range(0, 18):
 //         print(" ".join(f"{xs[18 * c + y]:<10}" for c in range(14)))
 //
-// By inspecting each chunk we see they represent at the following equations:
+// By inspecting each chunk we see they represent the following equations:
 //
 //     x = w != z % 26 + b
 //     z /= a
@@ -73,11 +73,10 @@ fn op_const(line: &str) -> i64 {
     line[6..].parse().unwrap() // Skip over "xxx r "
 }
 
-pub fn solve(input: String) -> (i64, i64) {
-    let lines: Vec<&str> = input.lines().collect();
+pub fn solve(lines: Vec<String>) -> (i64, i64) {
     let params: Vec<Op> = lines
         .chunks_exact(18)
-        .map(|x| (op_const(x[4]) == 26, op_const(x[5]), op_const(x[15])))
+        .map(|x| (op_const(&x[4]) == 26, op_const(&x[5]), op_const(&x[15])))
         .collect();
 
     let k = 10_000_000_000_000;
