@@ -3,7 +3,7 @@ const HEIGHT: usize = 137;
 type Seafloor = [[u8; WIDTH]; HEIGHT];
 
 fn step(grid: &mut Seafloor) -> bool {
-    let mut moved = 0;
+    let mut moved = false;
 
     // Move east.
     for y in 0..HEIGHT {
@@ -12,7 +12,7 @@ fn step(grid: &mut Seafloor) -> bool {
             grid[y][WIDTH - 1] = b'.';
             grid[y][0] = b'>';
             offset = 1;
-            moved += 1;
+            moved = true;
         }
         let mut x = offset;
         while x < WIDTH - offset - 1 as usize {
@@ -20,7 +20,7 @@ fn step(grid: &mut Seafloor) -> bool {
                 grid[y][x + 1] = b'>';
                 grid[y][x] = b'.';
                 x += 1;
-                moved += 1;
+                moved = true;
             }
             x += 1;
         }
@@ -32,7 +32,7 @@ fn step(grid: &mut Seafloor) -> bool {
         if grid[HEIGHT - 1][x] == b'v' && grid[0][x] == b'.' {
             grid[HEIGHT - 1][x] = b'.';
             grid[0][x] = b'v';
-            moved += 1;
+            moved = true;
             offset = 1;
         }
         let mut y = offset;
@@ -41,14 +41,13 @@ fn step(grid: &mut Seafloor) -> bool {
                 grid[y + 1][x] = b'v';
                 grid[y][x] = b'.';
                 y += 1;
-                moved += 1;
+                moved = true;
             }
             y += 1;
         }
     }
 
-    println!("{moved}");
-    moved > 0
+    moved
 }
 
 pub fn solve(input: String) -> (i32, &'static str) {
