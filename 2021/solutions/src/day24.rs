@@ -52,14 +52,17 @@ fn brute<const MIN: bool>(ops: &[Op], cache: &mut Cache, z: i64, k: i64) -> Opti
         return r;
     } else {
         // a is 1. To get the largest number accept the largest 'working' digit and v.v.
-        let (mut ltr, mut rtl) = (1..=9, (1..=9).rev());
-        let range: &mut dyn Iterator<Item = i64> = if MIN { &mut ltr } else { &mut rtl };
         let mut r = None;
-        for w in range {
+        let mut w = if MIN { 1 } else { 9 };
+        loop {
             if let Some(m) = brute::<MIN>(rest, cache, 26 * z + c + w, k / 10) {
                 r = Some(k * w + m);
                 break;
             }
+            if w == if MIN { 9 } else { 1 } {
+                break;
+            }
+            w += if MIN { 1 } else { -1 };
         }
         cache.insert((k, z), r);
         r
