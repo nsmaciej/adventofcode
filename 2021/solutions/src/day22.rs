@@ -1,3 +1,5 @@
+//! Reactor Reboot
+
 use itertools::Itertools;
 use smallvec::SmallVec;
 

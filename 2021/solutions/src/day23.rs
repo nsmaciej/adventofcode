@@ -1,3 +1,5 @@
+//! Amphipod
+
 use ahash::AHashMap;
 use smallvec::{smallvec, SmallVec};
 use std::cmp::Ordering;
