@@ -12,36 +12,42 @@ def adjacent_points(pt):
     return ((pt[0] + y, pt[1] + x) for y, x in [(-1, 0), (0, -1), (0, 1), (1, 0)])
 
 
-def find_nearest_filter(board, pt, predicate):
+# Why we need to break ties: Consider this case: Once BFS reaches the @, the next
+# visited spaces will be 1,2,3,4, in that order, with 3 and 4 being valid targets.
+# Note 3 will be reached before 4 which is earlier in the reading order.
+#
+#  #@1#
+#  423E
+#  E...
+#
+def find_next_step(board, pt, enemy):
     inf = 0xFFFF
-    queue = deque([(0, pt)])
     visited = np.zeros_like(board, bool)
     visited[pt] = True
-    selected = (inf, pt)
+    queue = deque()
+    # Seed the 4 initial positions. Note the 3rd element of the tuple doesn't change
+    # after this - it tells us which of these directions we took to get to a point.
+    for adj in adjacent_points(pt):
+        if board[adj] == enemy:
+            return None  # There is an enemy right there.
+        if board[adj] == ".":
+            queue.append((1, adj, adj))
+            visited[adj] = True
+    in_range = adjacent_cells_mask(board == enemy)
+    selected = (inf, pt, pt)
     while queue:
-        dist, pos = queue.popleft()
-        if predicate(pos):
-            selected = min(selected, (dist, pos))  # Break ties using reading order.
+        dist, pos, move = queue.popleft()
+        if in_range[pos]:
+            selected = min(selected, (dist, pos, move))  # Break ties.
         if dist >= selected[0]:
             continue  # We will never find a better dist.
         for adj in adjacent_points(pos):
             if board[adj] == "." and not visited[adj]:
                 visited[adj] = True
-                queue.append((1 + dist, adj))
-    if selected[0] != inf:
-        return selected[1]
-    return None
-
-
-def find_next_step(board, pt, enemy):
-    if any(board[x] == enemy for x in adjacent_points(pt)):
-        # Already near enemy, since pt is not empty, code below would skip it.
+                queue.append((1 + dist, adj, move))
+    if selected[0] == inf:
         return None
-    in_range = adjacent_cells_mask(board == enemy)
-    if enemy := find_nearest_filter(board, pt, lambda x: in_range[x]):
-        valid_moves = set(adjacent_points(pt))
-        return find_nearest_filter(board, enemy, lambda x: x in valid_moves)
-    return None  # No reachable target.
+    return selected[2]  # Return the direction that started us on this path.
 
 
 def units_mask(board):
