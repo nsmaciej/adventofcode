@@ -58,12 +58,14 @@ def solve(board, elf_attack):
     enemy_for_unit = {"E": "G", "G": "E"}
     hp = np.zeros_like(board, int)
     hp[units_mask(board)] = 200
-    turn = 0
+    rounds = 0
     alive = {"E": np.count_nonzero(board == "E"), "G": np.count_nonzero(board == "G")}
     while True:
-        for pos in map(tuple, np.argwhere(units_mask(board))):
-            if board[pos] == ".":
-                continue  # Was alive during argwhere, but got killed.
+        # We use a dict as an ordered set. We reverse since popitem is LIFO.
+        turns = dict.fromkeys(map(tuple, reversed(np.argwhere(units_mask(board)))))
+        while turns and alive["E"] > 0 and alive["G"] > 0:
+            pos = turns.popitem()[0]
+            assert board[pos] != "."
             enemy = enemy_for_unit[board[pos]]
             if step := find_next_step(board, pos, enemy):  # Consider moving.
                 board[step], board[pos] = board[pos], "."
@@ -76,9 +78,14 @@ def solve(board, elf_attack):
                     board[target] = "."
                     hp[target] = 0
                     alive[enemy] -= 1
+                    # Make sure the ghost of this target can't try to execute a turn
+                    # Stuff might move into the place and have two goes.
+                    turns.pop(target, None)
         if alive["E"] == 0 or alive["G"] == 0:
-            return hp.sum() * turn, alive
-        turn += 1
+            # Add 1 if this was a complete round, otherwise we ended mid-round.
+            complete_round = not turns
+            return hp.sum() * (rounds + complete_round), alive
+        rounds += 1
 
 
 board = np.array([list(x.strip()) for x in open("inputs/day15.txt")])
