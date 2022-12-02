@@ -6,9 +6,8 @@
        (str/split input #"\n\n")))
 
 (defn solve [data]
-  (let [sorted (->> data (map #(reduce + %)) (sort >))]
-    [(first sorted)
-     (reduce + (take 3 sorted))]))
+  (let [[a b c] (sort > (map #(reduce + %) data))]
+    [a (+ a b c)]))
 
 (defn -main []
   (println (solve (parse (slurp "inputs/day01.txt")))))
