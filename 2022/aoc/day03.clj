@@ -5,8 +5,8 @@
 (def item->priority
   (zipmap "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" (range 1 57)))
 
-(defn- find-common [[lhs rhs]]
-  (first (set/intersection (set lhs) (set rhs))))
+(defn- find-common [group]
+  (first (apply set/intersection (map set group))))
 
 (defn- part1 [data]
   (->> data
@@ -19,7 +19,7 @@
 (defn- part2 [data]
   (->> data
        (partition 3)
-       (map #(first (apply set/intersection (map set %))))
+       (map find-common)
        (map item->priority)
        (reduce +)))
 
