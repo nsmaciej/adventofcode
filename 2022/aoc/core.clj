@@ -5,17 +5,25 @@
             [aoc.day02]
             [aoc.day03]))
 
-(def day->solution {1 aoc.day01/solution
-                    2 aoc.day02/solution
-                    3 aoc.day03/solution})
+(def day->solution
+  {1 aoc.day01/solution
+   2 aoc.day02/solution
+   3 aoc.day03/solution})
 
 (def cli-options
   [["-d" "--day DAY" "Day number"
     :parse-fn parse-long
-    :validate [#(<= 1 % 24) "Must be a valid day 1-24"]]])
+    :validate [#(<= 1 % 24) "Must be a valid day 1-24"]]
+   ["-t" "--time" "Time the solutions"]])
 
-(defn- run-day [day]
-  (run! println ((day->solution day) (u/input day))))
+(defn- run-day [day & {:keys [time]}]
+  (let [input (u/input day)
+        start (System/nanoTime)
+        result ((day->solution day) input)
+        end (System/nanoTime)]
+    (run! println result)
+    (when time
+      (printf "Took %.2f ms\n" (/ (- end start) 1000000.0)))))
 
 (defn -main [& args]
   (let [{:keys [options errors]} (parse-opts args cli-options)]
@@ -23,5 +31,5 @@
       (run! println errors)
       (System/exit 1))
     (if-let [day (:day options)]
-      (run-day day)
-      (run! run-day (range 1 (inc (count day->solution)))))))
+      (run-day day options)
+      (run! #(run-day % options) (range 1 (inc (count day->solution)))))))
