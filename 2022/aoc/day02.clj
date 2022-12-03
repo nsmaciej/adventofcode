@@ -1,5 +1,4 @@
-(ns aoc.day02
-  (:require [clojure.string :as str]))
+(ns aoc.day02)
 
 (def abc->tool {"A" :rock, "B" :paper, "C" :scissors})
 (def xyz->tool {"X" :rock, "Y" :paper, "Z" :scissors})
@@ -26,7 +25,7 @@
     :lose (tool->weakness (tool->weakness opp))))
 
 (defn- parse [input]
-  (map #(str/split % #" ") (str/split-lines input)))
+  (partition 2 (re-seq #"\w" input)))
 
 (defn- score-part1 [[opp you]]
   (score-turn (abc->tool opp)
