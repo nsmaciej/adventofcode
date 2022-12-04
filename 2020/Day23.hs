@@ -12,7 +12,7 @@ main :: IO ()
 main = runSoln' (map (read . pure)) (Print . part1) part2
 
 part1 :: [Int32] -> String
-part1 = concat . map show . tail . play 100
+part1 = concatMap show . tail . play 100
 
 part2 :: [Int32] -> Integer
 part2 game = toInteger x * toInteger y

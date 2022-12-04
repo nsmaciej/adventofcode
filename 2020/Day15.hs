@@ -2,6 +2,7 @@ import Advent
 import Data.IntMap.Strict (IntMap)
 import qualified Data.IntMap.Strict as I
 
+main :: IO ()
 main = runSoln'
   (parseAll $ decimal `sepBy` char ',')
   ((!! 2019) . play)
