@@ -3,10 +3,14 @@
             [clojure.set :as set]))
 
 (def item->priority
-  (zipmap "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" (range 1 57)))
+  (zipmap "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+          (range 1 57)))
 
 (defn- find-common [group]
-  (first (apply set/intersection (map set group))))
+  (->> group
+       (map set)
+       (apply set/intersection)
+       first))
 
 (defn- part1 [data]
   (->> data
@@ -15,7 +19,6 @@
        (map item->priority)
        (reduce +)))
 
-  ; Part 2
 (defn- part2 [data]
   (->> data
        (partition 3)
