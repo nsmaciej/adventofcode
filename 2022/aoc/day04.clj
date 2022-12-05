@@ -8,7 +8,7 @@
       (and (<= b a) (>= y x))))
 
 (defn- partial-overlap? [[a x b y]]
-  (not (or (< x b) (< y a))))
+  (and (>= x b) (>= y a)))
 
 (defn solution [input]
   (let [data (parse input)]
