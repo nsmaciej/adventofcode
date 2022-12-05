@@ -3,12 +3,16 @@
             [clojure.tools.cli :refer [parse-opts]]
             [aoc.day01]
             [aoc.day02]
-            [aoc.day03]))
+            [aoc.day03]
+            [aoc.day04]
+            [aoc.day05]))
 
 (def day->solution
   {1 aoc.day01/solution
    2 aoc.day02/solution
-   3 aoc.day03/solution})
+   3 aoc.day03/solution
+   4 aoc.day04/solution
+   5 aoc.day05/solution})
 
 (def cli-options
   [["-d" "--day DAY" "Day number"
