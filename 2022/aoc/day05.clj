@@ -38,8 +38,7 @@
      (run-crane identity data)]))
 
 (comment
-  (def sample-pic
-    (parse-pic (str "[D]        \n"
-                    "[N] [C]    \n"
-                    "[Z] [M] [P]\n"
-                    " 1   2   3"))))
+  (parse-pic (str "[D]        \n"
+                  "[N] [C]    \n"
+                  "[Z] [M] [P]\n"
+                  " 1   2   3")))
