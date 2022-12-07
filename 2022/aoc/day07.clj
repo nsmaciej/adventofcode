@@ -63,5 +63,4 @@
      (->> sizes
           vals
           (filter #(>= % need-to-free))
-          sort
-          first)]))
+          (apply min))]))
