@@ -8,17 +8,17 @@
       {:kind :file, :size (parse-long kind)})))
 
 (defn- fs-parse [input]
-  (loop [[group & groups] (rest (str/split input #"\$ "))
+  (loop [groups (rest (str/split input #"\$ "))
          fs {}   ; List of dirs to file listing mapping
          cwd []] ; List of dirs rooted at []
-    (if group
-      (let [[cmd & output] (str/split-lines group)
+    (if (seq groups)
+      (let [[cmd & output] (str/split-lines (first groups))
             [program arg] (str/split cmd #" ")]
         (case program
-          "cd" (recur groups
+          "cd" (recur (next groups)
                       fs
                       (case arg "/" [], ".." (pop cwd), (conj cwd arg)))
-          "ls" (recur groups
+          "ls" (recur (next groups)
                       (assoc fs cwd (mapv parse-file output))
                       cwd)))
       fs)))
