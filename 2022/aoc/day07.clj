@@ -24,18 +24,15 @@
       fs)))
 
 (defn- fs-sizes [fs]
-  (letfn [(dir-size [sizes cwd]
-            (->> (fs cwd)
-                 (map #(case (:kind %)
-                         :dir (sizes (conj cwd (:name %)))
-                         :file (:size %)))
-                 (reduce +)
-                 (assoc sizes cwd)))]
-    (->> fs
-         keys
-         sort
-         reverse
-         (reduce dir-size {}))))
+  (let [topo-sorted (reverse (sort (keys fs)))
+        dir-size (fn [sizes cwd]
+                   (->> (fs cwd)
+                        (map #(case (:kind %)
+                                :dir (sizes (conj cwd (:name %)))
+                                :file (:size %)))
+                        (reduce +)
+                        (assoc sizes cwd)))]
+    (reduce dir-size {} topo-sorted)))
 
 (defn solution [input]
   (let [fs (fs-parse input)
