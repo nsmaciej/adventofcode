@@ -9,8 +9,8 @@
 
 (defn- fs-parse [input]
   (loop [[group & groups] (rest (str/split input #"\$ "))
-         fs {}
-         cwd []]
+         fs {}   ; List of dirs to file listing mapping
+         cwd []] ; List of dirs rooted at []
     (if group
       (let [[cmd & output] (str/split-lines group)
             [program arg] (str/split cmd #" ")]
