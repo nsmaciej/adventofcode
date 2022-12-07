@@ -1,5 +1,6 @@
 (ns aoc.day07
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.core.match :refer [match]]))
 
 (defn- parse-file [line]
   (let [[kind name] (str/split line #" ")]
@@ -8,19 +9,16 @@
       {:kind :file, :size (parse-long kind)})))
 
 (defn- fs-parse [input]
-  (loop [groups (rest (str/split input #"\$ "))
+  (loop [[invocation & rest] (rest (str/split input #"\$ "))
          fs {}   ; List of dirs to file listing mapping
          cwd []] ; List of dirs rooted at []
-    (if (seq groups)
-      (let [[cmd & output] (str/split-lines (first groups))
-            [program arg] (str/split cmd #" ")]
-        (case program
-          "cd" (recur (next groups)
-                      fs
-                      (case arg "/" [], ".." (pop cwd), (conj cwd arg)))
-          "ls" (recur (next groups)
-                      (assoc fs cwd (mapv parse-file output))
-                      cwd)))
+    (if invocation
+      (let [[cmd & output] (str/split-lines invocation)]
+        (match (str/split cmd #" ")
+          ["cd" "/"]  (recur rest fs [])
+          ["cd" ".."] (recur rest fs (pop cwd))
+          ["cd" dir]  (recur rest fs (conj cwd dir))
+          ["ls"]      (recur rest (assoc fs cwd (mapv parse-file output)) cwd)))
       fs)))
 
 (defn- fs-sizes [fs]
