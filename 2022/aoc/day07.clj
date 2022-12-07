@@ -32,17 +32,20 @@
                         (assoc sizes cwd)))]
     (reduce dir-size {} topo-sorted)))
 
+(defn- part1 [sizes]
+  (->> sizes
+       vals
+       (filter #(<= % 100000))
+       (reduce +)))
+
+(defn- part2 [sizes]
+  (let [taken-current (sizes [])
+        need-to-free (- taken-current 40000000)]
+    (->> sizes
+         vals
+         (filter #(>= % need-to-free))
+         (apply min))))
+
 (defn solution [input]
-  (let [fs (fs-parse input)
-        sizes (fs-sizes fs)
-        taken-max (- 70000000 30000000)
-        taken-current (sizes [])
-        need-to-free (- taken-current taken-max)]
-    [(->> sizes
-          vals
-          (filter #(<= % 100000))
-          (reduce +))
-     (->> sizes
-          vals
-          (filter #(>= % need-to-free))
-          (apply min))]))
+  (let [sizes (fs-sizes (fs-parse input))]
+    [(part1 sizes) (part2 sizes)]))
