@@ -5,53 +5,40 @@
   (let [[kind name] (str/split line #" ")]
     (if (= kind "dir")
       {:kind :dir, :name name}
-      {:kind :file, :name name, :size (parse-long kind)})))
+      {:kind :file, :size (parse-long kind)})))
 
-(defn- parse-output [text]
-  (let [[cmd & output] (str/split-lines text)
-        [program & args] (str/split cmd #" ")]
-    (case program
-      "cd" {:cmd :cd, :where (first args)}
-      "ls" {:cmd :ls, :listing (mapv parse-file output)})))
-
-(defn- parse [input]
-  (->> #"\$ "
-       (str/split input)
-       rest
-       (map parse-output)))
-
-(defn- fs-make [data]
-  (loop [cwd [], fs {}, [cmd & rest] data]
-    (case (:cmd cmd)
-      :cd (let [new-cmd (case (:where cmd)
-                          "/" []
-                          ".." (pop cwd)
-                          (conj cwd (:where cmd)))]
-            (recur new-cmd fs rest))
-      :ls (recur cwd (assoc fs cwd (:listing cmd)) rest)
+(defn- fs-parse [input]
+  (loop [[group & groups] (rest (str/split input #"\$ "))
+         fs {}
+         cwd []]
+    (if group
+      (let [[cmd & output] (str/split-lines group)
+            [program arg] (str/split cmd #" ")]
+        (case program
+          "cd" (recur groups
+                      fs
+                      (case arg "/" [], ".." (pop cwd), (conj cwd arg)))
+          "ls" (recur groups
+                      (assoc fs cwd (mapv parse-file output))
+                      cwd)))
       fs)))
 
-(defn- fs-reduce
-  "Given a mapping paths and values, produces a new mapping by invoking f with
-  the new mapping with all topological predecessors and the current path."
-  [f fs]
-  (->> fs
-       keys
-       sort
-       reverse
-       (reduce #(assoc %1 %2 (f %1 %2)) {})))
-
 (defn- fs-sizes [fs]
-  (letfn [(sum-children [sizes cwd]
+  (letfn [(dir-size [sizes cwd]
             (->> (fs cwd)
                  (map #(case (:kind %)
                          :dir (sizes (conj cwd (:name %)))
                          :file (:size %)))
-                 (reduce +)))]
-    (fs-reduce sum-children fs)))
+                 (reduce +)
+                 (assoc sizes cwd)))]
+    (->> fs
+         keys
+         sort
+         reverse
+         (reduce dir-size {}))))
 
 (defn solution [input]
-  (let [fs (fs-make (parse input))
+  (let [fs (fs-parse input)
         sizes (fs-sizes fs)
         taken-max (- 70000000 30000000)
         taken-current (sizes [])
