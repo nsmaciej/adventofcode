@@ -8,6 +8,24 @@
 (defn- visible-both [xs]
   (map #(or %1 %2) (-> xs reverse visible reverse) (visible xs)))
 
+(defn- visible-at-k [k xs]
+  (->> xs
+       (partition 2 1)
+       (reductions #(if (>= (first %2) k) 1 (inc %1)) 0)))
+
+(defn- visible-at-k-both [k xs]
+  (map *
+       (visible-at-k k xs)
+       (->> xs reverse (visible-at-k k) reverse)))
+
+(defn- visible-at-k-grid [k grid]
+  (let [left-right (map #(visible-at-k-both k %) grid)
+        top-down (->> grid
+                      u/transpose-grid
+                      (map #(visible-at-k-both k %))
+                      u/transpose-grid)]
+    (u/map-grid * top-down left-right)))
+
 (defn- parse [input]
   (u/mapv-grid #(- (int %) 48) (str/split-lines input)))
 
@@ -21,16 +39,12 @@
          (u/filter-grid identity)
          count)))
 
+(defn- part2 [data]
+  (->> (map #(visible-at-k-grid % data) (range 10))
+       (apply u/map-grid #(nth %& %) data)
+       flatten
+       (apply max)))
+
 (defn solution [input]
   (let [data (parse input)]
-    [(part1 data) nil]))
-
-(comment
-  (let [xs [3 0 3 7 3]]
-    (reductions max (cons 0 xs)))
-  ;; => (0 3 3 3 7 7)
-
-  (let [xs [3 0 3 7 3]]
-    (map > xs (reductions max (cons 0 xs))))
-  ;; => (true false false true false)
-  )
+    [(part1 data) (part2 data)]))
