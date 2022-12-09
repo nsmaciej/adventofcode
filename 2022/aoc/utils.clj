@@ -32,3 +32,8 @@
   ([[y x]] [y x])
   ([[y1 x1] [y2 x2]] [(+ y1 y2) (+ x1 x2)])
   ([p1 p2 & rest] (reduce +p (+p p1 p2) rest)))
+
+(defn sign [x]
+  (cond (< x 0) -1
+        (> x 0) 1
+        :else 0))
