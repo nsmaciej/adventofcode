@@ -1,5 +1,4 @@
-(ns aoc.utils
-  (:require [clojure.string :as str]))
+(ns aoc.utils)
 
 (defn input-file
   "Get the path the input file for day n."
@@ -11,15 +10,10 @@
   [n]
   (slurp (input-file n)))
 
-(defn transpose-grid
+(defn transpose
   "Transose a grid"
   [grid]
   (apply map list grid))
-
-(defn transposev-grid
-  "Transose a grid. Returning a vector of vectors."
-  [grid]
-  (apply mapv vector grid))
 
 (defn map-grid
   "Map through multiple grids in a zip-like manner."
@@ -32,7 +26,9 @@
   [f & grids]
   (apply mapv (fn [& rows] (apply mapv f rows)) grids))
 
-(defn filter-grid
-  "Filters through the grid, returning a flattened result."
-  [f grid]
-  (mapcat #(filter f %) grid))
+(defn +p
+  "Add  points together"
+  ([] [0 0])
+  ([[y x]] [y x])
+  ([[y1 x1] [y2 x2]] [(+ y1 y2) (+ x1 x2)])
+  ([p1 p2 & rest] (reduce +p (+p p1 p2) rest)))
