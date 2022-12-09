@@ -1,6 +1,7 @@
 (ns aoc.core
   (:require [aoc.utils :as u]
             [clojure.tools.cli :refer [parse-opts]]
+            [criterium.core :as criterium]
             [aoc.day01]
             [aoc.day02]
             [aoc.day03]
@@ -8,7 +9,8 @@
             [aoc.day05]
             [aoc.day06]
             [aoc.day07]
-            [aoc.day08]))
+            [aoc.day08]
+            [aoc.day09]))
 
 (def day->solution
   {1 aoc.day01/solution
@@ -18,7 +20,8 @@
    5 aoc.day05/solution
    6 aoc.day06/solution
    7 aoc.day07/solution
-   8 aoc.day08/solution})
+   8 aoc.day08/solution
+   9 aoc.day09/solution})
 
 (def cli-options
   [["-d" "--day DAY" "Day number"
