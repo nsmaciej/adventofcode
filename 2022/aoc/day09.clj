@@ -1,9 +1,8 @@
 (ns aoc.day09
   (:require [clojure.core.match :refer [match]]
-            [aoc.utils :as u]
-            [clojure.string :as str]))
+            [aoc.utils :as u]))
 
-(defn- tail-move
+(defn- knot-move
   "Given a head and a tail position, return the move the tail must make."
   [[hy hx] [ty tx]]
   (let [dy (- hy ty)
@@ -26,24 +25,22 @@
 
 (def move->delta {:R [0 1] :L [0 -1] :U [-1 0] :D [1 0]})
 
-(defn move [[h t] dir]
-  (let [new-h (u/+p h (move->delta dir))]
-    [new-h (u/+p t (tail-move new-h t))]))
+(defn move
+  "Given a chain, head first, applies a move and returns a new chain."
+  [[head & tail] move]
+  (reductions (fn [parent knot]
+                (u/+p knot (knot-move parent knot)))
+              (u/+p head (move->delta move))
+              tail))
 
-(defn- part1 [data]
+(defn- solve-for-size [k data]
   (->> data
-       (reductions move [[0 0] [0 0]])
-       (map second) ; Get only tail positions
+       (reductions move (repeat k [0 0]))
+       (map last) ; Get only tail positions
        set
        count))
 
 (defn solution [input]
   (let [data (parse input)]
-    [(part1 data) nil]))
-
-(comment
-  (tail-move [0 0] [2 1])
-  ;; => [-1 -1]
-  (tail-move [0 2] [0 0])
-  ;; => [0 1]
-  )
+    [(solve-for-size 2 data)
+     (solve-for-size 10 data)]))
