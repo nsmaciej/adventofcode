@@ -10,7 +10,8 @@
             [aoc.day06]
             [aoc.day07]
             [aoc.day08]
-            [aoc.day09]))
+            [aoc.day09]
+            [aoc.day10]))
 
 (def day->solution
   {1 aoc.day01/solution
@@ -21,7 +22,8 @@
    6 aoc.day06/solution
    7 aoc.day07/solution
    8 aoc.day08/solution
-   9 aoc.day09/solution})
+   9 aoc.day09/solution
+   10 aoc.day10/solution})
 
 (def cli-options
   [["-d" "--day DAY" "Day number"
