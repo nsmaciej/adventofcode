@@ -28,7 +28,7 @@
                         (map #(case (:kind %)
                                 :dir (sizes (conj cwd (:name %)))
                                 :file (:size %)))
-                        (reduce +)
+                        (apply +)
                         (assoc sizes cwd)))]
     (reduce dir-size {} topo-sorted)))
 
