@@ -12,9 +12,8 @@
     (apply + (map #(* % (nth x-values (dec %))) steps))))
 
 (defn- part-2 [x-values]
-  (->> (map #(if (<= -1 (- %1 (mod %2 40)) 1) \# \space)
-            x-values
-            (range (* 40 60)))
+  (->> x-values
+       (map-indexed #(if (<= -1 (- %2 (mod %1 40)) 1) \# \space))
        (partition 40)
        (map str/join)
        (str/join "\n")))
