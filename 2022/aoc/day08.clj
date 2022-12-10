@@ -28,13 +28,13 @@
 (defn- parse [input]
   (u/mapv-grid #(- (int %) 48) (str/split-lines input)))
 
-(defn- part1 [data]
+(defn- part-1 [data]
   (->> (omni-map #(or %1 %2) visible-ground data)
        flatten
        (filter identity)
        count))
 
-(defn- part2 [data]
+(defn- part-2 [data]
   (let [cache (map (fn [k] (omni-map * #(visible-at-k k %) data)) (range 10))]
     (->> (apply u/map-grid #(nth %& %) data cache)
          flatten
@@ -42,4 +42,4 @@
 
 (defn solution [input]
   (let [data (parse input)]
-    [(part1 data) (part2 data)]))
+    [(part-1 data) (part-2 data)]))

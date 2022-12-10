@@ -12,14 +12,14 @@
        (apply set/intersection)
        first))
 
-(defn- part1 [data]
+(defn- part-1 [data]
   (->> data
        (map #(split-at (quot (count %) 2) %))
        (map find-common)
        (map item->priority)
        (reduce +)))
 
-(defn- part2 [data]
+(defn- part-2 [data]
   (->> data
        (partition 3)
        (map find-common)
@@ -28,4 +28,4 @@
 
 (defn solution [input]
   (let [data (str/split-lines input)]
-    [(part1 data) (part2 data)]))
+    [(part-1 data) (part-2 data)]))
