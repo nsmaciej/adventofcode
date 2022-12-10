@@ -1,7 +1,10 @@
 (ns aoc.day10
   (:require [clojure.string :as str]))
 
-(defn- simulate [x-value line]
+(defn- simulate
+  "Given the current X register and an unparsed instruction,
+   return final X values for each of the instruction's cycles."
+  [x-value line]
   (let [[inst op] (str/split line #" ")]
     (case inst
       "addx" [x-value (+ x-value (parse-long op))]
