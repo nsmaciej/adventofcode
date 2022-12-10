@@ -36,7 +36,7 @@
   (->> sizes
        vals
        (filter #(<= % 100000))
-       (reduce +)))
+       (apply +)))
 
 (defn- part-2 [sizes]
   (let [taken-current (sizes [])

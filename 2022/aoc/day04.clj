@@ -1,7 +1,10 @@
 (ns aoc.day04)
 
 (defn- parse [input]
-  (partition 4 (map parse-long (re-seq #"\d+" input))))
+  (->> input
+       (re-seq #"\d+")
+       (map parse-long)
+       (partition 4)))
 
 (defn- full-overlap? [[a x b y]]
   (or (and (<= a b) (>= x y))

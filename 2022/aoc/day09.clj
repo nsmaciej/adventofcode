@@ -4,6 +4,14 @@
 (def move->delta
   {:R [0 1], :L [0 -1], :U [-1 0], :D [1 0]})
 
+(defn- parse
+  "Returns a list of keywords. Repeated movements give repeated values"
+  [input]
+  (->> input
+       (re-seq #"\w+")
+       (partition 2)
+       (mapcat (fn [[d n]] (repeat (parse-long n) (keyword d))))))
+
 (defn- follow
   "Given a head and a tail position, return the move the tail must make."
   [[hy hx] [ty tx]]
@@ -26,12 +34,6 @@
        (map last) ; Get only tail positions
        set
        count))
-
-(defn- parse [input]
-  (->> input
-       (re-seq #"\w+")
-       (partition 2)
-       (mapcat (fn [[d n]] (repeat (parse-long n) (keyword d))))))
 
 (defn solution [input]
   (let [data (parse input)]

@@ -10,27 +10,30 @@
        (apply map vector)    ; Transpose
        (mapv #(remove #{\space} %))))
 
-(defn- parse [input]
-  (let [[pic actions] (str/split input #"\n\n")]
+(defn- parse
+  "Parse into a list of container stacks (top first) and required steps."
+  [input]
+  (let [[pic actions] (str/split input #"\n\n")
+        triples (->> actions
+                     (re-seq #"\d+")
+                     (map parse-long)
+                     (partition 3))]
     [(parse-pic pic)
-     (->> actions
-          (re-seq #"\d+")
-          (map parse-long)
-          (partition 3))]))
+     (for [[n from to] triples]
+       {:amount n, :from (dec from), :to (dec to)})]))
 
-(defn- apply-step [f pic [n from to]]
-  (let [from-1 (dec from)
-        to-1 (dec to)
-        [taken leftover] (split-at n (nth pic from-1))]
-    (-> pic
-        (assoc from-1 leftover)
-        (update to-1 #(concat (f taken) %)))))
+(defn- apply-step [f stacks {:keys [to from amount]}]
+  (let [[taken leftover] (split-at amount (nth stacks from))
+        target (nth stacks to)]
+    (assoc stacks
+           from leftover
+           to (concat (f taken) target))))
 
-(defn- run-crane [f [pic steps]]
+(defn- run-crane [f [stacks steps]]
   (->> steps
-       (reduce #(apply-step f %1 %2) pic)
+       (reduce #(apply-step f %1 %2) stacks)
        (map first)
-       (apply str)))
+       str/join))
 
 (defn solution [input]
   (let [data (parse input)]
