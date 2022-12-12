@@ -1,5 +1,6 @@
 (ns aoc.day05
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [aoc.utils :as u]))
 
 (defn- parse-pic [pic]
   (->> pic
@@ -35,10 +36,12 @@
        (map first)
        str/join))
 
-(defn solution [input]
+(defn- solution [input]
   (let [data (parse input)]
     [(run-crane reverse data)
      (run-crane identity data)]))
+
+(u/register 5 solution)
 
 (comment
   (parse-pic (str "[D]        \n"

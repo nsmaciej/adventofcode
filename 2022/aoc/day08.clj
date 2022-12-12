@@ -40,6 +40,8 @@
          flatten
          (apply max))))
 
-(defn solution [input]
+(defn- solution [input]
   (let [data (parse input)]
     [(part-1 data) (part-2 data)]))
+
+(u/register 8 solution)

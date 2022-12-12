@@ -66,8 +66,10 @@
        (take 2)
        (apply *)))
 
-(defn solution [input]
+(defn- solution [input]
   (let [troop (parse input)
         div-by-lcm (apply u/lcm (map :div-by troop))]
     [(solve #(quot % 3) troop 20)
      (solve #(mod % div-by-lcm) troop 10000)]))
+
+(u/register 11 solution)

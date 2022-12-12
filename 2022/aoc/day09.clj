@@ -35,7 +35,9 @@
        set
        count))
 
-(defn solution [input]
+(defn- solution [input]
   (let [data (parse input)]
     [(solve-for-size 2 data)
      (solve-for-size 10 data)]))
+
+(u/register 9 solution)

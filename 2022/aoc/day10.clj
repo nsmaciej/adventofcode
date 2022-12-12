@@ -1,5 +1,6 @@
 (ns aoc.day10
-  (:require [clojure.string :as str]))
+  (:require [aoc.utils :as u]
+            [clojure.string :as str]))
 
 (defn- simulate [x-value line]
   (let [[inst op] (str/split line #" ")]
@@ -18,10 +19,12 @@
        (map str/join)
        (str/join "\n")))
 
-(defn solution [input]
+(defn- solution [input]
   (let [x-values (->> input
                       str/split-lines
                       (reductions #(simulate (last %1) %2) [1])
                       (apply concat)
                       vec)]
     [(part-1 x-values), (part-2 x-values)]))
+
+(u/register 10 solution)

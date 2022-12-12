@@ -59,3 +59,10 @@
   ([m k f a b c] (assoc! m k (f (get m k) a b c)))
   ([m k f a b c d] (assoc! m k (f (get m k) a b c d)))
   ([m k f a b c d & args] (assoc! m k (apply f (nth m k) a b c d args))))
+
+(def solutions (atom {}))
+
+(defn register
+  "Register a solution function for the given day."
+  [day solution]
+  (swap! solutions assoc day solution))

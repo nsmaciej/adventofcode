@@ -1,6 +1,7 @@
 (ns aoc.day07
   (:require [clojure.string :as str]
-            [clojure.core.match :refer [match]]))
+            [clojure.core.match :refer [match]]
+            [aoc.utils :as u]))
 
 (defn- parse-file [line]
   (let [[kind name] (str/split line #" ")]
@@ -46,6 +47,8 @@
          (filter #(>= % need-to-free))
          (apply min))))
 
-(defn solution [input]
+(defn- solution [input]
   (let [sizes (fs-sizes (fs-parse input))]
     [(part-1 sizes) (part-2 sizes)]))
+
+(u/register 7 solution)

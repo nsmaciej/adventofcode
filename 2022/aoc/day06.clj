@@ -1,4 +1,5 @@
-(ns aoc.day06)
+(ns aoc.day06
+  (:require [aoc.utils :as u]))
 
 (defn- find-marker [input n]
   (->> input
@@ -10,6 +11,8 @@
        first
        (+ n)))
 
-(defn solution [input]
+(defn- solution [input]
   [(find-marker input 4)
    (find-marker input 14)])
+
+(u/register 6 solution)

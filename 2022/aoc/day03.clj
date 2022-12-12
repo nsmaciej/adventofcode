@@ -1,6 +1,7 @@
 (ns aoc.day03
   (:require [clojure.string :as str]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [aoc.utils :as u]))
 
 (def item->priority
   (zipmap "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -17,15 +18,17 @@
        (map #(split-at (quot (count %) 2) %))
        (map find-common)
        (map item->priority)
-       (reduce +)))
+       (apply +)))
 
 (defn- part-2 [data]
   (->> data
        (partition 3)
        (map find-common)
        (map item->priority)
-       (reduce +)))
+       (apply +)))
 
-(defn solution [input]
+(defn- solution [input]
   (let [data (str/split-lines input)]
     [(part-1 data) (part-2 data)]))
+
+(u/register 3 solution)

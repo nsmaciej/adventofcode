@@ -1,4 +1,5 @@
-(ns aoc.day04)
+(ns aoc.day04
+  (:require [aoc.utils :as u]))
 
 (defn- parse [input]
   (->> input
@@ -13,7 +14,9 @@
 (defn- partial-overlap? [[a x b y]]
   (and (>= x b) (>= y a)))
 
-(defn solution [input]
+(defn- solution [input]
   (let [data (parse input)]
     [(count (filter full-overlap? data))
      (count (filter partial-overlap? data))]))
+
+(u/register 4 solution)

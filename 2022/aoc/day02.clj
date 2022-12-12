@@ -1,4 +1,5 @@
-(ns aoc.day02)
+(ns aoc.day02
+  (:require [aoc.utils :as u]))
 
 (def abc->tool {"A" :rock, "B" :paper, "C" :scissors})
 (def xyz->tool {"X" :rock, "Y" :paper, "Z" :scissors})
@@ -28,7 +29,9 @@
               (select-tool (abc->tool opp)
                            (xyz->outcome you))))
 
-(defn solution [input]
+(defn- solution [input]
   (let [data (partition 2 (re-seq #"\w" input))]
     [(apply + (map score-part-1 data))
      (apply + (map score-part-2 data))]))
+
+(u/register 2 solution)
