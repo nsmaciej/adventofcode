@@ -33,7 +33,18 @@
   ([[y1 x1] [y2 x2]] [(+ y1 y2) (+ x1 x2)])
   ([p1 p2 & rest] (reduce +p (+p p1 p2) rest)))
 
-(defn sign [x]
+(defn sign
+  "Returns -1, 0, or 1 depending on the sing of x."
+  [x]
   (cond (< x 0) -1
         (> x 0) 1
         :else 0))
+
+(defn gcd [a b]
+  (if (zero? b) a (recur b (mod a b))))
+
+(defn lcm
+  "Returns the lowest common multiple of given numbers."
+  ([x] x)
+  ([x y] (/ (* x y) (gcd x y)))
+  ([x y & rest] (reduce lcm (lcm x y) rest)))

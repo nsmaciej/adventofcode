@@ -25,64 +25,46 @@
     :if #(hash-map (if (= %1 "true") :if-true :if-false) (parse-long %2))}
    (parse-notes input)))
 
-(defn- monkey-turn [monkey x]
-  (let [x-op (case (:op monkey)
-               :square (* x x)
-               :add    (+ x (:arg monkey))
-               :times  (* x (:arg monkey)))
-        x-relief (quot x-op 3)
-        id (if (zero? (mod x-relief (:div-by monkey)))
+(defn- handle-item
+  "Peforms a single monkey's operation on the item `x`. The resulting value is
+  passed through `(f x)`. Returns a map where :item is the new item value and
+  :monkey-id is the monkey the item is to be thrown to."
+  [monkey f x]
+  (let [new-x (f (case (:op monkey)
+                   :square (* x x)
+                   :add    (+ x (:arg monkey))
+                   :times  (* x (:arg monkey))))
+        id (if (zero? (mod new-x (:div-by monkey)))
              (:if-true monkey)
              (:if-false monkey))]
-    {:item x-relief, :monkey id}))
+    {:item new-x, :monkey-id id}))
 
-(defn- troop-turn [troop monkey x]
-  (let [turn (monkey-turn monkey x)]
-    ;; (println "Passing" turn
-    ;;          (update-in troop [(:monkey turn) :items] #(conj % (:item turn))))
-    (update-in troop [(:monkey turn) :items] conj (:item turn))))
+(defn- simulate-turn
+  "Perform a single monkey's turn by updating its object in the list of monkeys
+  `troop`. `f` is passed to `handle-item` as the item value update function."
+  [f troop monkey-id]
+  (let [monkey (nth troop monkey-id)
+        items (:items monkey)
+        troop (update troop monkey-id assoc
+                      :items []
+                      :inspected (+ (:inspected monkey) (count items)))]
+    (reduce #(let [turn (handle-item monkey f %2)]
+               (update-in %1 [(:monkey-id turn) :items] conj (:item turn)))
+            troop
+            items)))
 
-; Troop is a group of monkeys.
-(defn- play-round [result x]
-  (let [monkey (nth result x)]
-    (reduce #(troop-turn %1 monkey %2)
-            (update result x assoc
-                    :items []
-                    :inspected (+ (:inspected monkey) (count (:items monkey))))
-            (:items monkey))))
+(defn- simulate-round [f troop]
+  (reduce #(simulate-turn f %1 %2) troop (range (count troop))))
 
-(->> 20
-     (nth (iterate #(reduce play-round % (range (count %))) (parse (u/input 11))))
-     (map :inspected)
-     (sort >)
-     (take 2)
-     (apply *))
+(defn- solve [f troop turns]
+  (->> (nth (iterate #(simulate-round f %1) troop) turns)
+       (map :inspected)
+       (sort >)
+       (take 2)
+       (apply *)))
 
-(comment
-  (def sample-input "Monkey 0:
-  Starting items: 79, 98
-  Operation: new = old * 19
-  Test: divisible by 23
-    If true: throw to monkey 2
-    If false: throw to monkey 3
-
-Monkey 1:
-  Starting items: 54, 65, 75, 74
-  Operation: new = old + 6
-  Test: divisible by 19
-    If true: throw to monkey 2
-    If false: throw to monkey 0
-
-Monkey 2:
-  Starting items: 79, 60, 97
-  Operation: new = old * old
-  Test: divisible by 13
-    If true: throw to monkey 1
-    If false: throw to monkey 3
-
-Monkey 3:
-  Starting items: 74
-  Operation: new = old + 3
-  Test: divisible by 17
-    If true: throw to monkey 0
-    If false: throw to monkey 1"))
+(defn solution [input]
+  (let [troop (parse input)
+        div-by-lcm (apply u/lcm (map :div-by troop))]
+    [(solve #(quot % 3) troop 20)
+     (solve #(mod % div-by-lcm) troop 10000)]))
