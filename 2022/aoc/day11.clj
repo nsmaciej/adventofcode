@@ -40,24 +40,27 @@
     {:item new-x, :monkey-id id}))
 
 (defn- simulate-turn
-  "Perform a single monkey's turn by updating its object in the list of monkeys
-  `troop`. `f` is passed to `handle-item` as the item value update function."
-  [f troop monkey-id]
-  (let [monkey (nth troop monkey-id)
+  "Perform a single monkey's turn by updating its object in the `troop` transient.
+  `f` is passed to `handle-item` as the item value update function."
+  [f troop-transient monkey-id]
+  (let [monkey (nth troop-transient monkey-id)
         items (:items monkey)
-        troop (-> troop
-                  (assoc-in  [monkey-id :items] [])
-                  (update-in [monkey-id :inspected] #(+ % (count items))))]
-    (reduce #(let [turn (handle-item monkey f %2)]
-               (update-in %1 [(:monkey-id turn) :items] conj (:item turn)))
+        troop (u/update! troop-transient monkey-id assoc
+                         :items []
+                         :inspected (+ (:inspected monkey) (count items)))]
+    (reduce #(let [{:keys [monkey-id item]} (handle-item monkey f %2)]
+               (u/update! %1 monkey-id update :items conj item))
             troop
             items)))
 
-(defn- simulate-round [f troop]
-  (reduce #(simulate-turn f %1 %2) troop (range (count troop))))
+(defn- simulate-round [f troop-transient]
+  (reduce #(simulate-turn f %1 %2)
+          troop-transient
+          (range (count troop-transient))))
 
 (defn- solve [f troop turns]
-  (->> (nth (iterate #(simulate-round f %1) troop) turns)
+  (->> (nth (iterate #(simulate-round f %1) (transient (vec troop))) turns)
+       persistent!
        (map :inspected)
        (sort >)
        (take 2)

@@ -48,3 +48,14 @@
   ([x] x)
   ([x y] (/ (* x y) (gcd x y)))
   ([x y & rest] (reduce lcm (lcm x y) rest)))
+
+;; TODO: Just like real update we overload like crazy. Why does it do
+;; it that way. If we do not do this, day 11 is 2x slower.
+(defn update!
+  "Update a transient associative structure"
+  ([m k f] (assoc! m k (f (get m k))))
+  ([m k f a] (assoc! m k (f (get m k) a)))
+  ([m k f a b] (assoc! m k (f (get m k) a b)))
+  ([m k f a b c] (assoc! m k (f (get m k) a b c)))
+  ([m k f a b c d] (assoc! m k (f (get m k) a b c d)))
+  ([m k f a b c d & args] (assoc! m k (apply f (nth m k) a b c d args))))
