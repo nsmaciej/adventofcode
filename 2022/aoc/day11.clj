@@ -45,9 +45,9 @@
   [f troop monkey-id]
   (let [monkey (nth troop monkey-id)
         items (:items monkey)
-        troop (update troop monkey-id assoc
-                      :items []
-                      :inspected (+ (:inspected monkey) (count items)))]
+        troop (-> troop
+                  (assoc-in  [monkey-id :items] [])
+                  (update-in [monkey-id :inspected] #(+ % (count items))))]
     (reduce #(let [turn (handle-item monkey f %2)]
                (update-in %1 [(:monkey-id turn) :items] conj (:item turn)))
             troop
