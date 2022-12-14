@@ -28,12 +28,15 @@
         (when time
           (printf "Took %.2f ms\n" (/ (- end start) 1000000.0)))))))
 
-(defn -main [& args]
+(defn- true-main [args]
   (let [{:keys [options errors]} (parse-opts args cli-options)]
     (when errors
       (run! println errors)
       (System/exit 1))
     (if-let [day (:day options)]
       (run-day day options)
-      (run! #(run-day % options) (keys @u/solutions)))
-    (shutdown-agents)))
+      (run! #(run-day % options) (keys @u/solutions)))))
+
+(defn -main [& args]
+  (true-main args)
+  (shutdown-agents))

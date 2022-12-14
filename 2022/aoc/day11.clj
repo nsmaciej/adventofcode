@@ -59,7 +59,10 @@
           (range (count troop-transient))))
 
 (defn- solve [f troop turns]
-  (->> (nth (iterate #(simulate-round f %1) (transient (vec troop))) turns)
+  (->> troop
+       transient
+       (iterate #(simulate-round f %1))
+       (#(nth % turns))
        persistent!
        (map :inspected)
        (sort >)
