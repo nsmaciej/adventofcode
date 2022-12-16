@@ -3,15 +3,22 @@
             [aoc.utils :as u]
             [criterium.core :as criterium]))
 
-(defn input-file
-  "Get the path the input file for day n."
-  [n]
-  (format "inputs/day%02d.txt" n))
-
 (defn input
   "Return the input for day n."
   [n]
-  (slurp (input-file n)))
+  (slurp (format "inputs/day%02d.txt" n)))
+
+(def solutions (atom {}))
+
+(defn add-solution
+  "Register a solution function for the given day."
+  [day solution]
+  (swap! solutions assoc day solution))
+
+(defn solve
+  "Solve day n with standard input"
+  [n]
+  (vec ((@solutions n) (input n))))
 
 (defn queue
   ([] (clojure.lang.PersistentQueue/EMPTY))
@@ -35,20 +42,25 @@
   (apply mapv (fn [& rows] (apply mapv f rows)) grids))
 
 (defn +p
-  "Add  points together"
+  "Add two points together"
   ([] [0 0])
   ([[y x]] [y x])
   ([[y1 x1] [y2 x2]] [(+ y1 y2) (+ x1 x2)])
   ([p1 p2 & rest] (reduce +p (+p p1 p2) rest)))
 
+(def around
+  "All the points around a the point [0 0]."
+  [[-1 0] [0 -1] [0  1] [1  0]])
+
 (defn chart-extent [chart]
-  (zipmap [:min-y :max-y :min-x :max-x]
-          (if (empty? chart)
-            [0 0 0 0]
-            (reduce (fn [[min-y max-y min-x max-x] [y x]]
-                      [(min min-y y) (max max-y y) (min min-x x) (max max-x x)])
-                    [Long/MAX_VALUE Long/MIN_VALUE Long/MAX_VALUE Long/MIN_VALUE]
-                    (keys chart)))))
+  (zipmap
+   [:min-y :max-y :min-x :max-x]
+   (if (empty? chart)
+     [0 0 0 0]
+     (reduce (fn [[min-y max-y min-x max-x] [y x]]
+               [(min min-y y) (max max-y y) (min min-x x) (max max-x x)])
+             [Long/MAX_VALUE Long/MIN_VALUE Long/MAX_VALUE Long/MIN_VALUE]
+             (keys chart)))))
 
 (defn chart->grid
   "Convert a chart into a lazy grid, replacing missing elements with `blank` or
@@ -64,15 +76,28 @@
             (map #(get chart [y %] blank) x-range))
           y-range))))
 
-(defn aroundp*
-  "Returns all points around a point."
-  [p]
-  [(+p p [-1 0]) (+p p [0 -1]) (+p p [0  1]) (+p p [1  0])])
+(defn points
+  "Returns `points` which belong to the chart, optionally adding
+   point `p` before checking."
+  ([chart deltas p]
+   (eduction (map #(+p p %))
+             (filter #(contains? chart %))
+             deltas))
+  ([chart points]
+   (filter #(contains? chart %)
+           points)))
 
-(defn aroundp
-  "Returns non-empty points around a point."
-  [chart p]
-  (filter #(contains? chart %) (aroundp* p)))
+(defn values
+  "Behaves like `points` but returns the value associated with the points."
+  ([chart deltas p]
+   (eduction (map #(+p p %))
+             (filter #(contains? chart %))
+             (map #(get chart %))
+             deltas))
+  ([chart points]
+   (eduction (filter #(contains? chart %))
+             (map #(get chart %))
+             points)))
 
 (defn chart-str
   "Convert a chart to a multi-line string, replacing missing elements with
@@ -118,10 +143,3 @@
   ([m k f a b c] (assoc! m k (f (get m k) a b c)))
   ([m k f a b c d] (assoc! m k (f (get m k) a b c d)))
   ([m k f a b c d & args] (assoc! m k (apply f (nth m k) a b c d args))))
-
-(def solutions (atom {}))
-
-(defn add-solution
-  "Register a solution function for the given day."
-  [day solution]
-  (swap! solutions assoc day solution))

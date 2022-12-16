@@ -7,7 +7,7 @@
     (let [p (peek unseen)
           height (int (chart p))
           front (filter #(and (not (contains? dists %)) (<= (- (int (chart %)) height) 1))
-                        (u/aroundp chart p))
+                        (u/points chart u/around p))
           front-dists (map #(vector % (inc (dists p))) front)]
       (if (= p end)
         (dists p)

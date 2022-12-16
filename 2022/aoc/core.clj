@@ -36,7 +36,8 @@
       (System/exit 1))
     (if-let [day (:day options)]
       (run-day day options)
-      (run! #(run-day % options) (keys @u/solutions)))))
+      (doseq [day (sort (keys @u/solutions))]
+        (run-day day options)))))
 
 (defn -main [& args]
   (true-main args)
