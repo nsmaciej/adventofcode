@@ -10,4 +10,4 @@
                                (apply +))))]
     [a (+ a b c)]))
 
-(u/register 1 solution)
+(u/add-solution 1 solution)

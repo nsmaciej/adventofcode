@@ -41,7 +41,7 @@
     [(run-crane reverse data)
      (run-crane identity data)]))
 
-(u/register 5 solution)
+(u/add-solution 5 solution)
 
 (comment
   (parse-pic (str "[D]        \n"

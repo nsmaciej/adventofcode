@@ -121,7 +121,7 @@
 
 (def solutions (atom {}))
 
-(defn register
+(defn add-solution
   "Register a solution function for the given day."
   [day solution]
   (swap! solutions assoc day solution))

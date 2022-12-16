@@ -34,4 +34,4 @@
     [(apply + (map score-part-1 data))
      (apply + (map score-part-2 data))]))
 
-(u/register 2 solution)
+(u/add-solution 2 solution)

@@ -27,4 +27,4 @@
                       vec)]
     [(part-1 x-values), (part-2 x-values)]))
 
-(u/register 10 solution)
+(u/add-solution 10 solution)

@@ -33,4 +33,4 @@
                      (map edn/read-string))]
     [(part-1 packets) (part-2 packets)]))
 
-(u/register 13 solution)
+(u/add-solution 13 solution)

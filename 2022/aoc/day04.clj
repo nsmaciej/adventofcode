@@ -19,4 +19,4 @@
     [(count (filter full-overlap? data))
      (count (filter partial-overlap? data))]))
 
-(u/register 4 solution)
+(u/add-solution 4 solution)

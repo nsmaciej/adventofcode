@@ -40,4 +40,4 @@
     [(solve-for-size 2 data)
      (solve-for-size 10 data)]))
 
-(u/register 9 solution)
+(u/add-solution 9 solution)

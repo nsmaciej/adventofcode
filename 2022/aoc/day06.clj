@@ -15,4 +15,4 @@
   [(find-marker input 4)
    (find-marker input 14)])
 
-(u/register 6 solution)
+(u/add-solution 6 solution)

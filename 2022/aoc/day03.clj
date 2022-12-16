@@ -31,4 +31,4 @@
   (let [data (str/split-lines input)]
     [(part-1 data) (part-2 data)]))
 
-(u/register 3 solution)
+(u/add-solution 3 solution)

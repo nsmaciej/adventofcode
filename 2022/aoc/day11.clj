@@ -75,4 +75,4 @@
     [(solve #(quot % 3) troop 20)
      (solve #(mod % div-by-lcm) troop 10000)]))
 
-(u/register 11 solution)
+(u/add-solution 11 solution)

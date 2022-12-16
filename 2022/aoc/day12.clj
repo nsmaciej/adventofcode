@@ -25,4 +25,4 @@
     (pcalls #(find-distance chart* [start] end)
             #(find-distance chart* (chart-find chart* \a) end))))
 
-(u/register 12 solution)
+(u/add-solution 12 solution)

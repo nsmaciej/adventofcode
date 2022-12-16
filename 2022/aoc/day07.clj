@@ -51,4 +51,4 @@
   (let [sizes (fs-sizes (fs-parse input))]
     [(part-1 sizes) (part-2 sizes)]))
 
-(u/register 7 solution)
+(u/add-solution 7 solution)

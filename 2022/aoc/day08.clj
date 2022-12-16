@@ -44,4 +44,4 @@
   (let [data (parse input)]
     [(part-1 data) (part-2 data)]))
 
-(u/register 8 solution)
+(u/add-solution 8 solution)
