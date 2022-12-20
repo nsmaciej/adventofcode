@@ -2,10 +2,6 @@
   (:require [aoc.utils :as u]
             [clojure.string :as str]))
 
-(defn- cave-str [cave]
-  (u/chart-str \. (update-vals cave {:rock \#
-                                     :sand \o})))
-
 (defn- trace-path [start end]
   (let [delta (mapv u/sign (u/-p end start))]
     (loop [r [], p start]
@@ -23,27 +19,28 @@
   (zipmap (mapcat parse-path (str/split-lines s))
           (repeat :rock)))
 
-(def directions [[1 0] [1 -1] [1 1]])
+(defn- trace [f limit cave p]
+  (if (> (first p) limit)
+    {:done cave}
+    (reduce (fn [cave p*]
+              (if (contains? cave p*)
+                cave
+                (let [r (trace f limit cave p*)]
+                  (if (:done r) (f r) r))))
+            (assoc! cave p :sand)
+            (map #(u/+p p %) [[1 0] [1 -1] [1 1]]))))
 
-(defn- trace-sand [limit cave start]
-  (if (>= (first start) limit)
-    (reduced cave)
-    (reduce (fn [c d] (if (contains? c (u/+p start d)) c
-                          (let [r (trace-sand limit c (u/+p start d))]
-                            (if (reduced? r) (reduced r) r))))
-            (assoc cave start :sand) directions)))
+(defn- solution [input]
+  (let [cave (parse-cave input)
+        max-y (:max-y (u/chart-extent cave))
+        count-sand #(count (filter #{:sand} (vals %)))]
+    [(-> (trace reduced (dec max-y) (transient cave) [0 500])
+         :done
+         persistent!
+         count-sand
+         (- max-y))
+     (-> (trace :done (inc max-y) (transient cave) [0 500])
+         persistent!
+         count-sand)]))
 
-(defn- trace-sand [limit cave start]
-  (if (>= (first start) limit)
-    (reduced cave)
-    (reduce (fn [c d] (if (contains? c (u/+p start d)) c
-                          (let [r (trace-sand limit c (u/+p start d))]
-                            (if (reduced? r) (reduced r) r))))
-            (assoc cave start :sand) directions)))
-
-(def sample "498,4 -> 498,6 -> 496,6
-503,4 -> 502,4 -> 502,9 -> 494,9")
-
-(let [cave (parse-cave sample)
-      limit (reduce max (map first (keys cave)))]
-  (- (count (filter #{:sand} (vals @(trace-sand limit cave [0 500])))) limit))
+(u/add-solution 14 solution)

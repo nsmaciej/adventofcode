@@ -2,10 +2,11 @@
   (:require [aoc.utils :as u]
             [clojure.tools.cli :refer [parse-opts]]
             [criterium.core :as criterium]
+            ;; Solutions register themselves using (add-solution)
             aoc.day01 aoc.day02 aoc.day03 aoc.day04
             aoc.day05 aoc.day06 aoc.day07 aoc.day08
             aoc.day09 aoc.day10 aoc.day11 aoc.day12
-            aoc.day13))
+            aoc.day13 aoc.day14))
 
 (def cli-options
   [["-d" "--day DAY" "Day number"
