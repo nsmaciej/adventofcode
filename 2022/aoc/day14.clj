@@ -1,5 +1,5 @@
 (ns aoc.day14
-  (:require [aoc.utils :as u]
+  (:require [aoc.utils :as u :refer [+p]]
             [clojure.string :as str]))
 
 (defn trace-path [[x y] [i j]]
@@ -12,24 +12,20 @@
             (partition-all 2)
             (map (fn [[x y]] [y x]))
             u/sliding-pair
-            (mapcat #(trace-path (first %) (second %)))
+            (mapcat #(apply trace-path %))
             (re-seq #"\d+" s)))
 
 (defn- parse-cave [s]
   (zipmap (mapcat parse-path (str/split-lines s))
           (repeat :rock)))
 
-(defn- trace [stop max-y cave]
-  (loop [bt [[0 500]]
-         cave cave]
+(defn- trace [stop-early max-y cave]
+  (loop [bt [[0 500]], cave cave]
     (if-let [p (peek bt)]
-      (if (> (first p) max-y)
-        (if stop cave (recur (pop bt) cave))
-        (recur (into (pop bt)
-                     (comp (map #(u/+p p %))
-                           (filter #(not (contains? cave %))))
-                     [[1 1] [1 -1] [1 0]])
-               (assoc cave p :sand)))
+      (cond (contains? cave p) (recur (pop bt) cave)
+            (> (first p) max-y) (if stop-early cave (recur (pop bt) cave))
+            :else (recur (conj (pop bt) (+p p [1 1]) (+p p [1 -1]) (+p p [1 0]))
+                         (assoc cave p :sand)))
       cave)))
 
 (defn- solution [input]
