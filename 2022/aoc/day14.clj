@@ -10,7 +10,7 @@
 (defn- parse-path [s]
   (eduction (map parse-long)
             (partition-all 2)
-            (map (fn [x y] [y x]))
+            (map (fn [[x y]] [y x]))
             u/sliding-pair
             (mapcat #(trace-path (first %) (second %)))
             (re-seq #"\d+" s)))
