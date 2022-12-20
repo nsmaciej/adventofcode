@@ -1,20 +1,20 @@
 (ns aoc.utils
   (:require [clojure.string :as str]
-            [aoc.utils :as u]
-            [criterium.core :as criterium]))
+            [aoc.utils :as u]))
 
 (defn input
   "Return the input for day n."
   [n]
   (slurp (format "inputs/day%02d.txt" n)))
 
-(def solutions (atom {}))
+(defonce solutions (atom {}))
 
 (defn add-solution
   "Register a solution function for the given day."
   [day solution]
   (swap! solutions assoc day solution))
 
+;; Useful for quick testing.
 (defn solve
   "Solve day n with standard input"
   [n]
@@ -41,12 +41,20 @@
   [f & grids]
   (apply mapv (fn [& rows] (apply mapv f rows)) grids))
 
+(defn transposep [[y x]] [x y])
+
 (defn +p
-  "Add two points together"
+  "Add points together"
   ([] [0 0])
   ([[y x]] [y x])
   ([[y1 x1] [y2 x2]] [(+ y1 y2) (+ x1 x2)])
-  ([p1 p2 & rest] (reduce +p (+p p1 p2) rest)))
+  ([p1 p2 & more] (reduce +p (+p p1 p2) more)))
+
+(defn -p
+  "Subtract points from each other"
+  ([[y x]] [(- y) (- x)])
+  ([[y1 x1] [y2 x2]] [(- y1 y2) (- x1 x2)])
+  ([p1 p2 & more] (reduce -p (-p p1 p2) more)))
 
 (def around
   "All the points around a the point [0 0]."
@@ -131,10 +139,10 @@
   "Returns the lowest common multiple of given numbers."
   ([x] x)
   ([x y] (/ (* x y) (gcd x y)))
-  ([x y & rest] (reduce lcm (lcm x y) rest)))
+  ([x y & more] (reduce lcm (lcm x y) more)))
 
-;; TODO: Just like real update we overload like crazy. Why does it do
-;; it that way. If we do not do this, day 11 is 2x slower.
+;; Just like real update we overload like crazy. Seems like apply is
+;; just very slow and if we do not do this, day 11 is 2x slower.
 (defn update!
   "Update a transient associative structure"
   ([m k f] (assoc! m k (f (get m k))))
@@ -143,3 +151,18 @@
   ([m k f a b c] (assoc! m k (f (get m k) a b c)))
   ([m k f a b c d] (assoc! m k (f (get m k) a b c d)))
   ([m k f a b c d & args] (assoc! m k (apply f (nth m k) a b c d args))))
+
+(defn sliding-pair
+  "A transducer that returns a two-element sliding window of its input.
+  Same as (partition 2 1) might do if it returned a transducer."
+  [xf]
+  (let [prev (volatile! ::none)]
+    (fn
+      ([] (xf))
+      ([result] (xf result))
+      ([result input]
+       (let [prior @prev]
+         (vreset! prev input)
+         (if (= prior ::none)
+           result
+           (xf result [prior input])))))))
