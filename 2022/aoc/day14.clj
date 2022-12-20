@@ -2,10 +2,10 @@
   (:require [aoc.utils :as u]
             [clojure.string :as str]))
 
-(defn- trace-path [start end]
-  (let [delta (mapv u/sign (u/-p end start))]
-    (loop [r [], p start]
-      (if (= p end) (conj r p) (recur (conj r p) (u/+p p delta))))))
+(defn trace-path [[x y] [i j]]
+  (for [n (range (min x i) (inc (max x i)))
+        m (range (min y j) (inc (max y j)))]
+    [n m]))
 
 (defn- parse-path [s]
   (eduction (map parse-long)
@@ -13,34 +13,30 @@
             (map u/transposep)
             u/sliding-pair
             (mapcat #(trace-path (first %) (second %)))
-            (str/split s #",| -> ")))
+            (re-seq #"\d+" s)))
 
 (defn- parse-cave [s]
   (zipmap (mapcat parse-path (str/split-lines s))
           (repeat :rock)))
 
-(defn- trace [f limit cave p]
-  (if (> (first p) limit)
-    {:done cave}
-    (reduce (fn [cave p*]
-              (if (contains? cave p*)
-                cave
-                (let [r (trace f limit cave p*)]
-                  (if (:done r) (f r) r))))
-            (assoc! cave p :sand)
-            (map #(u/+p p %) [[1 0] [1 -1] [1 1]]))))
+(defn- trace [stop max-y cave]
+  (loop [bt [[0 500]]
+         cave cave]
+    (if-let [p (peek bt)]
+      (if (> (first p) max-y)
+        (if stop cave (recur (pop bt) cave))
+        (recur (into (pop bt)
+                     (comp (map #(u/+p p %))
+                           (filter #(not (contains? cave %))))
+                     [[1 1] [1 -1] [1 0]])
+               (assoc cave p :sand)))
+      cave)))
 
 (defn- solution [input]
   (let [cave (parse-cave input)
         max-y (:max-y (u/chart-extent cave))
         count-sand #(count (filter #{:sand} (vals %)))]
-    [(-> (trace reduced (dec max-y) (transient cave) [0 500])
-         :done
-         persistent!
-         count-sand
-         (- max-y))
-     (-> (trace :done (inc max-y) (transient cave) [0 500])
-         persistent!
-         count-sand)]))
+    [(- (count-sand (trace true (dec max-y) cave)) max-y)
+     (count-sand (trace false (inc max-y) cave))]))
 
 (u/add-solution 14 solution)
