@@ -7,12 +7,13 @@
   [n]
   (slurp (format "inputs/day%02d.txt" n)))
 
-(defonce solutions (atom {}))
+(defonce solutions (atom (sorted-map)))
 
-(defn add-solution
-  "Register a solution function for the given day."
+(defmacro add-solution
+  "Register a solution function for a given day. Automatically uses an interned
+  var so that solution functions need not be re-added whenever they change."
   [day solution]
-  (swap! solutions assoc day solution))
+  `(swap! solutions assoc ~day #'~solution))
 
 ;; Useful for quick testing.
 (defn solve
