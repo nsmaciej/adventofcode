@@ -10,7 +10,7 @@
 (defn- parse-path [s]
   (eduction (map parse-long)
             (partition-all 2)
-            (map u/transposep)
+            (map (fn [x y] [y x]))
             u/sliding-pair
             (mapcat #(trace-path (first %) (second %)))
             (re-seq #"\d+" s)))
@@ -34,7 +34,7 @@
 
 (defn- solution [input]
   (let [cave (parse-cave input)
-        max-y (:max-y (u/chart-extent cave))
+        max-y (transduce (map first) max 0 (keys cave))
         count-sand #(count (filter #{:sand} (vals %)))]
     [(- (count-sand (trace true (dec max-y) cave)) max-y)
      (count-sand (trace false (inc max-y) cave))]))

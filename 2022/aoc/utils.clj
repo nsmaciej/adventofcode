@@ -42,8 +42,6 @@
   [f & grids]
   (apply mapv (fn [& rows] (apply mapv f rows)) grids))
 
-(defn transposep [[y x]] [x y])
-
 (defn +p
   "Add points together"
   ([] [0 0])
