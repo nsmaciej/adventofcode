@@ -24,13 +24,13 @@
   (let [n (count data)
         mixed (->> (map #(mod % n) (range (* n times)))
                    (reduce #(mix-indices data %1 %2) (fv/vec (range n)))
-                   (map #(nth data %)))
+                   (mapv #(nth data %)))
         zero-ix (fv-index-of mixed 0)]
     (apply + (map #(nth mixed (mod (+ zero-ix %) n))
                   [1000 2000 3000]))))
 
 (defn- solution [input]
-  (let [data (map parse-long (re-seq #"-?\d+" input))]
+  (let [data (mapv parse-long (re-seq #"-?\d+" input))]
     [(mix data 1)
      (mix (mapv #(* % 811589153) data) 10)]))
 
