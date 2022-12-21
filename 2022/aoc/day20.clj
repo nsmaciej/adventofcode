@@ -13,8 +13,9 @@
 (defn- mix [data times]
   (let [n (count data)
         ixs (LinkedList. (range n))]
-    (dotimes [ix (* n times)]
-      (mix-indices! data ixs (mod ix n)))
+    (dotimes [_ times]
+      (dotimes [ix n]
+        (mix-indices! data ixs ix)))
     (let [mixed (mapv #(nth data %) ixs)
           zero-ix (.indexOf mixed 0)]
       (apply + (map #(nth mixed (mod (+ zero-ix %) n))
