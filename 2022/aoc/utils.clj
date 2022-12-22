@@ -117,12 +117,16 @@
         (map str/join)
         (str/join "\n"))))
 
+(defmethod print-method ::chart [chart w]
+  (.write w (chart-str chart)))
+
 (defn parse-chart [s]
   (let [lines (str/split-lines s)]
-    (into {}
-          (for [y (range (count lines))
-                x (range (count (nth lines y)))]
-            [[y x] (nth (nth lines y) x)]))))
+    (with-meta
+      (into {} (for [y (range (count lines))
+                     x (range (count (nth lines y)))]
+                 [[y x] (nth (nth lines y) x)]))
+      {:type ::chart})))
 
 (defn sign
   "Returns -1, 0, or 1 depending on the sing of x."

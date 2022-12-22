@@ -21,6 +21,7 @@
       (apply + (map #(nth mixed (mod (+ zero-ix %) n))
                     [1000 2000 3000])))))
 
+; Rewrite to keep nodes stable.
 (defn- solution [input]
   (let [data (mapv parse-long (re-seq #"-?\d+" input))]
     [(mix data 1)
