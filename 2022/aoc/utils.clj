@@ -18,8 +18,8 @@
 ;; Useful for quick testing.
 (defn solve
   "Solve day n with standard input"
-  [n]
-  (vec ((@solutions n) (input n))))
+  ([n] (vec ((@solutions n) (input n))))
+  ([n text] (vec ((@solutions n) text))))
 
 (defn queue
   ([] (clojure.lang.PersistentQueue/EMPTY))
