@@ -6,12 +6,12 @@
 (def ^:private parse-op {"+" :plus "-" :minus "*" :times "/" :divide})
 
 (defn- parse-riddle [input]
-  (for [line (str/split-lines input)]
-    (let [[name x op rhs :as words] (str/split line #":? +")]
-      [(keyword name)
-       (if (= (count words) 2)
-         {:n (parse-long x)}
-         {:lhs (keyword x), :op (parse-op op), :rhs (keyword rhs)})])))
+  (for [line (str/split-lines input)
+        :let [[name x op rhs :as words] (str/split line #":? +")]]
+    [(keyword name)
+     (if (= (count words) 2)
+       {:n (parse-long x)}
+       {:lhs (keyword x), :op (parse-op op), :rhs (keyword rhs)})]))
 
 (defn- solve [riddle name]
   (let [m (riddle name)]
