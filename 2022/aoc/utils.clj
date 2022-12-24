@@ -59,15 +59,32 @@
   "All the points around a the point [0 0]."
   [[-1 0] [0 -1] [0  1] [1  0]])
 
+(def around*
+  "All the points around a the point [0 0], including diagonals."
+  [[-1 -1] [-1 0] [-1 1] [0 -1] [0 1] [1 -1] [1 0] [1 1]])
+
+(defn keys*
+  "Returns a sequence of keys, but also works on sets."
+  [coll]
+  (if (map? coll)
+    (keys coll)
+    (seq coll)))
+
 (defn chart-extent [chart]
-  (zipmap
-   [:min-y :max-y :min-x :max-x]
-   (if (empty? chart)
-     [0 0 0 0]
-     (reduce (fn [[min-y max-y min-x max-x] [y x]]
-               [(min min-y y) (max max-y y) (min min-x x) (max max-x x)])
-             [Long/MAX_VALUE Long/MIN_VALUE Long/MAX_VALUE Long/MIN_VALUE]
-             (keys chart)))))
+  (let [[min-y max-y min-x max-x]
+        (if (empty? chart)
+          [0 0 0 0]
+          (reduce (fn [[min-y max-y min-x max-x] [y x]]
+                    [(min min-y y) (max max-y y) (min min-x x) (max max-x x)])
+                  [Long/MAX_VALUE Long/MIN_VALUE Long/MAX_VALUE Long/MIN_VALUE]
+                  (keys* chart)))]
+    {:min-y min-y, :max-y (inc max-y), :min-x min-x, :max-x (inc max-x)
+     :height (inc (- max-y min-y))
+     :width (inc (- max-x min-x))}))
+
+(def ^:dynamic *present-grid-value*
+  "Value to use when turning set-based charts into grids"
+  \#)
 
 (defn chart->grid
   "Convert a chart into a lazy grid, replacing missing elements with `blank` or
@@ -77,11 +94,13 @@
    (chart->grid nil chart))
   ([blank chart]
    (let [extent (chart-extent chart)
-         x-range (range (:min-x extent) (inc (:max-x extent)))
-         y-range (range (:min-y extent) (inc (:max-y extent)))]
-     (map (fn [y]
-            (map #(get chart [y %] blank) x-range))
-          y-range))))
+         x-range (range (:min-x extent) (:max-x extent))
+         y-range (range (:min-y extent) (:max-y extent))]
+     (for [y y-range]
+       (for [x x-range :let [p [y x]]]
+         (if (map? chart)
+           (get chart p blank)
+           (if (contains? chart p) *present-grid-value* blank)))))))
 
 (defn points
   "Returns `points` which belong to the chart, optionally adding
