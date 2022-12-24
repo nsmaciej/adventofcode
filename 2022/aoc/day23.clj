@@ -36,14 +36,22 @@
         (comp (map (fn [[new olds]] (if (> (count olds) 1) olds [new]))) cat)
         (propose crater first-cardinal)))
 
-(defn solution [input]
-  (let [start-crater (parse-crater input)
-        crater (->> (first->cardinals :north)
-                    cycle
-                    (take 11)
-                    (reduce step start-crater))
+(defn- part-1 [simulations]
+  (let [crater (nth simulations 11)
         extent (u/chart-extent crater)
         area (* (:width extent) (:height extent))]
-    [(- area (count crater))]))
+    (- area (count crater))))
+
+(defn- part-2 [simulations]
+  (->> simulations
+       (sequence (comp u/sliding-pair (take-while #(apply distinct? %))))
+       count
+       inc))
+
+(defn solution [input]
+  (let [simulations (reductions step
+                                (parse-crater input)
+                                (cycle (first->cardinals :north)))]
+    [(part-1 simulations) (part-2 simulations)]))
 
 (u/add-solution 23 solution)
