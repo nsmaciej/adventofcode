@@ -125,16 +125,28 @@
              (map #(get chart %))
              points)))
 
+(defn- grid-vstack [& grids]
+  (vec (apply concat grids)))
+
+(defn- grid-hstack [& grids]
+  (apply mapv #(vec (apply concat %&)) grids))
+
+(defn- border-grid [grid]
+  (let [w (count (first grid))
+        h (count grid)
+        vertical (concat [[\+]] (repeat h [\|]) [[\+]])]
+    (grid-hstack vertical
+                 (grid-vstack [(repeat w \-)] grid [(repeat w \-)])
+                 vertical)))
+
 (defn chart-str
   "Convert a chart to a multi-line string, replacing missing elements with
   `blank` or a space if not provided."
-  ([chart]
-   (chart-str \space chart))
-  ([blank chart]
-   (->> chart
-        (chart->grid blank)
-        (map str/join)
-        (str/join "\n"))))
+  [chart & {:keys [blank border] :or {blank \., border true}}]
+  (let [grid (chart->grid blank chart)]
+    (->> (if border (border-grid grid) grid)
+         (map str/join)
+         (str/join "\n"))))
 
 (defmethod print-method ::chart [chart w]
   (.write w (chart-str chart)))
