@@ -55,6 +55,9 @@
   ([[y1 x1] [y2 x2]] [(- y1 y2) (- x1 x2)])
   ([p1 p2 & more] (reduce -p (-p p1 p2) more)))
 
+(defn abs- [x y]
+  (abs (- x y)))
+
 (def around
   "All the points around a the point [0 0]."
   [[-1 0] [0 -1] [0  1] [1  0]])
