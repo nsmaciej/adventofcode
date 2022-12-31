@@ -55,8 +55,15 @@
   ([[y1 x1] [y2 x2]] [(- y1 y2) (- x1 x2)])
   ([p1 p2 & more] (reduce -p (-p p1 p2) more)))
 
-(defn abs- [x y]
+(defn abs-
+  "Return the abosulte difference of two numbers."
+  [x y]
   (abs (- x y)))
+
+(defn manhattan
+  "Find the manhattan distance between two points."
+  [[y1 x1] [y2 x2]]
+  (+ (u/abs- y1 y2) (u/abs- x1 x2)))
 
 (def around
   "All the points around a the point [0 0]."
