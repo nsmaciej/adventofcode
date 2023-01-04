@@ -45,15 +45,17 @@
 (defn +p
   "Add points together"
   ([] [0 0])
-  ([[y x]] [y x])
-  ([[y1 x1] [y2 x2]] [(+ y1 y2) (+ x1 x2)])
-  ([p1 p2 & more] (reduce +p (+p p1 p2) more)))
+  ([p] p)
+  ([p1 p2] (mapv + p1 p2))
+  ([p1 p2 p3] (mapv + p1 p2 p3))
+  ([p1 p2 p3 & more] (apply mapv + p1 p2 p3 more)))
 
 (defn -p
   "Subtract points from each other"
-  ([[y x]] [(- y) (- x)])
-  ([[y1 x1] [y2 x2]] [(- y1 y2) (- x1 x2)])
-  ([p1 p2 & more] (reduce -p (-p p1 p2) more)))
+  ([p] p)
+  ([p1 p2] (mapv - p1 p2))
+  ([p1 p2 p3] (mapv - p1 p2 p3))
+  ([p1 p2 p3 & more] (apply mapv - p1 p2 p3 more)))
 
 (defn abs-
   "Return the abosulte difference of two numbers."
