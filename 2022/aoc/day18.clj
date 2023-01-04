@@ -1,54 +1,44 @@
 (ns aoc.day18
-  (:require [aoc.utils :as u])
-  (:import java.util.BitSet))
+  (:require [aoc.utils :as u]))
 
 (defn- parse [input]
   (->> input
        (re-seq #"\d+")
        (map parse-long)
        (partition 3)
-       (map vec)))
+       (map vec)
+       set))
 
-(defn- extent [xs]
-  (and (seq xs)
-       (reduce (fn [[min-x max-x] x] [(min min-x x) (max max-x x)])
-               [Long/MAX_VALUE Long/MIN_VALUE]
-               xs)))
+(defn around-cube [c]
+  (map #(u/+p c %) [[0 0 1] [0 0 -1] [0 1 0] [0 -1 0] [1 0 0] [-1 0 0]]))
 
-#_(def around [[0 0 1] [0 0 -1] [0 1 0] [0 -1 0] [1 0 0] [-1 0 0]])
+(defn- surface-area [cubes]
+  (apply + (for [c cubes] (count (filter #(not (contains? cubes %)) (around-cube c))))))
 
-#_(defn- surface-area [cubes]
-    (apply + (for [c cubes]
-               (count (filter #(->> % (u/+p c) (contains? cubes) not) around)))))
+(defn- extent [cubes dim]
+  [(dec (reduce min (map #(% dim) cubes)))
+   (inc (reduce max (map #(% dim) cubes)))])
 
-(defn- layers
-  "Returns a sequence of bitsets representing each layer in dimension dim.
-  vdim and hdim must be the indices of the remaining dimensions and are used to
-  encode the 2D surface into the bitset."
-  [cubes dim vdim hdim]
-  (let [[h-min h-max] (extent (map #(% hdim) cubes))
-        width (inc (- h-max h-min))]
-    (for [[_ layer] (sort-by key (group-by #(% dim) cubes))]
-      (let [bitset (BitSet.)]
-        (doseq [cube layer]
-          (.set bitset (+ (cube hdim)
-                          (* width (inc (- (cube vdim) h-min))))))
-        bitset))))
-
-(defn- layer-faces
-  "Returns the number of faces along each layer along dimension dim."
-  [cubes dim vdim hdim]
-  (loop [last (BitSet.)
-         layers (vec (layers cubes dim vdim hdim))
-         result []]
-    (if-let [x (peek layers)]
-      (recur x (pop layers) (conj result (do (.xor last x) (.cardinality last))))
-      (conj result (.cardinality last)))))
+(defn- exterior-area [cubes]
+  (let [[min-x max-x] (extent cubes 0)
+        [min-y max-y] (extent cubes 1)
+        [min-z max-z] (extent cubes 2)]
+    (loop [queue (u/queue [[min-x min-y min-z]]), seen #{}, area 0]
+      (if-let [c (peek queue)]
+        (let [front (filter #(and (<= min-x (c 0) max-x)
+                                  (<= min-y (c 1) max-y)
+                                  (<= min-z (c 2) max-z)
+                                  (not (contains? seen %))
+                                  (not (contains? cubes %)))
+                            (around-cube c))]
+          (recur (into (pop queue) front)
+                 (into seen front)
+                 (->> (around-cube c) (filter #(contains? cubes %)) count (+ area))))
+        area))))
 
 (defn- solution [input]
   (let [cubes (parse input)]
-    [(+ (apply + (layer-faces cubes 0 1 2))
-        (apply + (layer-faces cubes 1 2 0))
-        (apply + (layer-faces cubes 2 0 1)))]))
+    [(surface-area cubes) (exterior-area cubes)]))
 
+(u/solve 18)
 (u/add-solution 18 solution)
