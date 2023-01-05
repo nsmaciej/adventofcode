@@ -6,8 +6,8 @@
 (defn- parse-file [line]
   (let [[kind name] (str/split line #" ")]
     (if (= kind "dir")
-      {:kind :dir, :name name}
-      {:kind :file, :size (parse-long kind)})))
+      (array-map :kind :dir, :name name)
+      (array-map :kind :file, :size (parse-long kind)))))
 
 (defn- fs-parse [input]
   (loop [[invocation & rest] (rest (str/split input #"\$ "))
@@ -34,18 +34,12 @@
     (reduce dir-size {} topo-sorted)))
 
 (defn- part-1 [sizes]
-  (->> sizes
-       vals
-       (filter #(<= % 100000))
-       (apply +)))
+  (->> sizes vals (filter #(<= % 100000)) (apply +)))
 
 (defn- part-2 [sizes]
   (let [taken-current (sizes [])
         need-to-free (- taken-current 40000000)]
-    (->> sizes
-         vals
-         (filter #(>= % need-to-free))
-         (apply min))))
+    (u/minimum (filter #(>= % need-to-free)) (vals sizes))))
 
 (defn- solution [input]
   (let [sizes (fs-sizes (fs-parse input))]
