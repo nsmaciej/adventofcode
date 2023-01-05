@@ -13,34 +13,31 @@
 (def ^:private field-width 7)
 
 (defn- collides? [field shape]
-  (or (> (apply max (map first shape)) 0)
-      (< (apply min (map second shape)) 0)
-      (>= (apply max (map second shape)) field-width)
+  (or (> (u/maximum (map first) shape) 0)
+      (< (u/minimum (map second) shape) 0)
+      (>= (u/maximum (map second) shape) field-width)
       (some #(contains? field %) shape)))
 
 (defn drop-shape
-  "Simulate a single shape dropping. `field` should be a set, `stream` an infite
-  sequence of moves to nudge the shape by, `shape` a seq of points with
-  their origin at [0 0], `y-start` the top the field."
-  [shape field stream y-start]
-  (loop [[nudge & stream] stream
+  "Simulate a single shape dropping. `field` should be a set, `nudges` an infite
+   sequence of moves, `shape` a point seq with origin at [0 0], `y-start` top the field."
+  [{:keys [field, nudges, y-start]} shape]
+  (loop [[nudge & nudges] nudges
          shape (u/chart+p shape [(dec y-start) 0] start-offset)]
     (let [shape-nudged (u/chart+p shape nudge)
           shape* (if (collides? field shape-nudged) shape shape-nudged)
           shape-pulled (u/chart+p shape* [1 0])]
       (if (collides? field shape-pulled)
-        [(into field shape*), stream, (apply min y-start (map first shape*))]
-        (recur stream shape-pulled)))))
+        (array-map :field (into field shape*)
+                   :nudges nudges
+                   :y-start (min y-start (u/minimum (map first) shape*)))
+        (recur nudges shape-pulled)))))
 
 (defn- part-1 [moves steps]
-  (->> (take steps (cycle (vals shapes)))
-       ;; If the floor is at y=0, then last block would've been at y=1.
-       (reduce #(apply drop-shape %2 %1) [#{} (cycle moves) 1])
-       first
-       (map first)
-       (apply min)
-       -
-       inc))
+  ;; If the floor is to be at y=0, then last block would've been at y=1.
+  (let [future-shapes (take steps (cycle (vals shapes)))
+        start (array-map :field #{}, :nudges (cycle moves), :y-start 1)]
+    (- 1 (:y-start (reduce drop-shape start future-shapes)))))
 
 (defn- solution [input]
   (let [moves (map {\> [0 1] \< [0 -1]} (str/trim input))]

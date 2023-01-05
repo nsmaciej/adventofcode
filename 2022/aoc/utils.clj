@@ -26,6 +26,16 @@
   ([coll]
    (reduce conj clojure.lang.PersistentQueue/EMPTY coll)))
 
+(defn maximum
+  ([coll] (maximum identity coll))
+  ([xf coll]
+   (if (empty? coll) nil (transduce xf (completing max) Long/MIN_VALUE coll))))
+
+(defn minimum
+  ([coll] (minimum identity coll))
+  ([xf coll]
+   (if (empty? coll) nil (transduce xf (completing min) Long/MAX_VALUE coll))))
+
 (defn transpose
   "Transose a grid"
   [grid]
