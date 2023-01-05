@@ -76,11 +76,24 @@
   [[-1 -1] [-1 0] [-1 1] [0 -1] [0 1] [1 -1] [1 0] [1 1]])
 
 (defn keys*
-  "Returns a sequence of keys, but also works on sets."
+  "Returns a sequence of keys, but also treats non-maps as if they were keys."
   [coll]
   (if (map? coll)
     (keys coll)
     (seq coll)))
+
+(defn update-keys*
+  "Like update-keys, but also maps over non-maps."
+  [coll f]
+  (if (map? coll)
+    (update-keys coll f)
+    (into (empty coll) (map f) coll)))
+
+(defn chart+p [chart & ps]
+  (update-keys* chart #(apply +p % ps)))
+
+(defn chart-p [chart & ps]
+  (update-keys* chart #(apply -p % ps)))
 
 (defn chart-extent [chart]
   (let [[min-y max-y min-x max-x]
