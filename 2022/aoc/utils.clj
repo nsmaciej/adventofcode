@@ -106,16 +106,13 @@
   (update-keys* chart #(apply -p % ps)))
 
 (defn chart-extent [chart]
-  (let [[min-y max-y min-x max-x]
-        (if (empty? chart)
-          [0 0 0 0]
-          (reduce (fn [[min-y max-y min-x max-x] [y x]]
-                    [(min min-y y) (max max-y y) (min min-x x) (max max-x x)])
-                  [Long/MAX_VALUE Long/MIN_VALUE Long/MAX_VALUE Long/MIN_VALUE]
-                  (keys* chart)))]
-    {:min-y min-y, :max-y (inc max-y), :min-x min-x, :max-x (inc max-x)
-     :height (inc (- max-y min-y))
-     :width (inc (- max-x min-x))}))
+  (let [ks (keys* chart)
+        min-y (minimum (map first) ks),  max-y (maximum (map first) ks)
+        min-x (minimum (map second) ks), max-x (maximum (map second) ks)]
+    (array-map :min-y min-y, :max-y (inc max-y)
+               :min-x min-x, :max-x (inc max-x)
+               :height (inc (- max-y min-y))
+               :width (inc (- max-x min-x)))))
 
 (def ^:dynamic *present-grid-value*
   "Value to use when turning set-based charts into grids"
