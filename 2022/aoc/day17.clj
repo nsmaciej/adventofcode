@@ -20,24 +20,27 @@
 
 (defn drop-shape
   "Simulate a single shape dropping. `field` should be a set, `stream` an infite
-  sequence of moves to nudge the shape by, and `shape` a seq of points with
-  their origin at [0 0]."
-  [field stream shape]
-  (let [y-start (if (empty? field) 0 (dec (apply min (map first field))))]
-    (loop [[nudge & stream] stream
-           shape (u/chart+p shape [y-start 0] start-offset)]
-      (let [shape-nudged (u/chart+p shape nudge)
-            shape* (if (collides? field shape-nudged) shape shape-nudged)
-            shape-pulled (u/chart+p shape* [1 0])]
-        (if (collides? field shape-pulled)
-          [(into field shape*) stream]
-          (recur stream shape-pulled))))))
+  sequence of moves to nudge the shape by, `shape` a seq of points with
+  their origin at [0 0], `y-start` the top the field."
+  [shape field stream y-start]
+  (loop [[nudge & stream] stream
+         shape (u/chart+p shape [(dec y-start) 0] start-offset)]
+    (let [shape-nudged (u/chart+p shape nudge)
+          shape* (if (collides? field shape-nudged) shape shape-nudged)
+          shape-pulled (u/chart+p shape* [1 0])]
+      (if (collides? field shape-pulled)
+        [(into field shape*), stream, (apply min y-start (map first shape*))]
+        (recur stream shape-pulled)))))
 
 (defn- part-1 [moves steps]
-  (let [[field _] (reduce (fn [[f s] shape] (drop-shape f s shape))
-                          [#{} (cycle moves)]
-                          (take steps (cycle (vals shapes))))]
-    (->> field (map first) (apply min) - inc)))
+  (->> (take steps (cycle (vals shapes)))
+       ;; If the floor is at y=0, then last block would've been at y=1.
+       (reduce #(apply drop-shape %2 %1) [#{} (cycle moves) 1])
+       first
+       (map first)
+       (apply min)
+       -
+       inc))
 
 (defn- solution [input]
   (let [moves (map {\> [0 1] \< [0 -1]} (str/trim input))]
