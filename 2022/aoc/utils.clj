@@ -107,8 +107,8 @@
 
 (defn chart-extent [chart]
   (let [ks (keys* chart)
-        min-y (minimum (map first) ks),  max-y (maximum (map first) ks)
-        min-x (minimum (map second) ks), max-x (maximum (map second) ks)]
+        min-y (or (minimum (map first) ks) 0),  max-y (or (maximum (map first) ks) 0)
+        min-x (or (minimum (map second) ks) 0), max-x (or (maximum (map second) ks) 0)]
     (array-map :min-y min-y, :max-y (inc max-y)
                :min-x min-x, :max-x (inc max-x)
                :height (inc (- max-y min-y))
