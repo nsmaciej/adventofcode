@@ -194,8 +194,8 @@
 (defn sign
   "Returns -1, 0, or 1 depending on the sing of x."
   [x]
-  (cond (< x 0) -1
-        (> x 0) 1
+  (cond (neg? x) -1
+        (pos? x) 1
         :else 0))
 
 (defn gcd [a b]
