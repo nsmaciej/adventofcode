@@ -30,7 +30,7 @@
             field
             (range (count rows)))))
 
-(defn- drop-shape [nudges {:keys [field nudge-ix]} shape-ix]
+(defn- drop-shape [nudges {:keys [field nudge-ix step]} shape-ix]
   (let [shape-ix (mod shape-ix (count shapes))
         shape (nth shapes shape-ix)]
     (loop [nudge-ix nudge-ix
@@ -42,21 +42,18 @@
         (if (collides? field shape pos-fallen)
           {:field (glue-shape field (:rows shape) pos)
            :nudge-ix (inc nudge-ix)
-           :shape-ix (inc shape-ix)}
+           :shape-ix (inc shape-ix)
+           :step (inc step)}
           (recur (inc nudge-ix) pos-fallen))))))
 
-(defn- step-key [step]
-  (let [field (:field step)
-        rows (subvec field (max 0 (- (count field) (quot 64 field-width))))]
-    [(:nudge-ix step)
-     (:shape step)
-     (reduce bit-or 0 (map-indexed #(bit-shift-left %2 (* %1 field-width)) rows))]))
+(defn- field-key [field]
+  (let [rows (subvec field (max 0 (- (count field) (quot 64 field-width))))]
+    (transduce (map-indexed #(bit-shift-left %2 (* %1 field-width)))
+               (completing bit-or) 0 rows)))
 
 (defn- find-cycle [seen state]
-  (let [key (step-key state), step (assoc state :step (count seen))]
-    (if-let [matching-step (get seen key)]
-      (reduced [matching-step step])
-      (assoc seen key step))))
+  (let [key [(:nudge-ix state) (:shape-ix state) (field-key (:field state))]]
+    (if-let [state* (get seen key)] (reduced [state* state]) (assoc seen key state))))
 
 (defn- part-2 [nudges states]
   (let [part-2-steps 1000000000000
@@ -75,7 +72,7 @@
 
 (defn- solution [input]
   (let [nudges (mapv {\> (->Point 0 1), \< (->Point 0 -1)} (str/trim input))
-        start {:field (vector-of :long), :nudge-ix 0}
+        start {:field (vector-of :long), :nudge-ix 0, :step 0}
         states (reductions #(drop-shape nudges %1 %2) start (range))]
     [(-> states (nth 2022) :field count), (part-2 nudges states)]))
 
