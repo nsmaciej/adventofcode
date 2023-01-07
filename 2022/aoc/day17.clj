@@ -24,14 +24,13 @@
                 (some pos?)))))
 
 (defn- glue-shape [field rows {:keys [y x]}]
-  (let [grow-by (- (+ y (count rows)) (count field))
-        field (if (pos? grow-by) (into field (repeat grow-by 0)) field)]
-    (reduce #(update %1 (+ y %2) bit-or (bit-shift-left (rows %2) x))
-            field
-            (range (count rows)))))
+  ;; Update one past the end gives us a nil.
+  (reduce (fn [f r] (update f (+ y r) #(bit-or (or % 0) (bit-shift-left (rows r) x))))
+          field
+          (range (count rows))))
 
-(defn- drop-shape [nudges {:keys [field nudge-ix step]} shape-ix]
-  (let [shape-ix (mod shape-ix (count shapes))
+(defn- drop-shape [nudges {:keys [field nudge-ix]} step]
+  (let [shape-ix (mod step (count shapes))
         shape (nth shapes shape-ix)]
     (loop [nudge-ix nudge-ix
            pos-start (+p (->Point (count field) 0) start-offset)]
